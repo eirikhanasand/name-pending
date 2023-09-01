@@ -1,0 +1,16 @@
+{
+    "name": "tekkom-bot",
+    "version": "1.0.0",
+    "description": "TekKom Bot",
+    "main": "src/app.js",
+    "scripts": {
+        "start": "node src/app.js"
+    },
+    "author": "Login - Linjeforeningen for IT",
+    "license": "MIT",
+    "type": "module",
+    "dependencies": {
+        "discord.js": "^14.13.0",
+        "fs": "^0.0.1-security"
+    }
+}

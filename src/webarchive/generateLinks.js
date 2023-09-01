@@ -1,0 +1,46 @@
+export default function generateDailyLinks(path) {
+    const links = [];
+    const today = new Date();
+    const currentYear = today.getFullYear()
+
+    for (let month = 1; month < 12; month++) {
+        for (let day = 1; day < 31; day++) {
+            links.push(`${path.slice(0, -10)}${currentYear}-${month < 10 ? "0" + month : month}-${day}`);
+        }
+    }
+
+    return links;
+}
+
+export function generateWeeklyLinks(path) {
+    const currentWeek = getCurrentWeekNumber()
+    const currentYear = new Date().getFullYear()
+    const links = [];
+
+    for (let year = 2020; year <= currentYear; year++) {
+        for (let week = 1; week <= currentWeek; week++) {
+            links.push(`${path.slice(0, -7)}${year}-${week}`);
+        }
+    }
+
+    return links;
+}
+
+export function generateYearlyLinks(path) {
+    const currentYear = new Date().getFullYear();
+    const links = [];
+
+    for (let year = 2020; year <= currentYear; year++) {
+        links.push(`${path.slice(0, -4)}${year}`);
+    }
+
+    return links;
+}
+
+export function getCurrentWeekNumber() {
+    const date = new Date(); // Get the current date
+    const startOfYear = new Date(date.getFullYear(), 0, 1); // January 1st of the current year
+    const daysPassed = Math.floor((date - startOfYear) / (24 * 60 * 60 * 1000)); // Calculate days passed
+    const weekNumber = Math.ceil((daysPassed + startOfYear.getDay() + 1) / 7); // Calculate the week number
+    return weekNumber;
+}
