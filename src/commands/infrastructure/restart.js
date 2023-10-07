@@ -5,8 +5,54 @@ import config from '../../../config.json' assert { type: "json" };
 
 export const data = new SlashCommandBuilder()
     .setName('restart')
-    .setDescription('Restarts the bot');
+    .setDescription('Restarts a service')
+    .addStringOption((option) =>
+        option
+            .setName('reason')
+            .setDescription('Reason for the restart')
+    )
+    .addBooleanOption((option) =>
+        option
+            .setName('force')
+            .setDescription('Force restart')
+    );
 export async function execute(interaction) {
+    const argument = interaction.options.getString('argument');
+    console.log(argument)
+    await bot(interaction)
+}
+
+/**
+ * Replies to the interaction with a custom status
+ * 
+ * @param {ChatInputCommandInteraction<CacheType>} interaction Interaction to reply to
+ * @param {string} msg Status message
+ * @returns {void} Updates the message and returns void when done
+ */
+async function reply(interaction, process, msg) {
+    switch (process) {
+        case "error": {
+            const embed = new EmbedBuilder()
+            .setTitle('Restart')
+            .setDescription('Restarting the bot. The message will be updated when the bot is restarted.')
+            .setColor("#fd8738")
+            .setTimestamp()
+            .addFields(
+                {name: "Restarted", value: currentTime(), inline: true},
+                {name: "Status", value: msg, inline: true}
+            )
+
+        await interaction.editReply({ embeds: [embed] });
+        }
+        default: console.log(`Unknown process ${process}`); return
+    }
+}
+
+/**
+ * Restarts the bot itself
+ * @param {ChatInputCommandInteraction<CacheType>} interaction 
+ */
+async function bot(interaction) {
     let childPID, previousChildPID
     const restart = [
         'rm -rf tekkom-bot',
@@ -36,7 +82,7 @@ export async function execute(interaction) {
     child.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
         childPID = child.pid
-        reply(interaction, `Spawned child ${childPID}`)
+        reply(interaction, '"error"', `Spawned child ${childPID}`)
     });
 
     child.stderr.on('data', (data) => {
@@ -45,27 +91,6 @@ export async function execute(interaction) {
 
     child.on('close', () => {
         previousChildPID = childPID
-        reply(interaction, `Killed child ${previousChildPID}`)
+        reply(interaction, '"error"', `Killed child ${previousChildPID}`)
     });
-}
-
-/**
- * Replies to the interaction with a custom status
- * 
- * @param {unknown} interaction Interaction to reply to
- * @param {string} msg Status message
- * @returns {void} Updates the message and returns void when done
- */
-async function reply(interaction, msg) {
-    const embed = new EmbedBuilder()
-        .setTitle('Restart')
-        .setDescription('Restarting the bot. The message will be updated when the bot is restarted.')
-        .setColor("#fd8738")
-        .setTimestamp()
-        .addFields(
-            {name: "Restarted", value: currentTime(), inline: true},
-            {name: "Status", value: msg, inline: true}
-        )
-
-    await interaction.editReply({ embeds: [embed] });
 }
