@@ -7,25 +7,6 @@ export const data = new SlashCommandBuilder()
     .setName('restart')
     .setDescription('Restarts the bot');
 export async function execute(interaction) {
-    let time = undefined, present = new Date().getTime()
-    const lastRestarted = (present - time) / 1000
-    const timeOut = 30
-
-    console.log(lastRestarted, timeOut)
-    
-    if (lastRestarted < timeOut) {
-        const embed = new EmbedBuilder()
-        .setTitle('Restart')
-        .setDescription('Restarting the bot. The message will be updated when the bot is restarted.')
-        .setColor("#fd8738")
-        .setTimestamp()
-        .addFields(
-            {name: "Timeout", value: `The bot was restarted ${lastRestarted} seconds ago. Please wait another ${timeOut - lastRestarted} seconds.`, inline: true},
-        )
-        await interaction.reply({ embeds: [embed]});
-        return
-    }
-
     let childPID, previousChildPID
     const restart = [
         'rm -rf tekkom-bot',
@@ -55,7 +36,6 @@ export async function execute(interaction) {
     child.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
         childPID = child.pid
-        time = new Date().getTime()
         reply(interaction, `Spawned child ${childPID}`)
     });
 
