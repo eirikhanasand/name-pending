@@ -7,6 +7,36 @@ export const data = new SlashCommandBuilder()
     .setName('restart')
     .setDescription('Restarts the bot');
 export async function execute(interaction) {
+    let time = undefined, present = new Date().getTime()
+    const lastRestarted = (present - time) / 1000
+    const timeOut = 30
+
+    console.log(lastRestarted, timeOut)
+    
+    if (lastRestarted < timeOut) {
+        const embed = new EmbedBuilder()
+        .setTitle('Restart')
+        .setDescription('Restarting the bot. The message will be updated when the bot is restarted.')
+        .setColor("#fd8738")
+        .setTimestamp()
+        .addFields(
+            {name: "Timeout", value: `The bot was restarted ${lastRestarted} seconds ago. Please wait another ${timeOut - lastRestarted} seconds.`, inline: true},
+        )
+        await interaction.reply({ embeds: [embed]});
+        return
+    }
+
+    let childPID, previousChildPID
+    const restart = [
+        'rm -rf tekkom-bot',
+        'git clone git@git.logntnu.no:tekkom/playground/tekkom-bot.git',
+        'cd tekkom-bot',
+        'npm i',
+        'touch config.json',
+        `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}"}' > config.json`,
+        'npm run start',
+    ];
+
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('Restarting the bot. The message will be updated when the bot is restarted.')
@@ -19,30 +49,23 @@ export async function execute(interaction) {
     await interaction.reply({ embeds: [embed]});
 
     // Run a command on your system using the exec function
-    const childProcess = exec(`rm -rf tekkom-bot && git clone git@git.logntnu.no:tekkom/playground/tekkom-bot.git && cd tekkom-bot && npm i && touch config.json && echo ${config} > config.json && npm run start`);
+    const child = exec(restart.join(' && '));
 
     // Pipes the output of the child process to the main application console
-    childProcess.stdout.on('data', (data) => {
-        console.log("Status 1")
+    child.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
-        reply(interaction, "Finished")
+        childPID = child.pid
+        time = new Date().getTime()
+        reply(interaction, `Spawned child ${childPID}`)
     });
 
-    childProcess.stderr.on('data', (data) => {
-        console.log("Status 2")
+    child.stderr.on('data', (data) => {
         console.error(`stderr: ${data}`);
     });
 
-    childProcess.on('close', (code) => {
-        console.log("Status 3")
-        console.log(`child process exited with code ${code}`);
-        if (code === 0) {
-            console.log("Status 4")
-            reply(interaction, "Failed: Terminated")
-        } else {
-            console.log("Status 5")
-            reply(interaction, `Failed: Error ${code}`)
-        }
+    child.on('close', () => {
+        previousChildPID = childPID
+        reply(interaction, `Killed child ${previousChildPID}`)
     });
 }
 
