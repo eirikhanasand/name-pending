@@ -52,6 +52,7 @@ client.on(Events.InteractionCreate, async interaction => {
 		}
 	}
 });
+
 client.login(token);
 
 // https://linjeforeningen.it does not work, timeout error

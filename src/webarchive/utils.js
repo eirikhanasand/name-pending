@@ -81,3 +81,22 @@ export function update(embed, stats) {
     stats.progress = Math.trunc(Math.min(100, Math.max(0, stats.progress)));
     editEmbed(embed, stats)
 }
+
+/**
+ * Function for returning the current time formatted as HH:MM, DD/MM, YEAR
+ *
+ * @returns {string} String
+ */
+export function currentTime() {
+    const time = new Date()
+
+    // Checking and fixing missing 0
+    let day = time.getDate().toString().padStart(2, '0')
+    let month = (time.getMonth() + 1).toString().padStart(2, '0')
+    let year = time.getFullYear()
+    
+    let hour = time.getHours().toString().padStart(2, '0')
+    let minute = time.getMinutes().toString().padStart(2, '0')
+
+    return `${hour}:${minute}, ${day}/${month}, ${year}`
+}
