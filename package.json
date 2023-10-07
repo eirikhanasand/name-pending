@@ -4,8 +4,7 @@
     "description": "TekKom Bot",
     "main": "src/app.js",
     "scripts": {
-        "start": "node src/app.js",
-        "update": "node src/deploy-commands.js; npm run start"
+        "start": "node src/deploy-commands.js && node src/app.js"
     },
     "author": "Login - Linjeforeningen for IT",
     "license": "MIT",
