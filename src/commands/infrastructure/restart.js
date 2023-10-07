@@ -30,6 +30,7 @@ export async function execute(interaction) {
  * @returns {void} Updates the message and returns void when done
  */
 async function reply(interaction, process, msg) {
+    console.log(process, "error", process === "error", typeof process)
     switch (process) {
         case "error": {
             const embed = new EmbedBuilder()
@@ -42,7 +43,8 @@ async function reply(interaction, process, msg) {
                 {name: "Status", value: msg, inline: true}
             )
 
-        await interaction.editReply({ embeds: [embed] });
+            await interaction.editReply({ embeds: [embed] });
+            break;
         }
         default: console.log(`Unknown process ${process}`); return
     }
