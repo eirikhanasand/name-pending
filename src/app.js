@@ -77,7 +77,8 @@ client.on(Events.InteractionCreate, async message => {
 	try {
 		await command.execute(message);
 	} catch (error) {
-		console.log(error);
+        // Ignoring error as another process is handling it
+        // console.log(error)
 	}
 });
 
