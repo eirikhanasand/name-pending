@@ -85,18 +85,18 @@ async function reply(message, service, status, reason, branch) {
     const content = description()
 
     const embed = new EmbedBuilder()
-            .setTitle(content.title)
-            .setDescription(content.description)
-            .setColor("#fd8738")
-            .setTimestamp()
-            .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
-            .addFields(
-                {name: "Status", value: status, inline: true},
-                {name: "Reason", value: reason, inline: true},
-                {name: "Branch", value: branch, inline: true},
-            )
+        .setTitle(content.title)
+        .setDescription(content.description)
+        .setColor("#fd8738")
+        .setTimestamp()
+        .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
+        .addFields(
+            {name: "Status", value: status, inline: true},
+            {name: "Reason", value: reason, inline: true},
+            {name: "Branch", value: branch, inline: true},
+        )
 
-            await message.editReply({ embeds: [embed] });
+    await message.editReply({ embeds: [embed] });
 }
 
 /**
@@ -198,6 +198,7 @@ async function restartNotification(message, reason, branch) {
     // Run a command on your system using the exec function
     const child = exec(restart.join(' && '));
     reply(message, "notification", `Spawned child ${child.pid}`, reason, branch)
+
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
         console.log(data);
@@ -248,11 +249,12 @@ async function restartBeehive(message, reason, branch) {
 
     // Run a command on your system using the exec function
     const child = exec(restart.join(' && '));
+    reply(message, "beehive", `Spawned child ${child.pid}`, reason, branch)
 
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
         console.log(data);
-        reply(message, "beehive", `Spawned child ${child.pid}`, reason, branch)
+        reply(message, "beehive", `${data.slice(0, 1024)}`, reason, branch)
     });
 
     child.stderr.on('data', (data) => {
