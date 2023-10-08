@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { exec } from 'child_process';
 import config from '../../../config.json' assert { type: "json" };
+import info from '../../../../info.json' assert { type: "json" }
 
 export const data = new SlashCommandBuilder()
     .setName('restart')
@@ -46,22 +47,18 @@ export async function execute(interaction) {
 
     switch (service) {
         case "self": {
-            console.log("self")
             await restartBot(interaction, reason, branch);
             return;
         }
         case "beehive": {
-            console.log("beehive")
             await restartBeehive(interaction, reason, branch);
             return;
         }
         case "notification": {
-            console.log("notification")
             await restartNotification(interaction, reason, branch);
             return;
         }
         default: {
-            console.log("default")
             await replyInvalid(interaction, service, reason, branch)
             return;
         }
@@ -77,54 +74,30 @@ export async function execute(interaction) {
  * @returns {void} Updates the message and returns void when done
  */
 async function reply(interaction, service, status, reason) {
-    switch (service) {
-        case "error": {
-            const embed = new EmbedBuilder()
-            .setTitle('Restart')
-            .setDescription('Restarting the bot. The message will be updated when the bot is restarted.')
-            .setColor("#fd8738")
-            .setTimestamp()
-            .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
-            .addFields(
-                {name: "Status", value: status, inline: true},
-                {name: "Reason", value: reason, inline: true}
-            )
-
-            await interaction.editReply({ embeds: [embed] });
-            break;
+    
+    function description() {
+        switch (service) {
+            case "error": return {title: 'Restart', description: 'Restarting the bot. The message will be updated when the bot is restarted.'}
+            case "notification": return {title: 'Restart', description: 'Restarting the notification microservice.'}
+            case "beehive": return {title: 'Restart', description: 'Restarting beehive.'}
         }
-        case "notification": {
-            const embed = new EmbedBuilder()
-            .setTitle('Restart')
-            .setDescription('Restarting the notification microservice.')
-            .setColor("#fd8738")
-            .setTimestamp()
-            .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
-            .addFields(
-                {name: "Status", value: status, inline: true},
-                {name: "Reason", value: reason, inline: true}
-            )
-
-            await interaction.editReply({ embeds: [embed] });
-            break;
-        }
-        case "beehive": {
-            const embed = new EmbedBuilder()
-            .setTitle('Restart')
-            .setDescription('Restarting beehive.')
-            .setColor("#fd8738")
-            .setTimestamp()
-            .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
-            .addFields(
-                {name: "Status", value: status, inline: true},
-                {name: "Reason", value: reason, inline: true}
-            )
-
-            await interaction.editReply({ embeds: [embed] });
-            break;
-        }
-        default: console.log(`Unknown service ${service}`); return
     }
+
+    const content = description()
+
+    const embed = new EmbedBuilder()
+            .setTitle(content.title)
+            .setDescription(content.description)
+            .setColor("#fd8738")
+            .setTimestamp()
+            .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+            .addFields(
+                {name: "Status", value: status, inline: true},
+                {name: "Reason", value: reason, inline: true},
+                {name: "Branch", value: branch, inline: true},
+            )
+
+            await interaction.editReply({ embeds: [embed] });
 }
 
 /**
@@ -149,14 +122,12 @@ async function restartBot(interaction, reason, branch) {
     // ];
 
     const restart = [
-        'cd ..',
-        'rm -rf tekkom-bot',
-        `git clone ${branch ? `-b ${branch}`: ""} https://git.logntnu.no/tekkom/playground/tekkom-bot.git`,
-        'cd tekkom-bot',
-        'npm i',
-        'touch config.json',
-        `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}"}' > config.json`,
-        'npm start'
+        'cd ..'
+        `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone ${branch ? `-b ${branch} ` : ""}https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\nnpm i && npm start'> hei.sh`,
+        `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}", "docker_username": ${config.docker_username}, "docker_password": "${config.docker_password}"}' > config.json`,
+        `echo '{"childPID": "${childPID}", "previousChildPID": "${previousChildPID}", "interaction": "${interaction}", "docker_username": ${config.docker_username}, "docker_password": "${config.docker_password}"}' > info.json`,
+        'chmod +x hei.sh',
+        './hei.sh'
     ];
 
     const embed = new EmbedBuilder()
