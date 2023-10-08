@@ -34,7 +34,7 @@ client.once(Events.ClientReady, async() => {
     // client.application.commands.set([]) // Use to perge all inactive slash commands from Discord
 	console.log('Ready!');
 
-    if (info.interaction.length) {
+    if (info.interaction) {
         const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('Restarted the bot.')

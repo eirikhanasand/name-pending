@@ -122,9 +122,9 @@ async function restartBot(interaction, reason, branch) {
 
     const restart = [
         'cd ..',
-        `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone ${branch.length ? `-b ${branch} ` : ""}https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\nnpm i && npm start'> temp.sh`,
+        `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone ${branch ? `-b ${branch} ` : ""}https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\nnpm i && npm start'> temp.sh`,
         `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}", "docker_username": ${config.docker_username}, "docker_password": "${config.docker_password}"}' > config.json`,
-        `echo '{"branch": "${branch.length ? branch : ""}", "reason": "${reason}", "interaction": "${interaction}"}' > info.json`,
+        `echo '{"branch": "${branch ? branch : ""}", "reason": "${reason}", "interaction": "${interaction}"}' > info.json`,
         'chmod +x temp.sh',
         './temp.sh'
     ];
@@ -182,7 +182,7 @@ async function restartNotification(interaction, reason, branch) {
 
     const restart = [
         'rm -rf automatednotifications',
-        `git clone ${branch.length ? `-b ${branch}`: ""} https://git.logntnu.no/tekkom/apps/automatednotifications.git`,
+        `git clone ${branch ? `-b ${branch}`: ""} https://git.logntnu.no/tekkom/apps/automatednotifications.git`,
         'cd automatednotifications',
         'npm i',
         'touch .secrets.ts',
@@ -234,7 +234,7 @@ async function restartBeehive(interaction, reason, branch) {
 
     const restart = [
         'rm -rf frontend',
-        `git clone ${branch.length ? `-b ${branch}`: ""} https://${config.docker_username}:${config.docker_password}@git.logntnu.no/tekkom/web/beehive/frontend.git`,
+        `git clone ${branch ? `-b ${branch}`: ""} https://${config.docker_username}:${config.docker_password}@git.logntnu.no/tekkom/web/beehive/frontend.git`,
         'cd frontend',
         'npm i',
         `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
@@ -275,7 +275,7 @@ async function replyInvalid(interaction, service, reason, branch) {
         .addFields(
             {name: serviceExists(service) ? "Service" : "Invalid service", value: service ? service : "undefined", inline: true},
             {name: reason ? "Reason" : "Invalid reason", value: reason ? reason : "undefined", inline: true},
-            {name: branch.length ? "Branch" : " ", value: branch.length ? branch : " ", inline: true}
+            {name: branch ? "Branch" : " ", value: branch ? branch : " ", inline: true}
         )
     await interaction.editReply({ embeds: [embed]});
 }
