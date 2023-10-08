@@ -15,9 +15,15 @@ export const data = new SlashCommandBuilder()
             .setName('reason')
             .setDescription('Reason for the restart')
     )
+    .addStringOption((option) =>
+        option
+            .setName('branch')
+            .setDescription('Branch to launch from')
+    )
 export async function execute(interaction) {
     const service = interaction.options.getString('service');
     const reason = interaction.options.getString('reason');
+    const branch = interaction.options.getString('branch');
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('**Restarts the specified service.**\n\n**Valid services:**\nnotification\nself')
@@ -41,22 +47,22 @@ export async function execute(interaction) {
     switch (service) {
         case "self": {
             console.log("self")
-            await restartBot(interaction, reason);
+            await restartBot(interaction, reason, branch);
             return;
         }
         case "beehive": {
             console.log("beehive")
-            await restartBeehive(interaction, reason);
+            await restartBeehive(interaction, reason, branch);
             return;
         }
         case "notification": {
             console.log("notification")
-            await restartNotification(interaction, reason);
+            await restartNotification(interaction, reason, branch);
             return;
         }
         default: {
             console.log("default")
-            await replyInvalid(interaction, service, reason)
+            await replyInvalid(interaction, service, reason, branch)
             return;
         }
     }
@@ -125,22 +131,32 @@ async function reply(interaction, service, status, reason) {
  * Restarts the bot itself
  * @param {ChatInputCommandInteraction<CacheType>} interaction 
  */
-async function restartBot(interaction, reason) {
+async function restartBot(interaction, reason, branch) {
     let childPID, previousChildPID
+    // const restart = [ // TODO MAKE Docker Outside Of Docker PROCESS
+    //     'rm -rf tekkom-bot',
+    //     'git clone https://git.logntnu.no/tekkom/playground/tekkom-bot.git',
+    //     'cd tekkom-bot',
+    //     'npm i',
+    //     'touch config.json',
+    //     `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}"}' > config.json`,
+    //     `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
+    //     'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest .',
+    //     'docker image pull registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest',
+    //     'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest tekkom-bot',
+    //     'cd ..',
+    //     'rm -rf tekkom-bot',
+    // ];
+
     const restart = [
+        'cd ..',
         'rm -rf tekkom-bot',
-        'git clone https://git.logntnu.no/tekkom/playground/tekkom-bot.git',
+        `git clone ${branch ? `-b ${branch}`: ""} https://git.logntnu.no/tekkom/playground/tekkom-bot.git`,
         'cd tekkom-bot',
         'npm i',
         'touch config.json',
         `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}"}' > config.json`,
-        `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
-        'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest .',
-        'docker image pull registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest',
-        'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest tekkom-bot',
-        'cd ..',
-        'rm -rf tekkom-bot',
-        'echo Finished restarting bot'
+        'npm start'
     ];
 
     const embed = new EmbedBuilder()
@@ -181,7 +197,7 @@ async function restartBot(interaction, reason) {
  * Restarts the notification service
  * @param {ChatInputCommandInteraction<CacheType>} interaction 
  */
-async function restartNotification(interaction, reason) {
+async function restartNotification(interaction, reason, branch) {
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('Restarting the notification microservice.')
@@ -196,7 +212,7 @@ async function restartNotification(interaction, reason) {
 
     const restart = [
         'rm -rf automatednotifications',
-        'git clone https://git.logntnu.no/tekkom/apps/automatednotifications.git',
+        `git clone ${branch ? `-b ${branch}`: ""} https://git.logntnu.no/tekkom/apps/automatednotifications.git`,
         'cd automatednotifications',
         'npm i',
         'touch .secrets.ts',
@@ -207,7 +223,6 @@ async function restartNotification(interaction, reason) {
         'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/apps/automatednotifications:latest nucleus-notifications',
         'cd ..',
         'rm -rf automatednotifications',
-        'echo Finished restarting notification service'
     ];
 
     // Run a command on your system using the exec function
@@ -226,7 +241,7 @@ async function restartNotification(interaction, reason) {
 
     child.on('close', () => {
         reply(interaction, "notification", `Killed child ${child.pid}`, reason)
-        reply(interaction, "notification", `Finished`, reason)
+        reply(interaction, "notification", `Success`, reason)
     });
 }
 
@@ -234,7 +249,7 @@ async function restartNotification(interaction, reason) {
  * Restarts beehive
  * @param {ChatInputCommandInteraction<CacheType>} interaction 
  */
-async function restartBeehive(interaction, reason) {
+async function restartBeehive(interaction, reason, branch) {
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('Restarts beehive.')
@@ -249,7 +264,7 @@ async function restartBeehive(interaction, reason) {
 
     const restart = [
         'rm -rf frontend',
-        `git clone -b master https://${config.docker_username}:${config.docker_password}@git.logntnu.no/tekkom/web/beehive/frontend.git`,
+        `git clone ${branch ? `-b ${branch}`: ""} https://${config.docker_username}:${config.docker_password}@git.logntnu.no/tekkom/web/beehive/frontend.git`,
         'cd frontend',
         'npm i',
         `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
@@ -258,7 +273,6 @@ async function restartBeehive(interaction, reason) {
         'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/web/beehive/frontend:latest beehive',
         'cd ..',
         'rm -rf frontend',
-        'echo Finished restarting beehive'
     ];
 
     // Run a command on your system using the exec function
@@ -277,11 +291,11 @@ async function restartBeehive(interaction, reason) {
 
     child.on('close', () => {
         reply(interaction, "beehive", `Killed child ${child.pid}`, reason)
-        reply(interaction, "beehive", `Finished`, reason)
+        reply(interaction, "beehive", `Success`, reason)
     });
 }
 
-async function replyInvalid(interaction, service, reason) {
+async function replyInvalid(interaction, service, reason, branch) {
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('**Restarts the specified service.**\n\n**Valid services:**\nnotification\nself')
@@ -290,7 +304,8 @@ async function replyInvalid(interaction, service, reason) {
         .setTimestamp()
         .addFields(
             {name: serviceExists(service) ? "Service" : "Invalid service", value: service ? service : "undefined", inline: true},
-            {name: reason ? "Reason" : "Invalid reason", value: reason ? reason : "undefined", inline: true}
+            {name: reason ? "Reason" : "Invalid reason", value: reason ? reason : "undefined", inline: true},
+            {name: branch ? "Reason" : " ", value: branch ? branch : " ", inline: true}
         )
     await interaction.editReply({ embeds: [embed]});
 }
