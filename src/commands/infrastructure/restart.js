@@ -184,6 +184,8 @@ async function restartNotification(interaction, reason) {
         'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/apps/automatednotifications:latest .',
         'docker image pull registry.git.logntnu.no/tekkom/apps/automatednotifications:latest',
         `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
+        'docker swarm leave',
+        `docker swarm join --token ${config.swarm_token}`,
         'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/apps/automatednotifications:latest nucleus-notifications'
     ];
 
