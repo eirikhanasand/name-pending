@@ -93,7 +93,7 @@ async function reply(message, service, status, reason, branch) {
             .addFields(
                 {name: "Status", value: status, inline: true},
                 {name: "Reason", value: reason, inline: true},
-                {name: "Branch", value: branch, inline: true},
+                {name: "Branch", value: branch ? branch : "", inline: true},
             )
 
             await message.editReply({ embeds: [embed] });
