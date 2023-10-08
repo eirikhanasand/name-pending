@@ -1,8 +1,6 @@
 # Dockerfile
-FROM node:14-alpine
-
-RUN npm install discord.js fs
+FROM node:20-alpine
 
 COPY . .
 
-CMD ["node", "npm run start"]
+CMD ["npm", "start"]
