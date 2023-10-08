@@ -52,7 +52,7 @@ client.once(Events.ClientReady, async message => {
         await msg.edit({ embeds: [embed]});
 
         const commands = [
-            `echo '{"branch": "", "reason": "", "channelID": ""}' > ../info.json`,
+            `echo '{"branch": "", "reason": "", "channelID": "", "username": "", "userID": ""}' > ../info.json`,
             'rm ../temp.sh'
         ];
     
