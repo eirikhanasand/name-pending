@@ -3,7 +3,7 @@ import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 export const data = new SlashCommandBuilder()
     .setName('registry')
     .setDescription('Guide on how to use our registry.');
-export async function execute(interaction) {
+export async function execute(message) {
     const embed = new EmbedBuilder()
         .setTitle('Registry')
         .setDescription('Guide on how to use our registry')
@@ -22,5 +22,5 @@ export async function execute(interaction) {
             {name: "**[REMOTE]**", value: "docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest tekkom-bot", inline: true},
             {name: "**Description**", value: "Updates the docker service specified, effectively puts the latest version into production.", inline: true},
         )
-    await interaction.reply({ embeds: [embed]});
+    await message.reply({ embeds: [embed]});
 }

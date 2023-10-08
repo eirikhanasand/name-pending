@@ -7,13 +7,13 @@ import { cooldownEmbed } from '../../webarchive/embeds.js';
 export const data = new SlashCommandBuilder()
     .setName('archive')
     .setDescription('Archives all of Logins webpages in real time.');
-export async function execute(interaction) {
+export async function execute(message) {
     const currentTime = new Date()
     const stored = readFile("./data/status.txt")
     const cooldown = stored.cooldown-currentTime
     const info = getTotalLinks()
 
-    if (cooldown > 0) return await interaction.reply({ embeds: [cooldownEmbed(cooldown)] });
+    if (cooldown > 0) return await message.reply({ embeds: [cooldownEmbed(cooldown)] });
     
     // start stats section
     const stats = {
@@ -39,7 +39,7 @@ export async function execute(interaction) {
         progress: 0,
         status: "Starting",
         startTime: new Date(),
-        author: interaction.user.username,
+        author: message.user.username,
         links_generated: 0
     }
     // end stats section
@@ -58,7 +58,7 @@ export async function execute(interaction) {
             {name: "Paths", value: `${info.paths}`, inline: true}
         )
 
-    const response = await interaction.reply({ embeds: [embed] });
+    const response = await message.reply({ embeds: [embed] });
 
     await archiveURLs(response, stats)
 }

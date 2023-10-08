@@ -4,7 +4,7 @@ import getTotalLinks from '../../webarchive/getTotalLinks.js';
 export const data = new SlashCommandBuilder()
     .setName('info')
     .setDescription('Info regarding the bot.');
-export async function execute(interaction) {
+export async function execute(message) {
     const info = getTotalLinks()
     const embed = new EmbedBuilder()
         .setTitle('Info')
@@ -18,5 +18,5 @@ export async function execute(interaction) {
             {name: "Domains", value: `${info.domains}`, inline: true},
             {name: "Paths", value: `${info.paths}`, inline: true}
         )
-    await interaction.reply({ embeds: [embed]});
+    await message.reply({ embeds: [embed]});
 }

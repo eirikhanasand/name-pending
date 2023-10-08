@@ -6,40 +6,40 @@ export const data = new SlashCommandBuilder()
     .setName('test')
     .setDescription('Tests that docker is running and has the correct permissions')
 
-export async function execute(interaction) {
+export async function execute(message) {
     const embed = new EmbedBuilder()
         .setTitle('Test')
         .setDescription('Tests that docker is running and has the correct permissions.')
         .setColor("#fd8738")
-        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
         .setTimestamp()
         .addFields({name: "Loading...", value: "...", inline: true})
 
-    if (!interaction.replied) {
-        await interaction.reply({ embeds: [embed]});
+    if (!message.replied) {
+        await message.reply({ embeds: [embed]});
     } else {
-        await interaction.editReply({ embeds: [embed]});
+        await message.editReply({ embeds: [embed]});
     }
 
-    await testDocker(interaction);
+    await testDocker(message);
 }
 
-async function reply(interaction, status) {
+async function reply(message, status) {
     const embed = new EmbedBuilder()
         .setTitle('Test')
         .setDescription('Tests that docker is running and has the correct permissions')
         .setColor("#fd8738")
         .setTimestamp()
-        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
         .addFields(
             {name: "Status", value: status, inline: true},
             {name: "Reason", value: "Test", inline: true}
         )
 
-    await interaction.editReply({ embeds: [embed] });
+    await message.editReply({ embeds: [embed] });
 }
 
-async function testDocker(interaction) {
+async function testDocker(message) {
     let childPID, previousChildPID
     const restart = [
         'rm -rf tekkom-bot',
@@ -62,12 +62,12 @@ async function testDocker(interaction) {
         .setDescription('Tests that docker is running and has the correct permissions.')
         .setColor("#fd8738")
         .setTimestamp()
-        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
         .addFields(
             {name: "Status", value: "Starting...", inline: true},
             {name: "Reason", value: "Test", inline: true}
         )
-    await interaction.editReply({ embeds: [embed]});
+    await message.editReply({ embeds: [embed]});
 
     // Run a command on your system using the exec function
     const child = exec(restart.join(' && '));
@@ -76,17 +76,17 @@ async function testDocker(interaction) {
     child.stdout.on('data', (data) => {
         console.log(data);
         childPID = child.pid
-        reply(interaction, `Spawned child ${childPID}`)
+        reply(message, `Spawned child ${childPID}`)
     });
 
     child.stderr.on('data', (data) => {
         console.error(data);
-        reply(interaction, `${data}`)
+        reply(message, `${data}`)
     });
 
     child.on('close', () => {
         previousChildPID = childPID
-        reply(interaction, `Killed child ${previousChildPID}`)
-        reply(interaction, `Success`)
+        reply(message, `Killed child ${previousChildPID}`)
+        reply(message, `Success`)
     });
 }

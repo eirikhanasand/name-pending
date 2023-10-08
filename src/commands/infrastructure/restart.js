@@ -20,59 +20,59 @@ export const data = new SlashCommandBuilder()
             .setName('branch')
             .setDescription('Branch to launch from')
     )
-export async function execute(interaction) {
-    const service = interaction.options.getString('service');
-    const reason = interaction.options.getString('reason');
-    const branch = interaction.options.getString('branch');
+export async function execute(message) {
+    const service = message.options.getString('service');
+    const reason = message.options.getString('reason');
+    const branch = message.options.getString('branch');
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('**Restarts the specified service.**\n\n**Valid services:**\nnotification\nself')
         .setColor("#fd8738")
-        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
         .setTimestamp()
         .addFields({name: "Loading...", value: "...", inline: true})
 
-    if (!interaction.replied) {
-        await interaction.reply({ embeds: [embed]});
+    if (!message.replied) {
+        await message.reply({ embeds: [embed]});
     } else {
-        await interaction.editReply({ embeds: [embed]});
+        await message.editReply({ embeds: [embed]});
     }
 
     if (!serviceExists(service) || !reason) {
-        await replyInvalid(interaction, service, reason)
+        await replyInvalid(message, service, reason)
         return
     }
 
 
     switch (service) {
         case "self": {
-            await restartBot(interaction, reason, branch);
+            await restartBot(message, reason, branch);
             return;
         }
         case "beehive": {
-            await restartBeehive(interaction, reason, branch);
+            await restartBeehive(message, reason, branch);
             return;
         }
         case "notification": {
-            await restartNotification(interaction, reason, branch);
+            await restartNotification(message, reason, branch);
             return;
         }
         default: {
-            await replyInvalid(interaction, service, reason, branch)
+            await replyInvalid(message, service, reason, branch)
             return;
         }
     }
 }
 
 /**
- * Replies to the interaction with a custom status
+ * Replies to the message with a custom status
  * 
- * @param {ChatInputCommandInteraction<CacheType>} interaction Interaction to reply to
+ * @param {ChatInputCommandInteraction<CacheType>} message message to reply to
  * @param {string} status Status message
  * @param {string} reason Reason for reply
  * @returns {void} Updates the message and returns void when done
  */
-async function reply(interaction, service, status, reason) {
+async function reply(message, service, status, reason, branch) {
     
     function description() {
         switch (service) {
@@ -89,21 +89,21 @@ async function reply(interaction, service, status, reason) {
             .setDescription(content.description)
             .setColor("#fd8738")
             .setTimestamp()
-            .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+            .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
             .addFields(
                 {name: "Status", value: status, inline: true},
                 {name: "Reason", value: reason, inline: true},
                 {name: "Branch", value: branch, inline: true},
             )
 
-            await interaction.editReply({ embeds: [embed] });
+            await message.editReply({ embeds: [embed] });
 }
 
 /**
  * Restarts the bot itself
- * @param {ChatInputCommandInteraction<CacheType>} interaction 
+ * @param {ChatInputCommandInteraction<CacheType>} message 
  */
-async function restartBot(interaction, reason, branch) {
+async function restartBot(message, reason, branch) {
     let childPID, previousChildPID
     // const restart = [ // TODO MAKE Docker Outside Of Docker PROCESS
     //     'rm -rf tekkom-bot',
@@ -123,62 +123,71 @@ async function restartBot(interaction, reason, branch) {
     const restart = [
         'cd ..',
         `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone ${branch ? `-b ${branch} ` : ""}https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\nnpm i && npm start'> temp.sh`,
-        `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}", "docker_username": ${config.docker_username}, "docker_password": "${config.docker_password}"}' > config.json`,
-        `echo '{"branch": "${branch ? branch : ""}", "reason": "${reason}", "interaction": "${interaction}"}' > info.json`,
+        `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}", "docker_username": "${config.docker_username}", "docker_password": "${config.docker_password}"}' > config.json`,
+        `echo '{"branch": "${branch ? branch : ""}", "reason": "${reason}", "message": "${message}"}' > info.json`,
         'chmod +x temp.sh',
         './temp.sh'
     ];
+
+    const commands = [
+        `echo '{"branch": "", "reason": "", "channelID": "${message.channelId}", "messageID": "1160644160898994206"}' > ../info.json`,
+        'rm ../temp.sh'
+    ];
+
+    exec(commands.join(' && '))
+
 
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('Restarting the bot. The message will be updated when the bot is restarted.')
         .setColor("#fd8738")
         .setTimestamp()
-        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
         .addFields(
             {name: "Status", value: "Starting...", inline: true},
             {name: "Reason", value: reason, inline: true}
         )
-    await interaction.editReply({ embeds: [embed]});
+    await message.editReply({ embeds: [embed]});
+    
 
     // Run a command on your system using the exec function
     const child = exec(restart.join(' && '));
     childPID = child.pid
-    reply(interaction, "error", `Spawned child ${childPID}`, reason)
+    reply(message, "error", `Spawned child ${childPID}`, reason, branch)
 
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
         console.log(data);
-        reply(interaction, "error", `${data.slice(0, 1024)}`, reason)
+        reply(message, "error", `${data.slice(0, 1024)}`, reason, branch)
     });
 
     child.stderr.on('data', (data) => {
         console.error(data);
-        reply(interaction, "error", `${data.slice(0, 1024)}`, reason)
+        reply(message, "error", `${data.slice(0, 1024)}`, reason, branch)
     });
 
     child.on('close', () => {
         previousChildPID = childPID
-        reply(interaction, "error", `Killed child ${previousChildPID}`, reason)
+        reply(message, "error", `Killed child ${previousChildPID}`, reason, branch)
     });
 }
 
 /**
  * Restarts the notification service
- * @param {ChatInputCommandInteraction<CacheType>} interaction 
+ * @param {ChatInputCommandInteraction<CacheType>} message 
  */
-async function restartNotification(interaction, reason, branch) {
+async function restartNotification(message, reason, branch) {
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('Restarting the notification microservice.')
         .setColor("#fd8738")
         .setTimestamp()
-        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
         .addFields(
             {name: "Status", value: "Starting...", inline: true},
             {name: "Reason", value: reason, inline: true},
         )
-    await interaction.editReply({ embeds: [embed]});
+    await message.editReply({ embeds: [embed]});
 
     const restart = [
         'rm -rf automatednotifications',
@@ -197,40 +206,40 @@ async function restartNotification(interaction, reason, branch) {
 
     // Run a command on your system using the exec function
     const child = exec(restart.join(' && '));
-    reply(interaction, "notification", `Spawned child ${child.pid}`, reason)
+    reply(message, "notification", `Spawned child ${child.pid}`, reason, branch)
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
         console.log(data);
-        reply(interaction, "notification", `${data.slice(0, 1024)}`, reason)
+        reply(message, "notification", `${data.slice(0, 1024)}`, reason, branch)
     });
 
     child.stderr.on('data', (data) => {
         console.error(data);
-        reply(interaction, "notification", `${data.slice(0, 1024)}`, reason)
+        reply(message, "notification", `${data.slice(0, 1024)}`, reason, branch)
     });
 
     child.on('close', () => {
-        reply(interaction, "notification", `Killed child ${child.pid}`, reason)
-        reply(interaction, "notification", `Success`, reason)
+        reply(message, "notification", `Killed child ${child.pid}`, reason, branch)
+        reply(message, "notification", `Success`, reason, branch)
     });
 }
 
 /**
  * Restarts beehive
- * @param {ChatInputCommandInteraction<CacheType>} interaction 
+ * @param {ChatInputCommandInteraction<CacheType>} message 
  */
-async function restartBeehive(interaction, reason, branch) {
+async function restartBeehive(message, reason, branch) {
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('Restarts beehive.')
         .setColor("#fd8738")
         .setTimestamp()
-        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
         .addFields(
             {name: "Status", value: "Starting...", inline: true},
             {name: "Reason", value: reason, inline: true},
         )
-    await interaction.editReply({ embeds: [embed]});
+    await message.editReply({ embeds: [embed]});
 
     const restart = [
         'rm -rf frontend',
@@ -251,33 +260,33 @@ async function restartBeehive(interaction, reason, branch) {
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
         console.log(data);
-        reply(interaction, "beehive", `Spawned child ${child.pid}`, reason)
+        reply(message, "beehive", `Spawned child ${child.pid}`, reason, branch)
     });
 
     child.stderr.on('data', (data) => {
         console.error(data);
-        reply(interaction, "beehive", `${data.slice(0, 1024)}`, reason)
+        reply(message, "beehive", `${data.slice(0, 1024)}`, reason, branch)
     });
 
     child.on('close', () => {
-        reply(interaction, "beehive", `Killed child ${child.pid}`, reason)
-        reply(interaction, "beehive", `Success`, reason)
+        reply(message, "beehive", `Killed child ${child.pid}`, reason, branch)
+        reply(message, "beehive", `Success`, reason, branch)
     });
 }
 
-async function replyInvalid(interaction, service, reason, branch) {
+async function replyInvalid(message, service, reason, branch) {
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('**Restarts the specified service.**\n\n**Valid services:**\nnotification\nself')
         .setColor("#fd8738")
-        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
         .setTimestamp()
         .addFields(
             {name: serviceExists(service) ? "Service" : "Invalid service", value: service ? service : "undefined", inline: true},
             {name: reason ? "Reason" : "Invalid reason", value: reason ? reason : "undefined", inline: true},
             {name: branch ? "Branch" : " ", value: branch ? branch : " ", inline: true}
         )
-    await interaction.editReply({ embeds: [embed]});
+    await message.editReply({ embeds: [embed]});
 }
 
 function serviceExists(service) {

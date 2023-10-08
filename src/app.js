@@ -4,6 +4,7 @@ import { join, dirname } from 'path';
 import { Client, Collection, EmbedBuilder, Events, GatewayIntentBits } from 'discord.js';
 import config from '../config.json' assert { type: "json" };
 import info from '../../info.json' assert { type: "json" }
+import { exec } from 'child_process';
 
 const token = config.token;
 
@@ -30,26 +31,28 @@ for (const folder of commandFolders) {
 	}
 }
 
-client.once(Events.ClientReady, async() => {
+client.once(Events.ClientReady, async message => {
     // client.application.commands.set([]) // Use to perge all inactive slash commands from Discord
-	console.log('Ready!');
+    console.log('Ready!');
 
-    if (info.interaction) {
+    if (info.channelID && info.messageID) {
+        const mID = "1160644160898994206"
+        const msg = await message.channels.fetch(info.channelID).then(channel => channel.messages.fetch(mID))
         const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('Restarted the bot.')
         .setColor("#fd8738")
         .setTimestamp()
-        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .setAuthor({name: `Author: ${info.reason} · ${info.message.user}`})
         .addFields(
             {name: "Status", value: "Success", inline: true},
             {name: "Reason", value: info.reason, inline: true},
             {name: "Branch", value: info.branch, inline: true},
         )
-        await info.interaction.editReply({ embeds: [embed]});
+        await msg.edit({ embeds: [embed]});
 
         const commands = [
-            `echo '{"branch": "", "reason": "", "interaction": ""}' > ../info.json`,
+            `echo '{"branch": "", "reason": "", "message": ""}' > ../info.json`,
             'rm ../temp.sh'
         ];
     
@@ -58,21 +61,21 @@ client.once(Events.ClientReady, async() => {
 
 });
 
-client.on(Events.InteractionCreate, async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+client.on(Events.InteractionCreate, async message => {
+	if (!message.isChatInputCommand()) return;
 
-	const command = client.commands.get(interaction.commandName);
+	const command = client.commands.get(message.commandName);
 
 	if (!command) return;
 
 	try {
-		await command.execute(interaction);
+		await command.execute(message);
 	} catch (error) {
 		console.error(error);
-		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+		if (message.replied || message.deferred) {
+			await message.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
 		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+			await message.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 		}
 	}
 });

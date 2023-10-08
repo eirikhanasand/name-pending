@@ -5,7 +5,7 @@ import { formatCooldown, readFile } from '../../webarchive/utils.js';
 export const data = new SlashCommandBuilder()
     .setName('status')
     .setDescription('Status of how many domains are ready to be archived.');
-export async function execute(interaction) {
+export async function execute(message) {
     const info = getTotalLinks()
     const stored = await readFile("data/status.txt")
     const cooldown = formatCooldown(stored.cooldown)
@@ -22,5 +22,5 @@ export async function execute(interaction) {
             {name: "Domains",   value: `${info.domains}`,   inline: true },
             {name: "Paths",     value: `${info.paths}`,     inline: true }
         )
-    await interaction.reply({ embeds: [status]});
+    await message.reply({ embeds: [status]});
 }
