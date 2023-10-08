@@ -43,7 +43,6 @@ export async function execute(message) {
         return
     }
 
-
     switch (service) {
         case "self": {
             await restartBot(message, reason, branch ? branch : "main");
