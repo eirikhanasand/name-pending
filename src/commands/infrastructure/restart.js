@@ -124,7 +124,7 @@ async function restartBot(interaction, reason, branch) {
         'cd ..',
         `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone ${branch ? `-b ${branch} ` : ""}https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\nnpm i && npm start'> temp.sh`,
         `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}", "docker_username": ${config.docker_username}, "docker_password": "${config.docker_password}"}' > config.json`,
-        `echo '{"branch": "${branch}", "reason": "${reason}", "interaction": "${interaction}"}' > info.json`,
+        `echo '{"branch": "${branch ? branch : ""}", "reason": "${reason}", "interaction": "${interaction}"}' > info.json`,
         'chmod +x temp.sh',
         './temp.sh'
     ];
