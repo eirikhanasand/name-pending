@@ -53,7 +53,7 @@ export async function execute(interaction) {
         .addFields(
             {name: "Total", value: `${info.total}`, inline: true},
             {name: "Time elapsed", value: "00:00", inline: true},
-            {name: " ", value: " ", inline: true},
+            {name: " ", value: " ", inline: false},
             {name: "Domains", value: `${info.domains}`, inline: true},
             {name: "Paths", value: `${info.paths}`, inline: true}
         )
