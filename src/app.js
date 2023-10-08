@@ -35,7 +35,7 @@ client.once(Events.ClientReady, async message => {
     // client.application.commands.set([]) // Use to perge all inactive slash commands from Discord
     console.log('Ready!');
 
-    if (info.channelID) {
+    if (info.channelID && info.username && user.userID) {
         const mID = "1160644160898994206"
         const msg = await message.channels.fetch(info.channelID).then(channel => channel.messages.fetch(mID))
         const embed = new EmbedBuilder()
@@ -43,7 +43,7 @@ client.once(Events.ClientReady, async message => {
         .setDescription('Restarted the bot.')
         .setColor("#fd8738")
         .setTimestamp()
-        .setAuthor({name: `Author: ${info.reason} · ${info.message.user}`})
+        .setAuthor({name: `Author: ${info.username} · ${info.userID}`})
         .addFields(
             {name: "Status", value: "Success", inline: true},
             {name: "Reason", value: info.reason, inline: true},

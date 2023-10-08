@@ -124,18 +124,10 @@ async function restartBot(message, reason, branch) {
         'cd ..',
         `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone ${branch ? `-b ${branch} ` : ""}https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\nnpm i && npm start'> temp.sh`,
         `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}", "docker_username": "${config.docker_username}", "docker_password": "${config.docker_password}"}' > config.json`,
-        `echo '{"branch": "${branch ? branch : ""}", "reason": "${reason}", "message": "${message}"}' > info.json`,
+        `echo '{"branch": "${branch ? branch : ""}", "reason": "${reason}", "channelID": "${message.channelId}", "username": "${message.user.username}", "userID", "${message.user.id}"}' > info.json`,
         'chmod +x temp.sh',
         './temp.sh'
     ];
-
-    const commands = [
-        `echo '{"branch": "", "reason": "", "channelID": "${message.channelId}"}' > ../info.json`,
-        'rm ../temp.sh'
-    ];
-
-    exec(commands.join(' && '))
-
 
     const embed = new EmbedBuilder()
         .setTitle('Restart')
