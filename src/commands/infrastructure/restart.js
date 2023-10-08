@@ -123,8 +123,8 @@ async function restartBot(message, reason, branch) {
     const restart = [
         'cd ..',
         `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone -b ${branch} https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\nnpm i && npm start'> temp.sh`,
-        `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}", "docker_username": "${config.docker_username}", "docker_password": "${config.docker_password}"}' > config.json`,
-        `echo '{"branch": "${branch}", "reason": "${reason}", "channelID": "${message.channelId}", "username": "${message.user.username}", "userID", "${message.user.id}"}' > info.json`,
+        `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}", "docker_username": "${config.docker_username}", "docker_password": "${config.docker_password}"}' > tekkom-bot/config.json`,
+        `echo '{"branch": "${branch}", "reason": "${reason}", "channelID": "${message.channelId}", "username": "${message.user.username}", "userID": "${message.user.id}"}' > info.json`,
         'chmod +x temp.sh',
         './temp.sh'
     ];
