@@ -86,7 +86,10 @@ async function restartBot(interaction, reason) {
         'npm i',
         'touch config.json',
         `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}"}' > config.json`,
-        'npm run start',
+        `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
+        'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest .',
+        'docker image pull registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest',
+        'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest tekkom-bot'
     ];
 
     const embed = new EmbedBuilder()
