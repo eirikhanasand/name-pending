@@ -1,7 +1,7 @@
 import { readdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
-import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
+import { Client, Collection, EmbedBuilder, Events, GatewayIntentBits } from 'discord.js';
 import config from '../config.json' assert { type: "json" };
 import info from '../../info.json' assert { type: "json" }
 
@@ -34,7 +34,7 @@ client.once(Events.ClientReady, async() => {
     // client.application.commands.set([]) // Use to perge all inactive slash commands from Discord
 	console.log('Ready!');
 
-    if (info.interaction) {
+    if (info.interaction.length) {
         const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('Restarted the bot.')
