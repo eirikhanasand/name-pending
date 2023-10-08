@@ -28,7 +28,11 @@ export async function execute(interaction) {
         .addFields(
             {name: "Loading...", value: "...", inline: true},
         )
-    await interaction.editReply({ embeds: [embed]});
+    if (!interaction.replied) {
+        await interaction.reply({ embeds: [embed]});
+    } else {
+        await interaction.editReply({ embeds: [embed]});
+    }
 
     if (!serviceExists(service) || !reason) {
         await replyInvalid(interaction, service, reason)
