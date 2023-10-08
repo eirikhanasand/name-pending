@@ -49,7 +49,12 @@ client.once(Events.ClientReady, async message => {
             {name: "Reason", value: info.reason, inline: true},
             {name: "Branch", value: info.branch, inline: true},
         )
-        await msg.edit({ embeds: [embed]});
+
+        try {
+            await msg.edit({ embeds: [embed]});
+        } catch (e) {
+            msg.reply({ embeds: [embed]})
+        }
 
         const commands = [
             `echo '{"branch": "", "reason": "", "channelID": "", "username": "", "userID": ""}' > ../info.json`,
