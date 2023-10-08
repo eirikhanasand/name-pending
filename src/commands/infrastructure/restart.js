@@ -71,7 +71,7 @@ export async function execute(interaction) {
  * @param {string} msg Status message
  * @returns {void} Updates the message and returns void when done
  */
-async function reply(interaction, service, msg) {
+async function reply(interaction, service, status, reason) {
     switch (service) {
         case "error": {
             const embed = new EmbedBuilder()
@@ -82,7 +82,8 @@ async function reply(interaction, service, msg) {
             .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
             .addFields(
                 {name: "Restarted", value: currentTime(), inline: true},
-                {name: "Status", value: msg, inline: true}
+                {name: "Status", value: status, inline: true},
+                {name: "Reason", value: reason, inline: true}
             )
 
             await interaction.editReply({ embeds: [embed] });
@@ -147,17 +148,17 @@ async function restartBot(interaction, reason) {
     child.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
         childPID = child.pid
-        reply(interaction, "error", `Spawned child ${childPID}`)
+        reply(interaction, "error", `Spawned child ${childPID}`, reason)
     });
 
     child.stderr.on('data', (data) => {
         console.error(`stderr: ${data}`);
-        reply(interaction, "error", `Error ${data}`)
+        reply(interaction, "error", `Error ${data}`, reason)
     });
 
     child.on('close', () => {
         previousChildPID = childPID
-        reply(interaction, "error", `Killed child ${previousChildPID}`)
+        reply(interaction, "error", `Killed child ${previousChildPID}`, reason)
     });
 }
 
@@ -200,17 +201,17 @@ async function restartNotification(interaction, reason) {
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
-        reply(interaction, "notification", `Spawned child ${child.pid}`)
+        reply(interaction, "notification", `Spawned child ${child.pid}`, reason)
     });
 
     child.stderr.on('data', (data) => {
         console.error(`stderr: ${data}`);
-        reply(interaction, "notification", `Error ${data}`)
+        reply(interaction, "notification", `Error ${data}`, reason)
     });
 
     child.on('close', () => {
-        reply(interaction, "notification", `Killed child ${child.pid}`)
-        reply(interaction, "notification", `Finished`)
+        reply(interaction, "notification", `Killed child ${child.pid}`, reason)
+        reply(interaction, "notification", `Finished`, reason)
     });
 }
 
@@ -250,17 +251,17 @@ async function restartBeehive(interaction, reason) {
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
-        reply(interaction, "beehive", `Spawned child ${child.pid}`)
+        reply(interaction, "beehive", `Spawned child ${child.pid}`, reason)
     });
 
     child.stderr.on('data', (data) => {
         console.error(`stderr: ${data}`);
-        reply(interaction, "beehive", `Error ${data}`)
+        reply(interaction, "beehive", `Error ${data}`, reason)
     });
 
     child.on('close', () => {
-        reply(interaction, "beehive", `Killed child ${child.pid}`)
-        reply(interaction, "beehive", `Finished`)
+        reply(interaction, "beehive", `Killed child ${child.pid}`, reason)
+        reply(interaction, "beehive", `Finished`, reason)
     });
 }
 
