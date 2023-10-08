@@ -39,26 +39,26 @@ export async function execute(message) {
     }
 
     if (!serviceExists(service) || !reason) {
-        await replyInvalid(message, service, reason)
+        await replyInvalid(message, service, reason, "Default")
         return
     }
 
 
     switch (service) {
         case "self": {
-            await restartBot(message, reason, branch);
+            await restartBot(message, reason, branch ? branch : "main");
             return;
         }
         case "beehive": {
-            await restartBeehive(message, reason, branch);
+            await restartBeehive(message, reason, branch ? branch : "master");
             return;
         }
         case "notification": {
-            await restartNotification(message, reason, branch);
+            await restartNotification(message, reason, branch ? branch : "main");
             return;
         }
         default: {
-            await replyInvalid(message, service, reason, branch)
+            await replyInvalid(message, service, reason, branch ? branch : "Default")
             return;
         }
     }
@@ -93,7 +93,7 @@ async function reply(message, service, status, reason, branch) {
             .addFields(
                 {name: "Status", value: status, inline: true},
                 {name: "Reason", value: reason, inline: true},
-                {name: "Branch", value: branch ? branch : "", inline: true},
+                {name: "Branch", value: branch, inline: true},
             )
 
             await message.editReply({ embeds: [embed] });
@@ -122,9 +122,9 @@ async function restartBot(message, reason, branch) {
 
     const restart = [
         'cd ..',
-        `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone ${branch ? `-b ${branch} ` : ""}https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\nnpm i && npm start'> temp.sh`,
+        `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone -b ${branch} https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\nnpm i && npm start'> temp.sh`,
         `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}", "docker_username": "${config.docker_username}", "docker_password": "${config.docker_password}"}' > config.json`,
-        `echo '{"branch": "${branch ? branch : ""}", "reason": "${reason}", "channelID": "${message.channelId}", "username": "${message.user.username}", "userID", "${message.user.id}"}' > info.json`,
+        `echo '{"branch": "${branch}", "reason": "${reason}", "channelID": "${message.channelId}", "username": "${message.user.username}", "userID", "${message.user.id}"}' > info.json`,
         'chmod +x temp.sh',
         './temp.sh'
     ];
@@ -183,7 +183,7 @@ async function restartNotification(message, reason, branch) {
 
     const restart = [
         'rm -rf automatednotifications',
-        `git clone ${branch ? `-b ${branch}`: ""} https://git.logntnu.no/tekkom/apps/automatednotifications.git`,
+        `git clone -b ${branch} https://git.logntnu.no/tekkom/apps/automatednotifications.git`,
         'cd automatednotifications',
         'npm i',
         'touch .secrets.ts',
@@ -230,12 +230,13 @@ async function restartBeehive(message, reason, branch) {
         .addFields(
             {name: "Status", value: "Starting...", inline: true},
             {name: "Reason", value: reason, inline: true},
+            {name: "Branch", value: branch, inline: true},
         )
     await message.editReply({ embeds: [embed]});
 
     const restart = [
         'rm -rf frontend',
-        `git clone ${branch ? `-b ${branch}`: ""} https://${config.docker_username}:${config.docker_password}@git.logntnu.no/tekkom/web/beehive/frontend.git`,
+        `git clone -b ${branch} https://${config.docker_username}:${config.docker_password}@git.logntnu.no/tekkom/web/beehive/frontend.git`,
         'cd frontend',
         'npm i',
         `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
@@ -276,7 +277,7 @@ async function replyInvalid(message, service, reason, branch) {
         .addFields(
             {name: serviceExists(service) ? "Service" : "Invalid service", value: service ? service : "undefined", inline: true},
             {name: reason ? "Reason" : "Invalid reason", value: reason ? reason : "undefined", inline: true},
-            {name: branch ? "Branch" : " ", value: branch ? branch : " ", inline: true}
+            {name: "Branch", value: branch, inline: true}
         )
     await message.editReply({ embeds: [embed]});
 }
