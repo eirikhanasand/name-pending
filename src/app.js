@@ -30,7 +30,7 @@ for (const folder of commandFolders) {
 	}
 }
 
-client.once(Events.ClientReady, () => {
+client.once(Events.ClientReady, async() => {
     // client.application.commands.set([]) // Use to perge all inactive slash commands from Discord
 	console.log('Ready!');
 
@@ -46,7 +46,14 @@ client.once(Events.ClientReady, () => {
             {name: "Reason", value: info.reason, inline: true},
             {name: "Branch", value: info.branch, inline: true},
         )
-        interaction.editReply({ embeds: [embed]});
+        await info.interaction.editReply({ embeds: [embed]});
+
+        const commands = [
+            `echo '{"branch": "", "reason": "", "interaction": ""}' > ../info.json`,
+            'rm ../temp.sh'
+        ];
+    
+        exec(commands.join(' && '))
     }
 
 });
