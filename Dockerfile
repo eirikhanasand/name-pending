@@ -1,8 +1,12 @@
-# Dockerfile
-FROM node:20-alpine
+# Docker in docker base
+FROM docker:dind
 
-## Copies files to image
+# Copies content
 COPY . .
 
-# Starts the service
-CMD ["npm", "start"]
+# Adds necesarry packages
+RUN apk add git openssh-client docker openrc nodejs npm
+
+RUN dockerd --host=unix:///var/run/docker.sock &
+
+CMD npm start

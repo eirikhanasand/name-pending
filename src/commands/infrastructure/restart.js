@@ -129,8 +129,7 @@ async function restartBot(interaction, reason) {
     let childPID, previousChildPID
     const restart = [
         'rm -rf tekkom-bot',
-        'apk add git openssh-client docker',
-        'git clone git@git.logntnu.no:tekkom/playground/tekkom-bot.git',
+        'git clone https://git.logntnu.no/tekkom/playground/tekkom-bot.git',
         'cd tekkom-bot',
         'npm i',
         'touch config.json',
@@ -141,6 +140,7 @@ async function restartBot(interaction, reason) {
         'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest tekkom-bot',
         'cd ..',
         'rm -rf tekkom-bot',
+        'echo Finished restarting bot'
     ];
 
     const embed = new EmbedBuilder()
@@ -195,8 +195,7 @@ async function restartNotification(interaction, reason) {
 
     const restart = [
         'rm -rf automatednotifications',
-        'apk add git openssh-client docker',
-        'git clone git@git.logntnu.no:tekkom/apps/automatednotifications.git',
+        'git clone https://git.logntnu.no/tekkom/apps/automatednotifications.git',
         'cd automatednotifications',
         'npm i',
         'touch .secrets.ts',
@@ -207,6 +206,7 @@ async function restartNotification(interaction, reason) {
         'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/apps/automatednotifications:latest nucleus-notifications',
         'cd ..',
         'rm -rf automatednotifications',
+        'echo Finished restarting notification service'
     ];
 
     // Run a command on your system using the exec function
@@ -248,7 +248,6 @@ async function restartBeehive(interaction, reason) {
 
     const restart = [
         'rm -rf frontend',
-        'apk add git openssh-client docker',
         `git clone https://${config.docker_username}:${config.docker_password}@git.logntnu.no/tekkom/web/beehive/frontend.git`,
         'cd frontend',
         'npm i',
@@ -258,6 +257,7 @@ async function restartBeehive(interaction, reason) {
         'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/web/beehive/frontend:latest beehive',
         'cd ..',
         'rm -rf frontend',
+        'echo Finished restarting beehive'
     ];
 
     // Run a command on your system using the exec function
