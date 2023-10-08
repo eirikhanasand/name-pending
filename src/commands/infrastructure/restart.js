@@ -83,6 +83,21 @@ async function reply(interaction, service, msg) {
             await interaction.editReply({ embeds: [embed] });
             break;
         }
+        case "notification": {
+            const embed = new EmbedBuilder()
+            .setTitle('Restart')
+            .setDescription('Restarting the notification microservice.')
+            .setColor("#fd8738")
+            .setTimestamp()
+            .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+            .addFields(
+                {name: "Restarted", value: currentTime(), inline: true},
+                {name: "Status", value: msg, inline: true}
+            )
+
+            await interaction.editReply({ embeds: [embed] });
+            break;
+        }
         default: console.log(`Unknown service ${service}`); return
     }
 }
@@ -131,7 +146,7 @@ async function restartBot(interaction, reason) {
 
     child.stderr.on('data', (data) => {
         console.error(`stderr: ${data}`);
-        reply(interaction, "notification", `Error ${data}`)
+        reply(interaction, "error", `Error ${data}`)
     });
 
     child.on('close', () => {
@@ -146,8 +161,8 @@ async function restartBot(interaction, reason) {
  */
 async function restartNotification(interaction, reason) {
     const embed = new EmbedBuilder()
-        .setTitle('Restart notification')
-        .setDescription('Restarting the notification service.')
+        .setTitle('Restart')
+        .setDescription('Restarting the notification microservice.')
         .setColor("#fd8738")
         .setTimestamp()
         .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
