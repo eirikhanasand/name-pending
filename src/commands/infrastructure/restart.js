@@ -46,6 +46,11 @@ export async function execute(interaction) {
             await restartBot(interaction, reason);
             return;
         }
+        case "beehive": {
+            console.log("beehive")
+            await restartBeehive(interaction, reason);
+            return;
+        }
         case "notification": {
             console.log("notification")
             await restartNotification(interaction, reason);
@@ -117,6 +122,7 @@ async function restartBot(interaction, reason) {
         'touch config.json',
         `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}"}' > config.json`,
         `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
+        'rm -rf automatednotifications',
         'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest .',
         'docker image pull registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest',
         'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest tekkom-bot'
@@ -182,10 +188,9 @@ async function restartNotification(interaction, reason) {
         'touch .secrets.ts',
         `echo 'export const api_key = "${config.notification_api_key}"\nexport const api_url = "${config.notification_api_url}"' > .secrets.ts`,
         'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/apps/automatednotifications:latest .',
+        'rm -rf automatednotifications',
         'docker image pull registry.git.logntnu.no/tekkom/apps/automatednotifications:latest',
         `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
-        'docker swarm leave',
-        `docker swarm join --token ${config.swarm_token}`,
         'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/apps/automatednotifications:latest nucleus-notifications'
     ];
 
@@ -209,6 +214,56 @@ async function restartNotification(interaction, reason) {
     });
 }
 
+/**
+ * Restarts beehive
+ * @param {ChatInputCommandInteraction<CacheType>} interaction 
+ */
+async function restartBeehive(interaction, reason) {
+    const embed = new EmbedBuilder()
+        .setTitle('Restart')
+        .setDescription('Restarts beehive.')
+        .setColor("#fd8738")
+        .setTimestamp()
+        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .addFields(
+            {name: "Status", value: "Working...", inline: true},
+            {name: "Reason", value: reason, inline: true},
+        )
+    await interaction.editReply({ embeds: [embed]});
+
+    const restart = [
+        'rm -rf frontend',
+        'npm install -g git',
+        'git clone git@git.logntnu.no:tekkom/web/beehive/frontend.git',
+        'cd frontend',
+        'npm i',
+        'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/web/beehive/frontend:latest .',
+        'rm -rf frontend',
+        'docker image pull registry.git.logntnu.no/tekkom/web/beehive/frontend:latest',
+        `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
+        'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/web/beehive/frontend:latest beehive'
+    ];
+
+    // Run a command on your system using the exec function
+    const child = exec(restart.join(' && '));
+
+    // Pipes the output of the child process to the main application console
+    child.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+        reply(interaction, "beehive", `Spawned child ${child.pid}`)
+    });
+
+    child.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+        reply(interaction, "beehive", `Error ${data}`)
+    });
+
+    child.on('close', () => {
+        reply(interaction, "beehive", `Killed child ${child.pid}`)
+        reply(interaction, "beehive", `Finished`)
+    });
+}
+
 async function replyInvalid(interaction, service, reason) {
     const embed = new EmbedBuilder()
         .setTitle('Restart')
@@ -224,7 +279,7 @@ async function replyInvalid(interaction, service, reason) {
 }
 
 function serviceExists(service) {
-    const services = ["self", "notification"]
+    const services = ["self", "notification", "beehive"]
 
     return services.includes(service)
 }
