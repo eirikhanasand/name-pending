@@ -53,7 +53,8 @@ client.once(Events.ClientReady, async message => {
         try {
             await msg.edit({ embeds: [embed]});
         } catch (e) {
-            msg.reply({ embeds: [embed]})
+            const channel = msg.channel;
+            await channel.send({ embeds: [embed] });
         }
 
         const commands = [
