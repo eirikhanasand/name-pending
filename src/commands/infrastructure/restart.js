@@ -68,7 +68,8 @@ export async function execute(interaction) {
  * Replies to the interaction with a custom status
  * 
  * @param {ChatInputCommandInteraction<CacheType>} interaction Interaction to reply to
- * @param {string} msg Status message
+ * @param {string} status Status message
+ * @param {string} reason Reason for reply
  * @returns {void} Updates the message and returns void when done
  */
 async function reply(interaction, service, status, reason) {
@@ -81,7 +82,6 @@ async function reply(interaction, service, status, reason) {
             .setTimestamp()
             .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
             .addFields(
-                {name: "Restarted", value: currentTime(), inline: true},
                 {name: "Status", value: status, inline: true},
                 {name: "Reason", value: reason, inline: true}
             )
@@ -97,8 +97,8 @@ async function reply(interaction, service, status, reason) {
             .setTimestamp()
             .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
             .addFields(
-                {name: "Restarted", value: currentTime(), inline: true},
-                {name: "Status", value: msg, inline: true}
+                {name: "Status", value: status, inline: true},
+                {name: "Reason", value: reason, inline: true}
             )
 
             await interaction.editReply({ embeds: [embed] });
