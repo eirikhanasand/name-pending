@@ -129,7 +129,7 @@ async function restartBot(interaction, reason) {
     let childPID, previousChildPID
     const restart = [
         'rm -rf tekkom-bot',
-        'apk add git openssh-client',
+        'apk add git openssh-client docker',
         'git clone git@git.logntnu.no:tekkom/playground/tekkom-bot.git',
         'cd tekkom-bot',
         'npm i',
@@ -195,7 +195,7 @@ async function restartNotification(interaction, reason) {
 
     const restart = [
         'rm -rf automatednotifications',
-        'apk add git openssh-client',
+        'apk add git openssh-client docker',
         'git clone git@git.logntnu.no:tekkom/apps/automatednotifications.git',
         'cd automatednotifications',
         'npm i',
@@ -248,7 +248,7 @@ async function restartBeehive(interaction, reason) {
 
     const restart = [
         'rm -rf frontend',
-        'apk add git openssh-client',
+        'apk add git openssh-client docker',
         `git clone https://${config.docker_username}:${config.docker_password}@git.logntnu.no/tekkom/web/beehive/frontend.git`,
         'cd frontend',
         'npm i',
@@ -266,20 +266,16 @@ async function restartBeehive(interaction, reason) {
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
         console.log(data);
-        console.log(process.env.PATH);
         reply(interaction, "beehive", `Spawned child ${child.pid}`, reason)
     });
 
     child.stderr.on('data', (data) => {
         console.error(data);
-        console.log(process.env.PATH);
         reply(interaction, "beehive", `${data.slice(0,1024)}`, reason)
     });
 
     child.on('close', () => {
-        console.log(process.env.PATH);
         reply(interaction, "beehive", `Killed child ${child.pid}`, reason)
-        console.log(process.env.PATH);
         reply(interaction, "beehive", `Finished`, reason)
     });
 }
