@@ -19,6 +19,16 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction) {
     const service = interaction.options.getString('service');
     const reason = interaction.options.getString('reason');
+    const embed = new EmbedBuilder()
+        .setTitle('Restart')
+        .setDescription('**Restarts the specified service.**\n\n**Valid services:**\nnotification\nself')
+        .setColor("#fd8738")
+        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .setTimestamp()
+        .addFields(
+            {name: "Loading...", value: "...", inline: true},
+        )
+    await interaction.editReply({ embeds: [embed]});
 
     if (!serviceExists(service) || !reason) {
         await replyInvalid(interaction, service, reason)
@@ -103,7 +113,7 @@ async function restartBot(interaction, reason) {
             {name: "Status", value: "Working...", inline: true},
             {name: "Reason", value: reason, inline: true}
         )
-    await interaction.reply({ embeds: [embed]});
+    await interaction.editReply({ embeds: [embed]});
 
     // Run a command on your system using the exec function
     const child = exec(restart.join(' && '));
@@ -141,10 +151,11 @@ async function restartNotification(interaction, reason) {
             {name: "Status", value: "Working...", inline: true},
             {name: "Reason", value: reason, inline: true},
         )
-    await interaction.reply({ embeds: [embed]});
+    await interaction.editReply({ embeds: [embed]});
 
     const restart = [
         'rm -rf automatednotifications',
+        'echo inside automa',
         'npm install -g git',
         'git clone git@git.logntnu.no:tekkom/apps/automatednotifications.git',
         'cd automatednotifications',
@@ -188,7 +199,7 @@ async function replyInvalid(interaction, service, reason) {
             {name: serviceExists(service) ? "Service" : "Invalid service", value: service ? service : "undefined", inline: true},
             {name: reason ? "Reason" : "Invalid reason", value: reason ? reason : "undefined", inline: true}
         )
-    await interaction.reply({ embeds: [embed]});
+    await interaction.editReply({ embeds: [embed]});
 }
 
 function serviceExists(service) {
