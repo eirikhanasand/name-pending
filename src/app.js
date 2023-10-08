@@ -35,7 +35,7 @@ client.once(Events.ClientReady, async message => {
     // client.application.commands.set([]) // Use to perge all inactive slash commands from Discord
     console.log('Ready!');
 
-    if (info.channelID && info.messageID) {
+    if (info.channelID) {
         const mID = "1160644160898994206"
         const msg = await message.channels.fetch(info.channelID).then(channel => channel.messages.fetch(mID))
         const embed = new EmbedBuilder()
@@ -52,7 +52,7 @@ client.once(Events.ClientReady, async message => {
         await msg.edit({ embeds: [embed]});
 
         const commands = [
-            `echo '{"branch": "", "reason": "", "message": ""}' > ../info.json`,
+            `echo '{"branch": "", "reason": "", "channelID": ""}' > ../info.json`,
             'rm ../temp.sh'
         ];
     

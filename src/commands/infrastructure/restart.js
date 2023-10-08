@@ -130,7 +130,7 @@ async function restartBot(message, reason, branch) {
     ];
 
     const commands = [
-        `echo '{"branch": "", "reason": "", "channelID": "${message.channelId}", "messageID": "1160644160898994206"}' > ../info.json`,
+        `echo '{"branch": "", "reason": "", "channelID": "${message.channelId}"}' > ../info.json`,
         'rm ../temp.sh'
     ];
 
