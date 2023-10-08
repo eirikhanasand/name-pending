@@ -157,17 +157,18 @@ async function restartBot(interaction, reason) {
 
     // Run a command on your system using the exec function
     const child = exec(restart.join(' && '));
+    childPID = child.pid
+    reply(interaction, "error", `Spawned child ${childPID}`, reason)
 
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
         console.log(data);
-        childPID = child.pid
-        reply(interaction, "error", `Spawned child ${childPID}`, reason)
+        reply(interaction, "error", `${data.slice(0, 1024)}`, reason)
     });
 
     child.stderr.on('data', (data) => {
         console.error(data);
-        reply(interaction, "error", `${data}`, reason)
+        reply(interaction, "error", `${data.slice(0, 1024)}`, reason)
     });
 
     child.on('close', () => {
@@ -211,16 +212,16 @@ async function restartNotification(interaction, reason) {
 
     // Run a command on your system using the exec function
     const child = exec(restart.join(' && '));
-
+    reply(interaction, "notification", `Spawned child ${child.pid}`, reason)
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
         console.log(data);
-        reply(interaction, "notification", `Spawned child ${child.pid}`, reason)
+        reply(interaction, "notification", `${data.slice(0, 1024)}`, reason)
     });
 
     child.stderr.on('data', (data) => {
         console.error(data);
-        reply(interaction, "notification", `${data}`, reason)
+        reply(interaction, "notification", `${data.slice(0, 1024)}`, reason)
     });
 
     child.on('close', () => {
@@ -271,7 +272,7 @@ async function restartBeehive(interaction, reason) {
 
     child.stderr.on('data', (data) => {
         console.error(data);
-        reply(interaction, "beehive", `${data.slice(0,1024)}`, reason)
+        reply(interaction, "beehive", `${data.slice(0, 1024)}`, reason)
     });
 
     child.on('close', () => {
