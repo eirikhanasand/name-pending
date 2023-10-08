@@ -249,7 +249,7 @@ async function restartBeehive(interaction, reason) {
 
     const restart = [
         'rm -rf frontend',
-        `git clone https://${config.docker_username}:${config.docker_password}@git.logntnu.no/tekkom/web/beehive/frontend.git`,
+        `git clone -b master https://${config.docker_username}:${config.docker_password}@git.logntnu.no/tekkom/web/beehive/frontend.git`,
         'cd frontend',
         'npm i',
         `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
