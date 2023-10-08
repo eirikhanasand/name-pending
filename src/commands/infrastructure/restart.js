@@ -1,5 +1,4 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { currentTime } from '../../webarchive/utils.js';
 import { exec } from 'child_process';
 import config from '../../../config.json' assert { type: "json" };
 
@@ -25,9 +24,8 @@ export async function execute(interaction) {
         .setColor("#fd8738")
         .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
         .setTimestamp()
-        .addFields(
-            {name: "Loading...", value: "...", inline: true},
-        )
+        .addFields({name: "Loading...", value: "...", inline: true})
+
     if (!interaction.replied) {
         await interaction.reply({ embeds: [embed]});
     } else {
@@ -104,6 +102,21 @@ async function reply(interaction, service, status, reason) {
             await interaction.editReply({ embeds: [embed] });
             break;
         }
+        case "beehive": {
+            const embed = new EmbedBuilder()
+            .setTitle('Restart')
+            .setDescription('Restarting beehive.')
+            .setColor("#fd8738")
+            .setTimestamp()
+            .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+            .addFields(
+                {name: "Status", value: status, inline: true},
+                {name: "Reason", value: reason, inline: true}
+            )
+
+            await interaction.editReply({ embeds: [embed] });
+            break;
+        }
         default: console.log(`Unknown service ${service}`); return
     }
 }
@@ -123,7 +136,8 @@ async function restartBot(interaction, reason) {
         'touch config.json',
         `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}"}' > config.json`,
         `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
-        'rm -rf automatednotifications',
+        'cd ..',
+        'rm -rf tekkom-bot',
         'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest .',
         'docker image pull registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest',
         'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest tekkom-bot'
@@ -146,14 +160,14 @@ async function restartBot(interaction, reason) {
 
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
+        console.log(data);
         childPID = child.pid
         reply(interaction, "error", `Spawned child ${childPID}`, reason)
     });
 
     child.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
-        reply(interaction, "error", `Error ${data}`, reason)
+        console.error(data);
+        reply(interaction, "error", `${data}`, reason)
     });
 
     child.on('close', () => {
@@ -189,6 +203,7 @@ async function restartNotification(interaction, reason) {
         'touch .secrets.ts',
         `echo 'export const api_key = "${config.notification_api_key}"\nexport const api_url = "${config.notification_api_url}"' > .secrets.ts`,
         'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/apps/automatednotifications:latest .',
+        'cd ..',
         'rm -rf automatednotifications',
         'docker image pull registry.git.logntnu.no/tekkom/apps/automatednotifications:latest',
         `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
@@ -200,13 +215,13 @@ async function restartNotification(interaction, reason) {
 
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
+        console.log(data);
         reply(interaction, "notification", `Spawned child ${child.pid}`, reason)
     });
 
     child.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
-        reply(interaction, "notification", `Error ${data}`, reason)
+        console.error(data);
+        reply(interaction, "notification", `${data}`, reason)
     });
 
     child.on('close', () => {
@@ -239,6 +254,7 @@ async function restartBeehive(interaction, reason) {
         'cd frontend',
         'npm i',
         'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/web/beehive/frontend:latest .',
+        'cd ..',
         'rm -rf frontend',
         'docker image pull registry.git.logntnu.no/tekkom/web/beehive/frontend:latest',
         `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
@@ -250,13 +266,13 @@ async function restartBeehive(interaction, reason) {
 
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
-        console.log(`stdout: ${data}`);
+        console.log(data);
         reply(interaction, "beehive", `Spawned child ${child.pid}`, reason)
     });
 
     child.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
-        reply(interaction, "beehive", `Error ${data}`, reason)
+        console.error(data);
+        reply(interaction, "beehive", `${data}`, reason)
     });
 
     child.on('close', () => {
