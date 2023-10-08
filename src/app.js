@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
 import config from '../config.json' assert { type: "json" };
+import info from '../../info.json' assert { type: "json" }
 
 const token = config.token;
 
@@ -32,6 +33,22 @@ for (const folder of commandFolders) {
 client.once(Events.ClientReady, () => {
     // client.application.commands.set([]) // Use to perge all inactive slash commands from Discord
 	console.log('Ready!');
+
+    if (info.interaction) {
+        const embed = new EmbedBuilder()
+        .setTitle('Restart')
+        .setDescription('Restarted the bot.')
+        .setColor("#fd8738")
+        .setTimestamp()
+        .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
+        .addFields(
+            {name: "Status", value: "Success", inline: true},
+            {name: "Reason", value: info.reason, inline: true},
+            {name: "Branch", value: info.branch, inline: true},
+        )
+        interaction.editReply({ embeds: [embed]});
+    }
+
 });
 
 client.on(Events.InteractionCreate, async interaction => {

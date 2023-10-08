@@ -1,7 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { exec } from 'child_process';
 import config from '../../../config.json' assert { type: "json" };
-import info from '../../../../info.json' assert { type: "json" }
 
 export const data = new SlashCommandBuilder()
     .setName('restart')
@@ -123,11 +122,11 @@ async function restartBot(interaction, reason, branch) {
 
     const restart = [
         'cd ..'
-        `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone ${branch ? `-b ${branch} ` : ""}https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\nnpm i && npm start'> hei.sh`,
+        `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone ${branch ? `-b ${branch} ` : ""}https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\nnpm i && npm start'> temp.sh`,
         `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}", "docker_username": ${config.docker_username}, "docker_password": "${config.docker_password}"}' > config.json`,
-        `echo '{"childPID": "${childPID}", "previousChildPID": "${previousChildPID}", "interaction": "${interaction}", "docker_username": ${config.docker_username}, "docker_password": "${config.docker_password}"}' > info.json`,
-        'chmod +x hei.sh',
-        './hei.sh'
+        `echo '{"branch": "${branch}", "reason": "${reason}", "interaction": "${interaction}"}' > info.json`,
+        'chmod +x temp.sh',
+        './temp.sh'
     ];
 
     const embed = new EmbedBuilder()
