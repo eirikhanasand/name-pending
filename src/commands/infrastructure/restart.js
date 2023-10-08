@@ -129,7 +129,7 @@ async function restartBot(interaction, reason) {
     let childPID, previousChildPID
     const restart = [
         'rm -rf tekkom-bot',
-        'npm install -g git',
+        'npm install git',
         'git clone git@git.logntnu.no:tekkom/playground/tekkom-bot.git',
         'cd tekkom-bot',
         'npm i',
@@ -195,8 +195,7 @@ async function restartNotification(interaction, reason) {
 
     const restart = [
         'rm -rf automatednotifications',
-        'echo inside automa',
-        'npm install -g git',
+        'npm install git',
         'git clone git@git.logntnu.no:tekkom/apps/automatednotifications.git',
         'cd automatednotifications',
         'npm i',
@@ -249,7 +248,7 @@ async function restartBeehive(interaction, reason) {
 
     const restart = [
         'rm -rf frontend',
-        'npm install -g git',
+        'npm install git',
         'git clone git@git.logntnu.no:tekkom/web/beehive/frontend.git',
         'cd frontend',
         'npm i',
