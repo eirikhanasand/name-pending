@@ -136,11 +136,11 @@ async function restartBot(interaction, reason) {
         'touch config.json',
         `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}"}' > config.json`,
         `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
-        'cd ..',
-        'rm -rf tekkom-bot',
         'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest .',
         'docker image pull registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest',
-        'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest tekkom-bot'
+        'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest tekkom-bot',
+        'cd ..',
+        'rm -rf tekkom-bot',
     ];
 
     const embed = new EmbedBuilder()
@@ -150,7 +150,7 @@ async function restartBot(interaction, reason) {
         .setTimestamp()
         .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
         .addFields(
-            {name: "Status", value: "Working...", inline: true},
+            {name: "Status", value: "Starting...", inline: true},
             {name: "Reason", value: reason, inline: true}
         )
     await interaction.editReply({ embeds: [embed]});
@@ -188,7 +188,7 @@ async function restartNotification(interaction, reason) {
         .setTimestamp()
         .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
         .addFields(
-            {name: "Status", value: "Working...", inline: true},
+            {name: "Status", value: "Starting...", inline: true},
             {name: "Reason", value: reason, inline: true},
         )
     await interaction.editReply({ embeds: [embed]});
@@ -202,12 +202,12 @@ async function restartNotification(interaction, reason) {
         'npm i',
         'touch .secrets.ts',
         `echo 'export const api_key = "${config.notification_api_key}"\nexport const api_url = "${config.notification_api_url}"' > .secrets.ts`,
+        `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
         'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/apps/automatednotifications:latest .',
+        'docker image pull registry.git.logntnu.no/tekkom/apps/automatednotifications:latest',
+        'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/apps/automatednotifications:latest nucleus-notifications',
         'cd ..',
         'rm -rf automatednotifications',
-        'docker image pull registry.git.logntnu.no/tekkom/apps/automatednotifications:latest',
-        `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
-        'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/apps/automatednotifications:latest nucleus-notifications'
     ];
 
     // Run a command on your system using the exec function
@@ -242,7 +242,7 @@ async function restartBeehive(interaction, reason) {
         .setTimestamp()
         .setAuthor({name: `Author: ${interaction.user.username} · ${interaction.user.id}`})
         .addFields(
-            {name: "Status", value: "Working...", inline: true},
+            {name: "Status", value: "Starting...", inline: true},
             {name: "Reason", value: reason, inline: true},
         )
     await interaction.editReply({ embeds: [embed]});
@@ -253,12 +253,12 @@ async function restartBeehive(interaction, reason) {
         'git clone git@git.logntnu.no:tekkom/web/beehive/frontend.git',
         'cd frontend',
         'npm i',
+        `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
         'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/web/beehive/frontend:latest .',
+        'docker image pull registry.git.logntnu.no/tekkom/web/beehive/frontend:latest',
+        'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/web/beehive/frontend:latest beehive',
         'cd ..',
         'rm -rf frontend',
-        'docker image pull registry.git.logntnu.no/tekkom/web/beehive/frontend:latest',
-        `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
-        'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/web/beehive/frontend:latest beehive'
     ];
 
     // Run a command on your system using the exec function
@@ -272,7 +272,7 @@ async function restartBeehive(interaction, reason) {
 
     child.stderr.on('data', (data) => {
         console.error(data);
-        reply(interaction, "beehive", `${data}`, reason)
+        reply(interaction, "beehive", `${data.slice(0,1024)}`, reason)
     });
 
     child.on('close', () => {
