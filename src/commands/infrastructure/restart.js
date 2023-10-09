@@ -104,24 +104,10 @@ async function reply(message, service, status, reason, branch) {
  */
 async function restartBot(message, reason, branch) {
     let childPID, previousChildPID
-    // const restart = [ // TODO MAKE Docker Outside Of Docker PROCESS
-    //     'rm -rf tekkom-bot',
-    //     'git clone https://git.logntnu.no/tekkom/playground/tekkom-bot.git',
-    //     'cd tekkom-bot',
-    //     'npm i',
-    //     'touch config.json',
-    //     `echo '{"token": "${config.token}", "clientId": "${config.clientId}", "guildId": "${config.guildId}"}' > config.json`,
-    //     `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
-    //     'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest .',
-    //     'docker image pull registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest',
-    //     'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/playground/tekkom-bot:latest tekkom-bot',
-    //     'cd ..',
-    //     'rm -rf tekkom-bot',
-    // ];
 
     const restart = [
         'cd ..',
-        `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone -b ${branch} https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\necho """{\\"token\\": \\"${config.token}\\", \\"clientId\\": \\"${config.clientId}\\", \\"guildId\\": \\"${config.guildId}\\", \\"docker_username\\": \\"${config.docker_username}\\", \\"docker_password\\": \\"${config.docker_password}\\"}""" > config.json\nnpm i && npm start'> temp.sh`,
+        `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone -b ${branch} https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\necho """{\\"token\\": \\"${config.token}\\", \\"clientId\\": \\"${config.clientId}\\", \\"guildId\\": \\"${config.guildId}\\", \\"docker_username\\": \\"${config.docker_username}\\", \\"docker_password\\": \\"${config.docker_password}\\", \\"minecraft\\": \\"${config.minecraft}\\"}""" > config.json\nnpm i && npm start'> temp.sh`,
         `echo '{"branch": "${branch}", "reason": "${reason}", "channelID": "${message.channelId}", "username": "${message.user.username}", "userID": "${message.user.id}"}' > info.json`,
         'chmod +x temp.sh',
         './temp.sh'
