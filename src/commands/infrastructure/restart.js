@@ -32,6 +32,15 @@ export async function execute(message) {
         .setTimestamp()
         .addFields({name: "Loading...", value: "...", inline: true})
 
+    // Checking if user should be allowed to remove users from the whitelist
+    const roleID = "940879337383673866";
+    const isAllowed = message.member.roles.cache.some(role => role.id === roleID);
+
+    // Aborts if the user does not have sufficient permissions
+    if (!isAllowed) {
+        return await message.reply("Unauthorized.")
+    }
+    
     if (!message.replied) {
         await message.reply({ embeds: [embed]});
     } else {
