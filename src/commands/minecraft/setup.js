@@ -154,7 +154,7 @@ function createVirtualTerminal(message, session) {
         if (data.includes('System restart required')) {
             updateChatStatus(message, "Success", session, "virtualTerminal")
 
-            // Exexcutes the whitelist action in the tmux session
+            // Sends the collected messages in the in game chat
             collector.on('collect', m => {
                 virtualTerminal.write(`tmux send-keys -t ${session} 'say ${m.author.username}: ${m.content}' C-m\r`)
             })
@@ -322,11 +322,11 @@ async function updateChatStatus(message, status, session, job) {
 }
 
 /**
- * Sends a message on server A on server B
+ * Sends a message from server A on server B
  * Has to be seperate since the tmux session is attached to mirror messages.
- * @param {*} message 
- * @param {*} user 
- * @param {*} session 
+ * @param {*} message Initial message object
+ * @param {*} user Author of the message to send
+ * @param {*} session Session to send the message in
  */
 function sayOnServer(session, content) {
     // Spawns a virtual terminal
@@ -345,8 +345,10 @@ function sayOnServer(session, content) {
     virtualTerminal.onData((data) => {
         // Listens for message indicating that a connection has been established
         if (data.includes('System restart required')) {
-            // Exexcutes the whitelist action in the tmux session
+            // Sends the message on the other server
             virtualTerminal.write(`tmux send-keys -t ${session} 'say ${content}' C-m\r`)
+
+            // Closes the temporary terminal
             virtualTerminal.kill()
         }
     })
