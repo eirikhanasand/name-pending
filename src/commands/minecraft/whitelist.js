@@ -57,7 +57,7 @@ function spawnTerminal(message, user, session) {
             message.editReply('Failed with unknown cause. Please try again.')
             virtualTerminal.kill()
         }
-    }, 10000)
+    }, 20000)
 
     // Sets the terminal to not alive if it was not spawned
     if (!virtualTerminal) {
