@@ -40,7 +40,8 @@ for (const folder of commandFolders) {
 }
 
 // Constructing and preparing an instance of the REST module
-const rest = new REST({ version: '10' }).setToken(token)
+// Do not remove the semicolon, it is necesarry for the IIFE below to work.
+const rest = new REST({ version: '10' }).setToken(token);
 
 // Deploying commands to Discord
 (async () => {
