@@ -26,7 +26,7 @@ export async function execute(message) {
     const branch = message.options.getString('branch');
     const embed = new EmbedBuilder()
         .setTitle('Restart')
-        .setDescription('**Restarts the specified service.**\n\n**Valid services:**\nnotification\nself')
+        .setDescription('**Restarts the specified service.**\n\n**Valid services:**\nnotification\nself\nbeehive')
         .setColor("#fd8738")
         .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
         .setTimestamp()
