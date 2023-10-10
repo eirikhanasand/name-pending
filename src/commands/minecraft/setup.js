@@ -268,7 +268,7 @@ function mirrorChat(message, session) {
                 // Initial response has now been ignored, and the status is successful
                 ignoredInitial = true
                 updateChatStatus(message, "Success")
-            }, 5000);
+            }, 5000)
         }
     })
 }
@@ -336,18 +336,18 @@ function sayOnServer(session, content) {
         rows: 30,
         cwd: process.cwd(),
         env: process.env
-    });
+    })
 
     // Logs into Ludens with responsible account on the Minecraft server
-    virtualTerminal.write(config.minecraft_command + '\r');
+    virtualTerminal.write(config.minecraft_command + '\r')
 
     // Listens for data indicating success
     virtualTerminal.onData((data) => {
         // Listens for message indicating that a connection has been established
         if (data.includes('System restart required')) {
             // Exexcutes the whitelist action in the tmux session
-            virtualTerminal.write(`tmux send-keys -t ${session} 'say ${content}' C-m\r`);
+            virtualTerminal.write(`tmux send-keys -t ${session} 'say ${content}' C-m\r`)
             virtualTerminal.kill()
         }
-    });
+    })
 }

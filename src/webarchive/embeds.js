@@ -2,13 +2,13 @@ import { EmbedBuilder } from "discord.js"
 import { formatMillis } from "./utils.js"
 
 export default function editEmbed(embed, stats) {
-    const totalWeight = 4 * (stats.total_domains + stats.total_paths) + 200;
-    const completedWeight = stats.domains_in_fetch_progress.length + (stats.finished_domains * 3) + stats.paths_in_fetch_progress + (stats.finished_paths * 3) + stats.links_generated;
+    const totalWeight = 4 * (stats.total_domains + stats.total_paths) + 200
+    const completedWeight = stats.domains_in_fetch_progress.length + (stats.finished_domains * 3) + stats.paths_in_fetch_progress + (stats.finished_paths * 3) + stats.links_generated
 
-    stats.progress = (completedWeight / totalWeight) * 100;
+    stats.progress = (completedWeight / totalWeight) * 100
 
     // Ensure progress is between 0 and 100
-    stats.progress = Math.trunc(Math.min(100, Math.max(0, stats.progress)));
+    stats.progress = Math.trunc(Math.min(100, Math.max(0, stats.progress)))
     
     switch (stats.status) {
         case "Working":

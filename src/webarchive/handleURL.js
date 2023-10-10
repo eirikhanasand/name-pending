@@ -1,7 +1,7 @@
-import url from '../../data/links.json' assert { type: 'json' };
+import url from '../../data/links.json' assert { type: 'json' }
 import handlePaths from './handlePaths.js'
-import remove from './utils.js';
-import editEmbed from './embeds.js';
+import remove from './utils.js'
+import editEmbed from './embeds.js'
 const websites = url.websites
 const websiteLinks = url.websiteLinks
 
@@ -28,11 +28,11 @@ const websiteLinks = url.websiteLinks
  */
 export default async function fetchURL(link, generated, fast) {
     try {
-        let response = await fetch(link, {method: 'HEAD'});
+        let response = await fetch(link, {method: 'HEAD'})
         if (!response) console.log("No secure HEAD reply from " + link)
         if (response.status === 200) return link
         if (fast) return
-        response = await fetch(link, {method: 'GET'});
+        response = await fetch(link, {method: 'GET'})
         if (!response) console.log("No secure GET reply from " + link)
         if (response.status === 200) return link
         response = await fetch(link.replace('https://', 'http://'), {method: 'HEAD'})
@@ -139,21 +139,21 @@ export async function archiveURLs(embed, stats) {
     }))
 
     for (const item of workingURLs) {
-        console.log(item);
+        console.log(item)
     }
     console.log("Recieved", workingURLs.length)
     await archiveWorkingURLs(embed, workingURLs, stats)
 }
 
 export function prettifyURL(url) {
-    const isHttps = /^https:\/\//.test(url);
+    const isHttps = /^https:\/\//.test(url)
     if (isHttps) return url.slice(8)
     return url.slice(7)
 }
 
 export function isDomain(url) {
-    const regex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})(\/)?$/;
-    return regex.test(url);
+    const regex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})(\/)?$/
+    return regex.test(url)
 }
 
 export async function archiveWorkingURLs(embed, links, stats) {

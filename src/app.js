@@ -1,37 +1,37 @@
-import { readdirSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { join, dirname } from 'path';
-import { Client, Collection, EmbedBuilder, Events, GatewayIntentBits } from 'discord.js';
-import config from '../config.json' assert { type: "json" };
+import { readdirSync } from 'fs'
+import { fileURLToPath } from 'url'
+import { join, dirname } from 'path'
+import { Client, Collection, EmbedBuilder, Events, GatewayIntentBits } from 'discord.js'
+import config from '../config.json' assert { type: "json" }
 import info from '../../info.json' assert { type: "json" }
-import { exec } from 'child_process';
+import { exec } from 'child_process'
 
-const token = config.token;
+const token = config.token
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const client = new Client({ intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessageReactions
-] });
+] })
 
-client.commands = new Collection();
-const foldersPath = join(__dirname, 'commands');
-const commandFolders = readdirSync(foldersPath);
+client.commands = new Collection()
+const foldersPath = join(__dirname, 'commands')
+const commandFolders = readdirSync(foldersPath)
 
 for (const folder of commandFolders) {
-	const commandsPath = join(foldersPath, folder);
-	const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	const commandsPath = join(foldersPath, folder)
+	const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 	for (const file of commandFiles) {
-		const filePath = join(commandsPath, file);
-        const command = await import(filePath);
+		const filePath = join(commandsPath, file)
+        const command = await import(filePath)
 		if ('data' in command && 'execute' in command) {
-			client.commands.set(command.data.name, command);
+			client.commands.set(command.data.name, command)
 		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`)
 		}
 	}
 }
@@ -56,37 +56,37 @@ client.once(Events.ClientReady, async message => {
         )
 
         try {
-            await msg.edit({ embeds: [embed]});
+            await msg.edit({ embeds: [embed]})
         } catch (e) {
-            const channel = msg.channel;
-            await channel.send({ embeds: [embed] });
+            const channel = msg.channel
+            await channel.send({ embeds: [embed] })
         }
 
         const commands = [
             `echo '{"branch": "", "reason": "", "channelID": "", "username": "", "userID": ""}' > ../info.json`,
             'rm ../temp.sh'
-        ];
+        ]
     
         exec(commands.join(' && '))
     }
 
-});
+})
 
 client.on(Events.InteractionCreate, async message => {
-	if (!message.isChatInputCommand()) return;
+	if (!message.isChatInputCommand()) return
 
-	const command = client.commands.get(message.commandName);
+	const command = client.commands.get(message.commandName)
 
-	if (!command) return;
+	if (!command) return
 
 	try {
-		await command.execute(message);
+		await command.execute(message)
 	} catch (error) {
         // Ignoring error as another process is handling it
         // console.log(error)
 	}
-});
+})
 
-client.login(token);
+client.login(token)
 
 // https://linjeforeningen.it does not work, timeout error

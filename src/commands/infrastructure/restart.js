@@ -1,29 +1,26 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { exec } from 'child_process';
-import config from '../../../config.json' assert { type: "json" };
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js'
+import { exec } from 'child_process'
+import config from '../../../config.json' assert { type: "json" }
 
 export const data = new SlashCommandBuilder()
     .setName('restart')
     .setDescription('Restarts the specified service')
-    .addStringOption((option) =>
-        option
-            .setName('service')
-            .setDescription('Service to restart')
+    .addStringOption((option) => option
+        .setName('service')
+        .setDescription('Service to restart')
     )
-    .addStringOption((option) =>
-        option
-            .setName('reason')
-            .setDescription('Reason for the restart')
+    .addStringOption((option) => option
+        .setName('reason')
+        .setDescription('Reason for the restart')
     )
-    .addStringOption((option) =>
-        option
-            .setName('branch')
-            .setDescription('Branch to launch from')
+    .addStringOption((option) => option
+        .setName('branch')
+        .setDescription('Branch to launch from')
     )
 export async function execute(message) {
-    const service = message.options.getString('service');
-    const reason = message.options.getString('reason');
-    const branch = message.options.getString('branch');
+    const service = message.options.getString('service')
+    const reason = message.options.getString('reason')
+    const branch = message.options.getString('branch')
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('**Restarts the specified service.**\n\n**Valid services:**\nnotification\nself\nbeehive')
@@ -33,8 +30,7 @@ export async function execute(message) {
         .addFields({name: "Loading...", value: "...", inline: true})
 
     // Checking if user should be allowed to remove users from the whitelist
-    const roleID = "940879337383673866";
-    const isAllowed = message.member.roles.cache.some(role => role.id === roleID);
+    const isAllowed = message.member.roles.cache.some(role => role.id === config.roleID)
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
@@ -42,9 +38,9 @@ export async function execute(message) {
     }
     
     if (!message.replied) {
-        await message.reply({ embeds: [embed]});
+        await message.reply({ embeds: [embed]})
     } else {
-        await message.editReply({ embeds: [embed]});
+        await message.editReply({ embeds: [embed]})
     }
 
     if (!serviceExists(service) || !reason) {
@@ -54,20 +50,20 @@ export async function execute(message) {
 
     switch (service) {
         case "self": {
-            await restartBot(message, reason, branch ? branch : "main");
-            return;
+            await restartBot(message, reason, branch ? branch : "main")
+            return
         }
         case "beehive": {
-            await restartBeehive(message, reason, branch ? branch : "master");
-            return;
+            await restartBeehive(message, reason, branch ? branch : "master")
+            return
         }
         case "notification": {
-            await restartNotification(message, reason, branch ? branch : "main");
-            return;
+            await restartNotification(message, reason, branch ? branch : "main")
+            return
         }
         default: {
             await replyInvalid(message, service, reason, branch ? branch : "Default")
-            return;
+            return
         }
     }
 }
@@ -104,7 +100,7 @@ async function reply(message, service, status, reason, branch) {
             {name: "Branch", value: branch, inline: true},
         )
 
-    await message.editReply({ embeds: [embed] });
+    await message.editReply({ embeds: [embed] })
 }
 
 /**
@@ -120,7 +116,7 @@ async function restartBot(message, reason, branch) {
         `echo '{"branch": "${branch}", "reason": "${reason}", "channelID": "${message.channelId}", "username": "${message.user.username}", "userID": "${message.user.id}"}' > info.json`,
         'chmod +x temp.sh',
         './temp.sh'
-    ];
+    ]
 
     const embed = new EmbedBuilder()
         .setTitle('Restart')
@@ -132,29 +128,29 @@ async function restartBot(message, reason, branch) {
             {name: "Status", value: "Starting...", inline: true},
             {name: "Reason", value: reason, inline: true}
         )
-    await message.editReply({ embeds: [embed]});
+    await message.editReply({ embeds: [embed]})
     
 
     // Run a command on your system using the exec function
-    const child = exec(restart.join(' && '));
+    const child = exec(restart.join(' && '))
     childPID = child.pid
     reply(message, "error", `Spawned child ${childPID}`, reason, branch)
 
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
-        console.log(data);
+        console.log(data)
         reply(message, "error", `${data.slice(0, 1024)}`, reason, branch)
-    });
+    })
 
     child.stderr.on('data', (data) => {
-        console.error(data);
+        console.error(data)
         reply(message, "error", `${data.slice(0, 1024)}`, reason, branch)
-    });
+    })
 
     child.on('close', () => {
         previousChildPID = childPID
         reply(message, "error", `Killed child ${previousChildPID}`, reason, branch)
-    });
+    })
 }
 
 /**
@@ -172,7 +168,7 @@ async function restartNotification(message, reason, branch) {
             {name: "Status", value: "Starting...", inline: true},
             {name: "Reason", value: reason, inline: true},
         )
-    await message.editReply({ embeds: [embed]});
+    await message.editReply({ embeds: [embed]})
 
     const restart = [
         'rm -rf automatednotifications',
@@ -187,27 +183,27 @@ async function restartNotification(message, reason, branch) {
         'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/apps/automatednotifications:latest nucleus-notifications',
         'cd ..',
         'rm -rf automatednotifications',
-    ];
+    ]
 
     // Run a command on your system using the exec function
-    const child = exec(restart.join(' && '));
+    const child = exec(restart.join(' && '))
     reply(message, "notification", `Spawned child ${child.pid}`, reason, branch)
 
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
-        console.log(data);
+        console.log(data)
         reply(message, "notification", `${data.slice(0, 1024)}`, reason, branch)
-    });
+    })
 
     child.stderr.on('data', (data) => {
-        console.error(data);
+        console.error(data)
         reply(message, "notification", `${data.slice(0, 1024)}`, reason, branch)
-    });
+    })
 
     child.on('close', () => {
         reply(message, "notification", `Killed child ${child.pid}`, reason, branch)
         reply(message, "notification", `Success`, reason, branch)
-    });
+    })
 }
 
 /**
@@ -226,7 +222,7 @@ async function restartBeehive(message, reason, branch) {
             {name: "Reason", value: reason, inline: true},
             {name: "Branch", value: branch, inline: true},
         )
-    await message.editReply({ embeds: [embed]});
+    await message.editReply({ embeds: [embed]})
 
     const restart = [
         'rm -rf frontend',
@@ -239,27 +235,27 @@ async function restartBeehive(message, reason, branch) {
         'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/web/beehive/frontend:latest beehive',
         'cd ..',
         'rm -rf frontend',
-    ];
+    ]
 
     // Run a command on your system using the exec function
-    const child = exec(restart.join(' && '));
+    const child = exec(restart.join(' && '))
     reply(message, "beehive", `Spawned child ${child.pid}`, reason, branch)
 
     // Pipes the output of the child process to the main application console
     child.stdout.on('data', (data) => {
-        console.log(data);
+        console.log(data)
         reply(message, "beehive", `${data.slice(0, 1024)}`, reason, branch)
-    });
+    })
 
     child.stderr.on('data', (data) => {
-        console.error(data);
+        console.error(data)
         reply(message, "beehive", `${data.slice(0, 1024)}`, reason, branch)
-    });
+    })
 
     child.on('close', () => {
         reply(message, "beehive", `Killed child ${child.pid}`, reason, branch)
         reply(message, "beehive", `Success`, reason, branch)
-    });
+    })
 }
 
 async function replyInvalid(message, service, reason, branch) {
@@ -274,7 +270,7 @@ async function replyInvalid(message, service, reason, branch) {
             {name: reason ? "Reason" : "Invalid reason", value: reason ? reason : "undefined", inline: true},
             {name: "Branch", value: branch, inline: true}
         )
-    await message.editReply({ embeds: [embed]});
+    await message.editReply({ embeds: [embed]})
 }
 
 function serviceExists(service) {

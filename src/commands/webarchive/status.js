@@ -1,10 +1,10 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import getTotalLinks from '../../webarchive/getTotalLinks.js';
-import { formatCooldown, readFile } from '../../webarchive/utils.js';
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js'
+import getTotalLinks from '../../webarchive/getTotalLinks.js'
+import { formatCooldown, readFile } from '../../webarchive/utils.js'
 
 export const data = new SlashCommandBuilder()
     .setName('status')
-    .setDescription('Status of how many domains are ready to be archived.');
+    .setDescription('Status of how many domains are ready to be archived.')
 export async function execute(message) {
     const info = getTotalLinks()
     const stored = await readFile("data/status.txt")
@@ -22,5 +22,5 @@ export async function execute(message) {
             {name: "Domains",   value: `${info.domains}`,   inline: true },
             {name: "Paths",     value: `${info.paths}`,     inline: true }
         )
-    await message.reply({ embeds: [status]});
+    await message.reply({ embeds: [status]})
 }
