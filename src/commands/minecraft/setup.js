@@ -20,7 +20,7 @@ export const data = new SlashCommandBuilder()
     )
 
 /**
- * Executes the whitelist command passed from Discord
+ * Executes the setup command passed from Discord
  * @param {*} message Message initiating the command, passed by Discord
  */
 export async function execute(message) {
