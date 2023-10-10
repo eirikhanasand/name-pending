@@ -232,25 +232,21 @@ function mirrorChat(message, session) {
                     const sanitized = first.includes("[K") ? first.slice(0, first.length - 4) : first
 
                     // Checks if first character is correct
-                    if (sanitized.trim()[0] === '<' && sanitized.includes('>')) {
-                        // Replaces with Discord format Name: instead of <Name>
-                        message.channel.send(sanitized.replace('<', '').replace('>', ':'))
+                   if (sanitized.includes('<') && sanitized.includes('>')){
+                        const match = line.match(/<([^>]+)>/)
+                        const long = line.slice(match.index).replace('<', '').replace('>', ':')
 
-                        // Sends the same message on the other server
-                        sayOnServer(session === survivalSession ? creativeSession : survivalSession, sanitized)
+                        // Checks that the message is not repeated
+                        if (!previousLines.includes(long) && !line.includes("[Not Secure]")) {
+                            // Sends the message on the other server
+                            sayOnServer(session === survivalSession ? creativeSession : survivalSession, sanitized)
 
-                        // Pushes line to previously sent content
-                        previousLines.push(sanitized)
+                            // Removes weird handling of norwegian letters
+                            const remove = long.replace(/\[K/, '').replace('[1;29r', '').replace('[29;1H', '').trim()
 
-                    // Fixes incorrect first character
-                    } else if (sanitized.slice(3).trim()[0] === '<' && sanitized.includes('>')){
-                        // Replaces with Discord format Name: instead of <Name>
-                        message.channel.send(sanitized.slice(3).replace('<', '').replace('>', ':'))
-
-                        // Sends the same message on the other server
-                        sayOnServer(session === survivalSession ? creativeSession : survivalSession, sanitized)
-
-                        // Pushes line to previously sent content
+                            // Sends the message in Discord
+                            message.channel.send(remove)
+                        }
                         previousLines.push(sanitized)
                     }
 
