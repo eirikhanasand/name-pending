@@ -242,7 +242,7 @@ function mirrorChat(message, session) {
                             sayOnServer(session === survivalSession ? creativeSession : survivalSession, sanitized)
 
                             // Removes weird handling of norwegian letters
-                            const remove = long.includes('[K') ? long.replace(/ \[K/, '').replace(/\[K/, '') : long
+                            const remove = long.replace(/\[K/, '').replace('[1;29r', '').replace('[29;1H', '').trim()
 
                             // Sends the message in Discord
                             message.channel.send(remove)
