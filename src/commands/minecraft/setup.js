@@ -224,7 +224,7 @@ function mirrorChat(message, session) {
                 }
 
                 // Checks if content is new, not empty and a chat message
-                if (line.trim() !== '' && !previousLines.includes(line) && line.includes('<') && line.length > 20) {
+                if (line.trim() !== '' && !previousLines.includes(line) && line.includes('<')) {
                     // Checks and removes discord ping and date object
                     const first = line.slice(16).replace(/@/g,'')
 
