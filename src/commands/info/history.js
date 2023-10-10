@@ -1,8 +1,8 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js'
 
 export const data = new SlashCommandBuilder()
     .setName('history')
-    .setDescription('The history of the bot');
+    .setDescription('The history of the bot')
 export async function execute(message) {
     const embed = new EmbedBuilder()
         .setTitle('Historie')
@@ -14,5 +14,5 @@ export async function execute(message) {
             {name: "Updated", value: "26.08.23", inline: true},
             {name: "Embeds added", value: "26.08.23"},
         )
-    await message.reply({ embeds: [embed]});
+    await message.reply({ embeds: [embed]})
 }

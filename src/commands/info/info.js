@@ -1,9 +1,9 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import getTotalLinks from '../../webarchive/getTotalLinks.js';
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js'
+import getTotalLinks from '../../webarchive/getTotalLinks.js'
 
 export const data = new SlashCommandBuilder()
     .setName('info')
-    .setDescription('Info regarding the bot.');
+    .setDescription('Info regarding the bot.')
 export async function execute(message) {
     const info = getTotalLinks()
     const embed = new EmbedBuilder()
@@ -18,5 +18,6 @@ export async function execute(message) {
             {name: "Domains", value: `${info.domains}`, inline: true},
             {name: "Paths", value: `${info.paths}`, inline: true}
         )
-    await message.reply({ embeds: [embed]});
+
+    await message.reply({ embeds: [embed]})
 }

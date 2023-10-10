@@ -1,10 +1,10 @@
-import * as fs from 'fs';
-import editEmbed from './embeds.js';
+import * as fs from 'fs'
+import editEmbed from './embeds.js'
 
 export default function remove(entries, id) {
-    const index = entries.indexOf(id);
+    const index = entries.indexOf(id)
     if (index !== -1) {
-        entries.splice(index, 1);
+        entries.splice(index, 1)
     }
 }
 
@@ -16,16 +16,16 @@ export async function readFile(file) {
 
     return new Promise((res) => {
         fs.readFile(file, async (err, data) => {
-            if (err) res(console.log("readFile.js", err));
+            if (err) res(console.log("readFile.js", err))
             try {
-                let content = JSON.parse(data.toString());
-                res(content);
+                let content = JSON.parse(data.toString())
+                res(content)
             } catch (e) {
-                console.log("Error while reading from status.txt", )
-            };
-        });
-    });
-};
+                console.log("Error while reading from status.txt", e)
+            }
+        })
+    })
+}
 
 /**
  * Writes data to text files.
@@ -39,9 +39,9 @@ export async function writeFile(content) {
 
     fs.writeFile(file, stringifiedContent, (err) => {
         if (err) console.log(err)
-        console.log(`Overwrote ${file}. Cooldown: ${formatCooldown(content.cooldown)}, total archives: ${content.archives}.`);
-    });
-};
+        console.log(`Overwrote ${file}. Cooldown: ${formatCooldown(content.cooldown)}, total archives: ${content.archives}.`)
+    })
+}
 
 /**
  * Formats the cooldown to minutes and seconds
@@ -53,7 +53,7 @@ export function formatCooldown(storedCooldown) {
     currentTime.setHours(currentTime.getHours() + 2)
     const cooldownMillis = new Date(storedCooldown) - currentTime
 
-    if (cooldownMillis <= 0) return "Klar!";
+    if (cooldownMillis <= 0) return "Ready!"
 
     return formatMillis(cooldownMillis)
 }
@@ -72,13 +72,13 @@ export function formatMillis(millis) {
 }
 
 export function update(embed, stats) {
-    const totalWeight = 4 * (stats.total_domains + stats.total_paths) + 200;
-    const completedWeight = stats.domains_in_fetch_progress.length + (stats.finished_domains * 3) + stats.paths_in_fetch_progress + (stats.finished_paths * 3) + stats.links_generated;
+    const totalWeight = 4 * (stats.total_domains + stats.total_paths) + 200
+    const completedWeight = stats.domains_in_fetch_progress.length + (stats.finished_domains * 3) + stats.paths_in_fetch_progress + (stats.finished_paths * 3) + stats.links_generated
 
-    stats.progress = (completedWeight / totalWeight) * 100;
+    stats.progress = (completedWeight / totalWeight) * 100
 
     // Ensure progress is between 0 and 100
-    stats.progress = Math.trunc(Math.min(100, Math.max(0, stats.progress)));
+    stats.progress = Math.trunc(Math.min(100, Math.max(0, stats.progress)))
     editEmbed(embed, stats)
 }
 

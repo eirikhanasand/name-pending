@@ -1,5 +1,5 @@
-import { SlashCommandBuilder } from 'discord.js';
-import pty from 'node-pty';
+import { SlashCommandBuilder } from 'discord.js'
+import pty from 'node-pty'
 import config from "../../../config.json" assert {type: "json"}
 
 /**
@@ -19,10 +19,10 @@ export const data = new SlashCommandBuilder()
  */
 export async function execute(message) {
     // Slices to avoid overflow errors
-    const user = message.options.getString('user').slice(0, 30);
+    const user = message.options.getString('user').slice(0, 30)
 
     // Checking if the author is allowed to remove users from the whitelist
-    const isAllowed = message.member.roles.cache.some(role => role.id === config.roleID);
+    const isAllowed = message.member.roles.cache.some(role => role.id === config.roleID)
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
@@ -30,7 +30,7 @@ export async function execute(message) {
     }
 
     // Sends initial reply
-    await message.reply("Removing from whitelist...");
+    await message.reply("Removing from whitelist...")
 
     // Sanitizes user before removing them to protect against xml attacks
     whitelistRemove(message, user.replace(/[^a-zA-Z0-9\s]/g, ''))
@@ -59,7 +59,7 @@ function spawnTerminal(message, user, session) {
         rows: 30,
         cwd: process.cwd(),
         env: process.env
-    });
+    })
 
     // Adds a timeout to kill the terminal after 10 seconds if something went wrong
     setTimeout(() => {
@@ -67,7 +67,7 @@ function spawnTerminal(message, user, session) {
             message.editReply('Failed with unknown cause. Please try again.')
             virtualTerminal.kill()
         }
-    }, 10000);
+    }, 10000)
 
     // Sets the terminal to not alive if it was not spawned
     if (!virtualTerminal) {
@@ -75,14 +75,14 @@ function spawnTerminal(message, user, session) {
     }
 
     // Logs into Ludens with responsible account on the Minecraft servexr
-    virtualTerminal.write(config.minecraft_command + '\r');
+    virtualTerminal.write(config.minecraft_command + '\r')
 
     // Listens for data indicating success
     virtualTerminal.onData((data) => {
         // Listens for message indicating that a connection has been established
         if (data.includes('System restart required')) {
             // Exexcutes the whitelist action in the tmux session
-            virtualTerminal.write(`tmux send-keys -t ${session} 'whitelist remove ${user}' C-m\r`);
+            virtualTerminal.write(`tmux send-keys -t ${session} 'whitelist remove ${user}' C-m\r`)
 
             // Enters the session to listen for response of whitelist action
             virtualTerminal.write(`tmux attach-session -t ${session}\r`)    
@@ -106,5 +106,5 @@ function spawnTerminal(message, user, session) {
             virtualTerminal.kill()
             alive = false
         }
-    });
+    })
 }

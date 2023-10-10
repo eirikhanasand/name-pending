@@ -1,4 +1,4 @@
-import url from '../../data/links.json' assert { type: 'json' };
+import url from '../../data/links.json' assert { type: 'json' }
 const websites = url.websites
 const websiteLinks = url.websiteLinks
 
@@ -32,5 +32,5 @@ export function getTotalPaths() {
         }
     }
     
-    return count;
+    return count
 }
