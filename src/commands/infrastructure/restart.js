@@ -26,7 +26,7 @@ export async function execute(message) {
     const branch = message.options.getString('branch');
     const embed = new EmbedBuilder()
         .setTitle('Restart')
-        .setDescription('**Restarts the specified service.**\n\n**Valid services:**\nnotification\nself')
+        .setDescription('**Restarts the specified service.**\n\n**Valid services:**\nnotification\nself\nbeehive')
         .setColor("#fd8738")
         .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
         .setTimestamp()
@@ -116,7 +116,7 @@ async function restartBot(message, reason, branch) {
 
     const restart = [
         'cd ..',
-        `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone -b ${branch} https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\necho """{\\"token\\": \\"${config.token}\\", \\"clientId\\": \\"${config.clientId}\\", \\"guildId\\": \\"${config.guildId}\\", \\"docker_username\\": \\"${config.docker_username}\\", \\"docker_password\\": \\"${config.docker_password}\\", \\"minecraft\\": \\"${config.minecraft}\\"}""" > config.json\ncd src\ngit clone https://${config.docker_username}:${config.minecraft}@git.logntnu.no/tekkom/ludens/minefly.git\ncd ..\nnpm i && npm start'> temp.sh`,
+        `echo '#!/bin/bash\nrm -rf tekkom-bot\ngit clone -b ${branch} https://git.logntnu.no/tekkom/playground/tekkom-bot.git\ncd tekkom-bot\necho """{\\"token\\": \\"${config.token}\\", \\"clientId\\": \\"${config.clientId}\\", \\"guildId\\": \\"${config.guildId}\\", \\"docker_username\\": \\"${config.docker_username}\\", \\"docker_password\\": \\"${config.docker_password}\\", \\"minecraft_command\\": \\"${config.minecraft_command}\\"}""" > config.json\nnpm i && npm start'> temp.sh`,
         `echo '{"branch": "${branch}", "reason": "${reason}", "channelID": "${message.channelId}", "username": "${message.user.username}", "userID": "${message.user.id}"}' > info.json`,
         'chmod +x temp.sh',
         './temp.sh'
