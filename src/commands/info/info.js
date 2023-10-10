@@ -14,7 +14,7 @@ export async function execute(message) {
         .addFields(
             {name: "Created", value: "21.08.23", inline: true},
             {name: "Updated", value: "26.08.23", inline: true},
-            { name: "0", value: "0", inline: false },
+            { name: " ", value: " ", inline: false },
             {name: "Domains", value: `${info.domains}`, inline: true},
             {name: "Paths", value: `${info.paths}`, inline: true}
         )
