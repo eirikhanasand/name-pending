@@ -252,6 +252,17 @@ function mirrorChat(message, session) {
 
                         // Pushes line to previously sent content
                         previousLines.push(sanitized)
+                    
+                    // Handles long messages and fixes 
+                    } else if (sanitized.includes('<') && sanitized.includes('>')){
+                        const match = line.match(/<([^>]+)>/)
+                        const long = line.slice(match.index).replace('<', '').replace('>', ':')
+                        if (!previousLines.includes(long) && !line.includes("[Not Secure]")) {
+                            sayOnServer(session === survivalSession ? creativeSession : survivalSession, sanitized)
+                            const remove = long.includes('[K') ? long.slice(0, long.length - 13).replace(/ \[K/, '').replace(/\[K/, '') : long
+                            message.channel.send(remove)
+                        }
+                        previousLines.push(sanitized)
                     }
 
                     // Adds line to array of already sent lines to prevent loop
