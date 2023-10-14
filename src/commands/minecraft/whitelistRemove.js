@@ -26,11 +26,11 @@ export async function execute(message) {
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
-        return await message.reply("Unauthorized.")
+        return await message.reply({content: "Unauthorized.", ephemeral: true})
     }
 
     // Sends initial reply
-    await message.reply("Removing from whitelist...")
+    await message.reply({content: "Removing from whitelist...", ephemeral: true})
 
     // Sanitizes user before removing them to protect against xml attacks
     whitelistRemove(message, user.replace(/[^a-zA-Z0-9\s]/g, ''))
@@ -91,20 +91,42 @@ function spawnTerminal(message, user, session) {
         // Listens for message indicating success
         if (data.includes(`Removed ${user.slice(0, 1).toUpperCase() + user.slice(1)} from the whitelist`)) {
             message.editReply(`Removed ${user} from the whitelist`)
+            log(message, user, `Removed ${user} from the ${session} whitelist`)
             virtualTerminal.kill()
             alive = false
 
         // Listens for message indicating that the player is not whitelisted
         } else if (data.includes('Player is not whitelisted')) {
-            message.editReply("Player is not whitelisted")
+            message.editReply(`${user} is not whitelisted`)
+            log(message, user, `${user} is not whitelisted on ${session}`)
             virtualTerminal.kill()
             alive = false
 
         // Listens for message indicating that the player does not exist
         } else if (alive && data.includes('That player does not exist')) {
             message.editReply(`Player ${user} does not exist`)
+            log(message, user, `Player ${user} does not exist on ${session}`)
             virtualTerminal.kill()
             alive = false
         }
     })
+}
+
+/**
+ * Logs the status of a whitelist_remove message to the log channel
+ * @param {*} message Message object from Discord
+ * @param {*} user Author of the message
+ * @param {*} status Status of the request
+ */
+function log(message, user, status) {
+    const guild = message.guild
+    const logChannel = guild.channels.cache.get(config.minecraft_log);
+
+    if (logChannel) {
+        // Sends a message to the target channel
+        logChannel.send(`${message.member.nickname} (ID: ${message.user.id}, Username: ${message.user.username}) authored: /whitelist_remove user:${user}, with result: ${status}`);
+    } else {
+        // Logs it in the terminal if no channel is set
+        console.log(`${message.member.nickname} (ID: ${message.user.id}, Username: ${message.user.username}) authored: /whitelist_remove user:${user}, with result: ${status}`);
+    }
 }
