@@ -25,7 +25,7 @@ let playersCreative = 0
  * Builds a new slash command with the given name, description and options
  */
 export const data = new SlashCommandBuilder()
-    .setName('setuplocal')
+    .setName('setup')
     .setDescription('Manages channel specific services.')
     .addStringOption((option) => option
         .setName('service')
