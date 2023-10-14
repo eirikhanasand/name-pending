@@ -1,19 +1,32 @@
 import { EmbedBuilder, SlashCommandBuilder } from 'discord.js'
 import pty from 'node-pty'
 import config from "../../../config.json" assert {type: "json"}
+import { exec } from 'child_process'
+
+// State of each mirror and listener
 let mirrorSurvival = ""
 let mirrorCreative = ""
 let listenSurvival = ""
 let listenCreative = ""
+
+// Tmux sessions monitored
 const survivalSession = "liveSurvival"
 const creativeSession = "liveCreative"
+
+// Tracks if mirrors and listeners should be enabled or disabled
+let killMirror = true
+let killListener = true
+
+// Players online on each server
+let playersSurvival = 0
+let playersCreative = 0
 
 /**
  * Builds a new slash command with the given name, description and options
  */
 export const data = new SlashCommandBuilder()
-    .setName('setup')
-    .setDescription('Sets up a service in the selected channel.')
+    .setName('setuplocal')
+    .setDescription('Manages channel specific services.')
     .addStringOption((option) => option
         .setName('service')
         .setDescription('Service to setup')
@@ -59,6 +72,50 @@ async function setup(message, service) {
         case "chat": {
             setupChatMirror(message)
             setupChatListener(message)
+            updatePlayerCount(message)
+            return
+        }
+        case "log": {
+            setupLog(message)
+            return
+        }
+        case "chat stop mirror": {
+            if (killMirror) {
+                reply(message, "There is no active chat mirror in this channel.", "chat")
+            } else {
+                // Turns of mirror
+                killMirror = true
+                reply(message, "Stopped mirroring in game chats to Discord.", "chat")
+            }
+            return
+        }
+        case "chat stop listener": {
+            if (killListener) {
+                reply(message, "There is no active listener mirroring this chat to in game chats.", "chat")
+            } else {
+                // Turns off listener
+                killListener = true
+                reply(message, "Stopped mirroring Discord chat to in game chats.", "chat")
+            }
+            return
+        }
+        case "chat stop": {
+            if (!killListener && !killMirror) {
+                // Turns of all chat services
+                killMirror = true
+                killListener = true
+                reply(message, "Terimnated chat services.", "chat")
+            } else if (!killListener) {
+                // Turns off listener
+                killListener = true
+                reply(message, "Stopped listener and terimnated chat services.", "chat")
+            } else if (!killMirror) {
+                // Turns of mirror
+                killMirror = true
+                reply(message, "Stopped mirror and terimnated chat services.", "chat")
+            } else {
+                reply(message, "There are no chat services enabled in this channel.", "chat")
+            }
             return
         }
         default: reply(message, "Failed, invalid service", service); return
@@ -70,6 +127,8 @@ async function setup(message, service) {
  * @param {*} message Message object from Discord
  */
 function setupChatMirror(message) {
+    // Allows the mirror to be turned on
+    killMirror = false
     // Creates a virtual terminal to mirror messages from the survival in game chat to Discord
     mirrorChat(message, survivalSession)
 
@@ -82,11 +141,13 @@ function setupChatMirror(message) {
  * @param {*} message Initial message object 
  */
 function setupChatListener(message) {
+    // Allows the listener to be turned on
+    killListener = false
     // Creates a virtual terminal to send messages from Discord on the survival server
-    createVirtualTerminal(message, survivalSession)
+    postFromDiscord(message, survivalSession)
 
     // Creates a virtual terminal to send messages from Discord on the creative server
-    createVirtualTerminal(message, creativeSession)
+    postFromDiscord(message, creativeSession)
 }
 
 /**
@@ -118,7 +179,7 @@ async function reply(message, status, service) {
  * @param {*} message Initial message object
  * @param {string} session Session to create a terminal for
  */
-function createVirtualTerminal(message, session) {
+function postFromDiscord(message, session) {
     // Spawns a virtual terminal
     const virtualTerminal = pty.spawn('bash', [], {
         name: 'xterm-color',
@@ -150,6 +211,10 @@ function createVirtualTerminal(message, session) {
 
     // Listens for data indicating success
     virtualTerminal.onData((data) => {
+        if (killListener) {
+            virtualTerminal.kill()
+        }
+
         // Listens for message indicating that a connection has been established
         if (data.includes('System restart required')) {
             updateChatStatus(message, "Success", session, "virtualTerminal")
@@ -179,6 +244,7 @@ function createVirtualTerminal(message, session) {
  * @param {string} session Minecraft session to mirror
  */
 function mirrorChat(message, session) {
+    const playersOnlineRegex = /There are (\d+) of a max of (\d+) players online:/
     let previousLines = []
     let ignoredInitial = false
 
@@ -204,23 +270,41 @@ function mirrorChat(message, session) {
 
     // Listens for data indicating success
     virtualTerminal.onData((data) => {
+        if (killMirror) {
+            virtualTerminal.kill()
+        }
+
         // Listens for message indicating that a connection has been established
         if (data.includes('System restart required')) {
             updateChatStatus(message, "Success", session, "mirrorChat")
+            virtualTerminal.write(`tmux send-keys -t ${session} 'list' C-m\r`)
             virtualTerminal.write(`tmux attach-session -t ${session}\r`)
+        }
+
+        // Splits response into lines when encountering a newline character
+        const lines = data.split('\n')
+
+        // Loops through lines
+        if (lines.find((line) => (line.includes('joined the game') || line.includes('left the game')) && !previousLines.includes(line))) {
+            virtualTerminal.write(`list\r`)
         }
 
         // Listens for message indicating success
         if (data.includes(`INFO]`)) {
-
-            // Splits response into lines when encountering a newline character
-            const lines = data.split('\n')
-
             // Loops through lines
             for (const line of lines) {
                 // Ignores lines sent before the bot started
                 if (!ignoredInitial) {
                     previousLines.push(line)
+                }
+
+                const match = line.match(playersOnlineRegex)
+
+                if (match) {
+                    // Checks what session is active and updates the playercount
+                    session === "liveSurvival"
+                        ? playersSurvival = parseInt(match[1])
+                        : playersCreative = parseInt(match[1])
                 }
 
                 // Checks if content is new, not empty and a chat message
@@ -348,4 +432,48 @@ function sayOnServer(session, content) {
             virtualTerminal.kill()
         }
     })
+}
+
+function setupLog(message) {
+    const storechannel = [
+        `echo """{\\"token\\": \\"${config.token}\\", \\"clientId\\": \\"${config.clientId}\\", \\"guildId\\": \\"${config.guildId}\\", \\"docker_username\\": \\"${config.docker_username}\\", \\"docker_password\\": \\"${config.docker_password}\\", \\"roleID\\": \\"${config.roleID}\\", \\"minecraft_command\\": \\"${config.minecraft_command}\\", \\"minecraft_log\\": \\"${message.channelId}\\"}""" > config.json`
+    ]
+    
+    // Run a command on your system using the exec function
+    const child = exec(storechannel.join(' && '))
+
+    reply(message, `Spawned child ${child.pid}`, "log")
+
+    // Pipes the output of the child process to the main application console
+    child.stdout.on('data', (data) => {
+        console.log(data)
+        reply(message, `${data.slice(0, 1024)}`, "log")
+    })
+
+    child.stderr.on('data', (data) => {
+        console.error(data)
+        reply(message, `${data.slice(0, 1024)}`, "log")
+    })
+
+    child.on('close', () => {
+        reply(message, `Killed child ${child.pid}`, "log")
+        reply(message, `Now logging whitelists commands in <#${message.channelId}>`, "log")
+    })
+}
+
+/**
+ * Updates the channel description of the channel tracking the Minecraft chats with the player counts.
+ * @param {*} message Message object
+ */
+async function updatePlayerCount(message) {
+    const channel = message.channel
+
+    // Runs once per 5 minutes as long as the chat is being mirrored
+    while (!killMirror) {
+        // Updates the channel topic
+        channel.setTopic(`Logins Minecraft server. Online: ${playersSurvival + playersCreative} Survival: ${playersSurvival} Creative: ${playersCreative}`)
+
+        // Waits for 5 minutes
+        await new Promise(resolve => setTimeout(resolve, 300000));
+    }
 }
