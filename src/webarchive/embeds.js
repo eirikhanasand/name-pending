@@ -135,7 +135,7 @@ export function finishedEmbed(stats) {
     const currentTime = new Date()
     const cooldown = new Date()
     const millis = formatMillis(currentTime-stats.startTime)
-    cooldown.setMinutes(cooldown.getMinutes() + 45);
+    cooldown.setMinutes(cooldown.getMinutes() + 45)
 
     const embed = new EmbedBuilder()
         .setTitle('Archive')
