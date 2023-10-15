@@ -116,13 +116,13 @@ function spawnTerminal(message, user, session) {
  */
 function log(message, user, status) {
     const guild = message.guild
-    const logChannel = guild.channels.cache.get(config.minecraft_log);
+    const logChannel = guild.channels.cache.get(config.minecraft_log)
 
     if (logChannel) {
         // Sends a message to the target channel
-        logChannel.send(`${message.member.nickname} (ID: ${message.user.id}, Username: ${message.user.username}) authored: /whitelist user:${user}, with result: ${status}`);
+        logChannel.send(`${message.member.nickname} (ID: ${message.user.id}, Username: ${message.user.username}) authored: /whitelist user:${user}, with result: ${status}`)
     } else {
         // Logs it in the terminal if no channel is set
-        console.log(`${message.member.nickname} (ID: ${message.user.id}, Username: ${message.user.username}) authored: /whitelist user:${user}, with result: ${status}`);
+        console.log(`${message.member.nickname} (ID: ${message.user.id}, Username: ${message.user.username}) authored: /whitelist user:${user}, with result: ${status}`)
     }
 }

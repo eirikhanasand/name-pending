@@ -307,21 +307,27 @@ function mirrorChat(message, session) {
                         : playersCreative = parseInt(match[1])
                 }
 
-                // Checks if content is new, not empty and a chat message
-                if (line.trim() !== '' && !previousLines.includes(line) && line.includes('<')) {
+                // Checks if content is new, not empty and a chat or death message
+                if (line.trim() !== '' && !previousLines.includes(line) && !line.includes("[Not Secure]") && (line.includes('<') || isDeath(line))) {
                     // Checks and removes discord ping and date object
                     const first = line.slice(16).replace(/@/g,'')
 
                     // Checks and removes terminal buffer
                     const sanitized = first.includes("[K") ? first.slice(0, first.length - 4) : first
 
+                    if (isDeath(sanitized)) {
+                        const start = sanitized.indexOf(': ')
+                        sayOnServer(session === survivalSession ? creativeSession : survivalSession, sanitized.slice(start + 2))
+                        message.channel.send(`**${sanitized.slice(start + 2)}**`)
+                    }
+
                     // Checks if first character is correct
-                   if (sanitized.includes('<') && sanitized.includes('>')){
+                    if (sanitized.includes('<') && sanitized.includes('>')){
                         const match = line.match(/<([^>]+)>/)
                         const long = line.slice(match.index).replace('<', '').replace('>', ':')
 
                         // Checks that the message is not repeated
-                        if (!previousLines.includes(long) && !line.includes("[Not Secure]")) {
+                        if (!previousLines.includes(long)) {
                             // Sends the message on the other server
                             sayOnServer(session === survivalSession ? creativeSession : survivalSession, sanitized)
 
@@ -331,7 +337,6 @@ function mirrorChat(message, session) {
                             // Sends the message in Discord
                             message.channel.send(remove)
                         }
-                        previousLines.push(sanitized)
                     }
 
                     // Adds line to array of already sent lines to prevent loop
@@ -467,6 +472,9 @@ function setupLog(message) {
  */
 async function updatePlayerCount(message) {
     const channel = message.channel
+    
+    // Gives initial 10 second window to find online status
+    await new Promise(resolve => setTimeout(resolve, 10000))
 
     // Runs once per 5 minutes as long as the chat is being mirrored
     while (!killMirror) {
@@ -474,6 +482,59 @@ async function updatePlayerCount(message) {
         channel.setTopic(`Logins Minecraft server. Online: ${playersSurvival + playersCreative} Survival: ${playersSurvival} Creative: ${playersCreative}`)
 
         // Waits for 5 minutes
-        await new Promise(resolve => setTimeout(resolve, 300000));
+        await new Promise(resolve => setTimeout(resolve, 300000))
+    }
+}
+
+function isDeath(text) {
+    if (
+        (text.includes('blew up')
+        || text.includes('burned to death')
+        || text.includes('death.fell.accident.water')
+        || text.includes("didn't want to live")
+        || text.includes('died')
+        || text.includes('discovered the floor was lava')
+        || text.includes('drowned')
+        || text.includes('experienced kinetic energy')
+        || text.includes('fell from a high place')
+        || text.includes('fell off')
+        || text.includes('fell out of the world')
+        || text.includes('fell while climbing')
+        || text.includes('froze to death')
+        || text.includes('hit the ground too hard')
+        || text.includes('left the confines of this world')
+        || text.includes('starved to death')
+        || text.includes('suffocated in a wall')
+        || text.includes('tried to swim in lava')
+        || text.includes('walked into a cactus while trying to escape')
+        || text.includes('walked into fire while fighting')
+        || text.includes('walked into the danger zone due to')
+        || text.includes('was blown up by')
+        || text.includes('was burned to a crisp while fighting')
+        || text.includes('was doomed to fall')
+        || text.includes('was fireballed by')
+        || text.includes('was frozen to death by')
+        || text.includes('was impaled by')
+        || text.includes('was impaled on a stalagmite')
+        || text.includes('was killed')
+        || text.includes('was obliterated by a sonically-charged shriek')
+        || text.includes('was poked to death by a sweet berry bush')
+        || text.includes('was pricked to death')
+        || text.includes('was pummeled by')
+        || text.includes('was shot by')
+        || text.includes('was skewered by a falling stalactite')
+        || text.includes('was slain by')
+        || text.includes('was squashed by')
+        || text.includes('was squished too much')
+        || text.includes('was struck by lightning')
+        || text.includes('was stung to death')
+        || text.includes('went off with a bang')
+        || text.includes('went up in flames')
+        || text.includes('withered away'))
+        && !text.includes('<') && !text.includes('>')
+    ) {
+        return true
+    } else {
+        return false
     }
 }
