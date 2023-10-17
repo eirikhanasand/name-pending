@@ -21,6 +21,10 @@ let killListener = true
 let playersSurvival = 0
 let playersCreative = 0
 
+// Time since players online was checked
+let listTimeSurvival = new Date()
+let listTimeCreative = new Date()
+
 /**
  * Builds a new slash command with the given name, description and options
  */
@@ -285,7 +289,9 @@ function mirrorChat(message, session) {
         const lines = data.split('\n')
 
         // Loops through lines
-        if (lines.find((line) => (line.includes('joined the game') || line.includes('left the game')) && !previousLines.includes(line))) {
+        if (lines.find((line) => (line.includes('joined the game') || line.includes('left the game')) && !previousLines.includes(line)) 
+            && (new Date() - new Date(session === survivalSession ? listTimeSurvival : listTimeCreative)) / 1000 > 60) {
+            session === survivalSession ? listTimeSurvival = new Date() : listTimeCreative = new Date()
             virtualTerminal.write(`list\r`)
         }
 
