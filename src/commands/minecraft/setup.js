@@ -225,7 +225,9 @@ function postFromDiscord(message, session) {
 
             // Sends the collected messages in the in game chat
             collector.on('collect', m => {
-                virtualTerminal.write(`tmux send-keys -t ${session} 'say ${m.author.username}: ${m.content}' C-m\r`)
+                if (!isFaulty(m.content)) {
+                    virtualTerminal.write(`tmux send-keys -t ${session} 'say ${m.author.username}: ${m.content}' C-m\r`)
+                }
             })
 
             // Sets up a collector for reactions
@@ -235,7 +237,9 @@ function postFromDiscord(message, session) {
 
                 // Logs the reaction interaction in game
                 reactionCollector.on('collect', (reaction, user) => {
-                    virtualTerminal.write(`tmux send-keys -t ${session} 'say ${user.tag} reacted with ${reaction.emoji.name} on ${m.content}' C-m\r`)
+                    if (!isFaulty(m.content)) {
+                        virtualTerminal.write(`tmux send-keys -t ${session} 'say ${user.tag} reacted with ${reaction.emoji.name} on ${m.content}' C-m\r`)
+                    }
                 })
             })
         }
@@ -341,7 +345,9 @@ function mirrorChat(message, session) {
                             const remove = long.replace(/\[K/, '').replace('[1;29r', '').replace('[29;1H', '').trim()
 
                             // Sends the message in Discord
-                            message.channel.send(remove)
+                            if (!isFaulty(remove)) {
+                                message.channel.send(remove)
+                            }
                         }
                     }
 
@@ -353,13 +359,13 @@ function mirrorChat(message, session) {
 
         // Checks if the initial response has been ignored
         if (!ignoredInitial) {
-            updateChatStatus(message, "Waiting 5 seconds to verify tasks...")
+            updateChatStatus(message, "Waiting 10 seconds to verify tasks...")
             // Sets a timeout for 5 seconds to ignore any messages sent before the bot started
             setTimeout(() => {
                 // Initial response has now been ignored, and the status is successful
                 ignoredInitial = true
                 updateChatStatus(message, "Success")
-            }, 5000)
+            }, 10000)
         }
     })
 }
@@ -420,6 +426,9 @@ async function updateChatStatus(message, status, session, job) {
  * @param {*} session Session to send the message in
  */
 function sayOnServer(session, content) {
+    // Aborts if content is faulty
+    if (isFaulty(content)) return
+
     // Spawns a virtual terminal
     const virtualTerminal = pty.spawn('bash', [], {
         name: 'xterm-color',
@@ -433,7 +442,7 @@ function sayOnServer(session, content) {
     virtualTerminal.write(config.minecraft_command + '\r')
 
     // Listens for data indicating success
-    virtualTerminal.onData((data) => {
+    virtualTerminal.onData((data) => {        
         // Listens for message indicating that a connection has been established
         if (data.includes('System restart required')) {
             // Sends the message on the other server
@@ -539,6 +548,21 @@ function isDeath(text) {
         || text.includes('withered away'))
         && !text.includes('<') && !text.includes('>')
     ) {
+        return true
+    } else {
+        return false
+    }
+}
+
+/**
+ * Checks if the passed content includes more than one square bracket of the
+ * same direction, thus likely indicating a faulty message that should not
+ * be sent to the chats.
+ * @param {*} content 
+ * @returns {boolean} true if faulty, otherwise false
+ */
+function isFaulty(content) {
+    if (content.split('[').length - 1 > 1 || content.split(']').length - 1 > 1) {
         return true
     } else {
         return false
