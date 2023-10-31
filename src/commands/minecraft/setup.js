@@ -546,12 +546,14 @@ function isDeath(text) {
         || text.includes('went off with a bang')
         || text.includes('went up in flames')
         || text.includes('withered away'))
-        && !text.includes('<') && !text.includes('>')
+        && !text.includes('<') 
+        && !text.includes('>') 
+        && !text.toLowerCase().includes('villager')
     ) {
         return true
-    } else {
-        return false
     }
+    
+    return false
 }
 
 /**
