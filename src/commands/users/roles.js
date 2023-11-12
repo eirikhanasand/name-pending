@@ -1,9 +1,10 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js'
-import roleListeners from "../../managed/roleListeners.js"
+import storedEmbeds from "../../managed/roles.js"
+import config from "../../../config.json" assert {type: "json"}
 import { exec } from 'child_process'
 
 export const data = new SlashCommandBuilder()
-    .setName('rolelistener')
+    .setName('roles')
     .setDescription('Handles roles')
     .addStringOption((option) => option
         .setName('title')
@@ -23,6 +24,14 @@ export const data = new SlashCommandBuilder()
     )
 
 export async function execute(message) {
+    // Checking if the author is allowed to setup services
+    const isAllowed = message.member.roles.cache.some(role => role.id === config.roleID)
+
+    // Aborts if the user does not have sufficient permissions
+    if (!isAllowed) {
+        return await message.reply("Unauthorized.")
+    }
+
     const title = message.options.getString('title')
     const name = message.options.getString('description')
     const roleString = message.options.getString('roles')
@@ -31,8 +40,8 @@ export async function execute(message) {
     const roleIcons = Array.from(roleIconsString.trim().split(' '))
     const value = roles.map((role, index) => `${roleIcons[index] ? roleIcons[index] : '❓'} <@&${role}>`).join('\n')
     const guild = message.guild
-    roleListeners.push({"channelID": message.channelId, "message": message.id})
-    const save = ['cd src/managed', `echo 'const roles = ${JSON.stringify(roleListeners)}\nexport default roles' > roleListeners.js`]
+    storedEmbeds.push({"channelID": message.channelId, "message": message.id})
+    const save = ['cd src/managed', `echo 'const roles = ${JSON.stringify(storedEmbeds)}\nexport default roles' > roles.js`]
     const child = exec(save.join(' && '))
 
     const embed = new EmbedBuilder()
@@ -41,21 +50,7 @@ export async function execute(message) {
         .setTimestamp()
         .addFields({name, value})
 
-    const response = await message.reply({ embeds: [embed], fetchReply: true, ephemeral: true })
-
-    // Stores the message locally in case of a bot restart
-
-    child.stdout.on('data', (data) => {
-        console.log(data)
-    })
-
-    child.stderr.on('data', (data) => {
-        console.log(data)
-    })
-
-    child.on('close', () => {
-        console.log("closed")
-    })
+    const response = await message.reply({ embeds: [embed], fetchReply: true })
 
     for (let i = 0; i < roleIcons.length; i++) {
         response.react(roleIcons[i])
