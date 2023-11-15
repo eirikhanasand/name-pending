@@ -25,6 +25,7 @@ export async function execute(message) {
     })
 
     botMessageCollector.on('collect', m => {
+        console.log("collected", m.content)
         // Listens for reactions for 1 minute on each message
         const reactionCollector = m.createReactionCollector({ time: 60000 })
 
