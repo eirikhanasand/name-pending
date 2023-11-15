@@ -50,7 +50,7 @@ async function listen(message) {
     const server = http.createServer((req, res) => {
         req.on('data', chunk => {
             // message.channel.send(`${data.name}: ${data.message}`)
-            console.log(chunk)
+            console.log(chunk.toString());
         })
     })
 
