@@ -1,12 +1,12 @@
 import { SlashCommandBuilder } from 'discord.js'
-import pty from 'node-pty'
 import config from "../../../config.json" assert {type: "json"}
+const url = "http://51.222.254.125"
 
 /**
  * Builds a new slash command with the given name, description and options
  */
 export const data = new SlashCommandBuilder()
-    .setName('whitelist')
+    .setName('whitelistl')
     .setDescription('Whitelists a user on the Minecraft server!')
     .addStringOption((option) => option
         .setName('user')
@@ -29,82 +29,22 @@ export async function execute(message) {
     await message.reply({content: "Adding to whitelist...", ephemeral: true})
 
     // Sanitizes user before adding them to protect against xml attacks
-    whitelist(message, user.replace(/[^a-zA-Z0-9\s]/g, ''))
+    console.log("posting")
+    post(user.replace(/[^a-zA-Z0-9\s]/g, ''))
 }
 
-/**
- * Whitelists the passed user on the Minecraft server if possible
- * @param {*} message Message object from Discord
- * @param {*} user User to whitelist
- */
-function whitelist(message, user) {
-    // Spawns a terminal for the survival server and whitelists the user
-    spawnTerminal(message, user, "liveSurvival")
-    
-    // Spawns a terminal for the creative server and whitelists the user
-    spawnTerminal(message, user, "liveCreative")
-}
+function post(name) {
+    const servers = [{port: 6677, name: 'survival'}, {port: 6688, name: 'creative'}]
+    servers.forEach(async(server) => {
+        console.log("Whitelisting on " + server.name)
+        fetch(`${url}:${server.port}/${server.name}-whitelist`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', name, action: "add"}
+        })
+        const response = await fetch(`${url}:${server.port}/${server.name}-whitelist`)
 
-function spawnTerminal(message, user, session) {
-    let alive = true
-
-    // Spawns a virtual terminal
-    const virtualTerminal = pty.spawn('bash', [], {
-        name: 'xterm-color',
-        cols: 80,
-        rows: 30,
-        cwd: process.cwd(),
-        env: process.env
-    })
-
-    // Adds a timeout to kill the terminal after 10 seconds if something went wrong
-    setTimeout(() => {
-        if (alive) {
-            message.editReply('Failed with unknown cause. Please try again.')
-            virtualTerminal.kill()
-        }
-    }, 20000)
-
-    // Sets the terminal to not alive if it was not spawned
-    if (!virtualTerminal) {
-        alive = false
-    }
-
-    // Logs into Ludens with responsible account on the Minecraft server
-    virtualTerminal.write(config.minecraft_command + '\r')
-
-    // Listens for data indicating success
-    virtualTerminal.onData((data) => {
-        // Listens for message indicating that a connection has been established
-        if (data.includes('System restart required')) {
-            // Exexcutes the whitelist action in the tmux session
-            virtualTerminal.write(`tmux send-keys -t ${session} 'whitelist add ${user}' C-m\r`)
-
-            // Enters the session to listen for response of whitelist action
-            virtualTerminal.write(`tmux attach-session -t ${session}\r`)    
-        }
-
-        // Listens for message indicating success
-        if (data.includes(`Added ${user.slice(0,1).toUpperCase() + user.slice(1)} to the whitelist`)) {
-            message.editReply(`Added ${user} to the whitelist`)
-            log(message, user, `Added ${user} to the whitelist on ${session}`)
-            virtualTerminal.kill()
-            alive = false
-
-        // Listens for message indicating that the player has already been whitelisted
-        } else if (alive && data.includes('Player is already whitelisted')) {
-            message.editReply(`${user} is already whitelisted`)
-            log(message, user, `${user} is already whitelisted on ${session}`)
-            alive = false
-            virtualTerminal.kill()
-
-        // Listens for message indicating that the player does not exist
-        } else if (alive && data.includes('That player does not exist')) {
-            message.editReply(`Player ${user} does not exist`)
-            log(message, user, `Player ${user} does not exist on ${session}`)
-            virtualTerminal.kill()
-            alive = false
-        }
+        console.log(response)
+        log(message, user, status)
     })
 }
 
