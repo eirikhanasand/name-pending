@@ -165,3 +165,6 @@ client.on(Events.InteractionCreate, async message => {
 })
 
 client.login(token)
+
+
+export default client
