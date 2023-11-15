@@ -21,7 +21,7 @@ export async function execute(message) {
     const botMessageCollector = message.channel.createMessageCollector()
 
     collector.on('collect', m => {
-        post(m.author.username || m.author.globalName || m.author.id, m.content)
+        post(`${m.author.username || m.author.globalName || m.author.id}: ${m.content}`)
     })
 
     botMessageCollector.on('collect', m => {
@@ -30,25 +30,33 @@ export async function execute(message) {
 
         // Logs the reaction interaction in game
         reactionCollector.on('collect', (reaction, user) => {
-            post(user.tag, `reacted with ${reaction.emoji.name} on ${m.content}`)
+            post(`${user.tag} reacted with ${reaction.emoji.name}`)
         })
     })
 
     listen(message)
 }
 
-function post(name, message) {
+/**
+ * Posts the message from Discord on all servers
+ * @param {Discord_Message} message 
+ */
+function post(message) {
     servers.forEach((server) => {
         fetch(`${url}:${server.port}/${server.name}-message`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: `${name}: ${message}`
+            body: message
         })
     })
 }
 
+/**
+ * Listens for content from Minecraft and posts it on Discord
+ * @param {Discord_Message} message 
+ */
 async function listen(message) {
-    const server = http.createServer((req, res) => {
+    const server = http.createServer((req) => {
         req.on('data', chunk => {
             message.channel.send(chunk.toString())
         })
