@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
     .setDescription('Establishes a connection between Minecraft and this Discord chat')
 
 export async function execute(message) {
-    await message.reply('Chattern!');
+    await message.reply({content: 'Connection established!', ephemeral: true});
 
     // Filter to check that the author is not a bot to prevent an infinite loop
     const filter = (response) => !response.author.bot
@@ -25,7 +25,6 @@ export async function execute(message) {
     })
 
     botMessageCollector.on('collect', m => {
-        console.log("collected", m.content)
         // Listens for reactions for 1 minute on each message
         const reactionCollector = m.createReactionCollector({ time: 60000 })
 
@@ -42,7 +41,8 @@ function post(name, message) {
     servers.forEach((server) => {
         fetch(`${url}:${server.port}/${server.name}-message`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json', name, message}
+            headers: {'Content-Type': 'application/json'},
+            body: `${name}: ${message}`
         })
     })
 }
@@ -54,7 +54,5 @@ async function listen(message) {
         })
     })
 
-    server.listen(port, () => {
-        console.log(`Listening for Minecraft chat logs on port ${6969}`)
-    })
+    server.listen(port)
 }
