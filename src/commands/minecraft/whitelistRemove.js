@@ -1,6 +1,9 @@
 import { SlashCommandBuilder } from 'discord.js'
-import pty from 'node-pty'
 import config from "../../../config.json" assert {type: "json"}
+import log from './logger.js'
+
+const url = "http://51.222.254.125"
+const servers = [{port: 6677, name: 'survival'}, {port: 6688, name: 'creative'}]
 
 /**
  * Builds a new slash command with the given name, description and options
@@ -18,8 +21,8 @@ export const data = new SlashCommandBuilder()
  * @param {*} message Message initiating the command, passed by Discord
  */
 export async function execute(message) {
-    // Slices to avoid overflow errors
-    const user = message.options.getString('user').slice(0, 30)
+    // Slices to avoid overflow errors, checks to avoid passing undefined parameters
+    const user = message.options.getString('user') ? message.options.getString('user').slice(0, 30) : null
 
     // Checking if the author is allowed to remove users from the whitelist
     const isAllowed = message.member.roles.cache.some(role => role.id === config.roleID)
@@ -29,104 +32,39 @@ export async function execute(message) {
         return await message.reply({content: "Unauthorized.", ephemeral: true})
     }
 
-    // Sends initial reply
-    await message.reply({content: "Removing from whitelist...", ephemeral: true})
-
-    // Sanitizes user before removing them to protect against xml attacks
-    whitelistRemove(message, user.replace(/[^a-zA-Z0-9\s]/g, ''))
-}
-
-/**
- * Removes the selected user on the Minecraft server if possible
- * @param {*} message Message object from Discord
- * @param {*} user User to whitelist
- */
-function whitelistRemove(message, user) {
-    // Spawns a terminal for the survival server and removes the user from the whitelist
-    spawnTerminal(message, user, "liveSurvival")
-    
-    // Spawns a terminal for the creative server and removes the user from the whitelist
-    spawnTerminal(message, user, "liveCreative")
-}
-
-function spawnTerminal(message, user, session) {
-    let alive = true
-
-    // Spawns a virtual terminal
-    const virtualTerminal = pty.spawn('bash', [], {
-        name: 'xterm-color',
-        cols: 80,
-        rows: 30,
-        cwd: process.cwd(),
-        env: process.env
-    })
-
-    // Adds a timeout to kill the terminal after 10 seconds if something went wrong
-    setTimeout(() => {
-        if (alive) {
-            message.editReply('Failed with unknown cause. Please try again.')
-            virtualTerminal.kill()
-        }
-    }, 20000)
-
-    // Sets the terminal to not alive if it was not spawned
-    if (!virtualTerminal) {
-        alive = false
+    if (!user) {
+        return await message.reply({
+            content: "You must provide a user: `/whitelist user:name`", 
+            ephemeral: true
+        })
     }
 
-    // Logs into Ludens with responsible account on the Minecraft servexr
-    virtualTerminal.write(config.minecraft_command + '\r')
-
-    // Listens for data indicating success
-    virtualTerminal.onData((data) => {
-        // Listens for message indicating that a connection has been established
-        if (data.includes('System restart required')) {
-            // Exexcutes the whitelist action in the tmux session
-            virtualTerminal.write(`tmux send-keys -t ${session} 'whitelist remove ${user}' C-m\r`)
-
-            // Enters the session to listen for response of whitelist action
-            virtualTerminal.write(`tmux attach-session -t ${session}\r`)    
-        }
-
-        // Listens for message indicating success
-        if (data.includes(`Removed ${user.slice(0, 1).toUpperCase() + user.slice(1)} from the whitelist`)) {
-            message.editReply(`Removed ${user} from the whitelist`)
-            log(message, user, `Removed ${user} from the ${session} whitelist`)
-            virtualTerminal.kill()
-            alive = false
-
-        // Listens for message indicating that the player is not whitelisted
-        } else if (data.includes('Player is not whitelisted')) {
-            message.editReply(`${user} is not whitelisted`)
-            log(message, user, `${user} is not whitelisted on ${session}`)
-            virtualTerminal.kill()
-            alive = false
-
-        // Listens for message indicating that the player does not exist
-        } else if (alive && data.includes('That player does not exist')) {
-            message.editReply(`Player ${user} does not exist`)
-            log(message, user, `Player ${user} does not exist on ${session}`)
-            virtualTerminal.kill()
-            alive = false
-        }
-    })
+    // Sanitizes user before removing them to protect against xml attacks
+    await post(message, user.replace(/[^a-zA-Z0-9\s]/g, ''))
 }
 
-/**
- * Logs the status of a whitelist_remove message to the log channel
- * @param {*} message Message object from Discord
- * @param {*} user Author of the message
- * @param {*} status Status of the request
- */
-function log(message, user, status) {
-    const guild = message.guild
-    const logChannel = guild.channels.cache.get(config.minecraft_log)
+async function post(message, name) {
+    let content = ""
 
-    if (logChannel) {
-        // Sends a message to the target channel
-        logChannel.send(`${message.member.nickname} (ID: ${message.user.id}, Username: ${message.user.username}) authored: /whitelist_remove user:${user}, with result: ${status}`)
-    } else {
-        // Logs it in the terminal if no channel is set
-        console.log(`${message.member.nickname} (ID: ${message.user.id}, Username: ${message.user.username}) authored: /whitelist_remove user:${user}, with result: ${status}`)
+    await Promise.all(
+        servers.map(async (server) => {
+            const fullUrl = `${url}:${server.port}/${server.name}-whitelist`
+            const response = await fetch(fullUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', name, action: "remove"}
+            })
+            
+            switch (response.status) {
+                case 304: content = `${name} is not on the whitelist.`; break;
+                case 418: content = `Removed ${name} from the whitelist.`; break;
+                case 404: content = `There is no Minecraft account named ${name}. Please try again.`; break;
+                default: content = "Please try again."; break;
+            }
+        })
+    )
+
+    if (content) {
+        await message.reply({content, ephemeral: true})
+        log(message, content)
     }
 }
