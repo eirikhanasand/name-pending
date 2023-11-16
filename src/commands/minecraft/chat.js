@@ -58,9 +58,15 @@ function post(message) {
  */
 async function listen(message) {
     const server = http.createServer((req) => {
-        req.on('data', chunk => {
-            message.channel.send(chunk.toString())
-        })
+        if (req.headers['type'] === 'death') {
+            req.on('data', chunk => {
+                message.channel.send(`**${chunk.toString()}**`)
+            })
+        } else {
+            req.on('data', chunk => {
+                message.channel.send(chunk.toString())
+            })
+        }
     })
 
     server.listen(port)
