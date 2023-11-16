@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
     .setDescription('Establishes a connection between Minecraft and this Discord chat')
 
 export async function execute(message) {
-    await message.reply({content: 'Connection established!', ephemeral: true});
+    await message.reply({content: 'Connection established!', ephemeral: true})
 
     // Filter to check that the author is not a bot to prevent an infinite loop
     const filter = (response) => !response.author.bot
@@ -34,6 +34,7 @@ export async function execute(message) {
         })
     })
 
+    updatePlayerCount(message)
     listen(message)
 }
 
@@ -63,4 +64,61 @@ async function listen(message) {
     })
 
     server.listen(port)
+}
+
+/**
+ * Updates the channel description of the channel tracking the Minecraft 
+ * chats with the player counts.
+ * @param {*} message Message object
+ */
+async function updatePlayerCount(message) {
+    const channel = message.channel
+
+    // Runs once per 5 minutes as long as the chat is being mirrored
+    while (true) {
+        let survival = []
+        let creative = []
+        const maxWidth = 20
+        let players = ""
+        let topic = ""
+        
+        await Promise.all(servers.map(async(server) => {
+            const response = await fetch(`${url}:${server.port}/${server.name}-online`)
+            const data = await response.json()
+            
+            switch (server.name) {
+                case "survival": survival = data; break;
+                case "creative": creative = data; break;
+            }
+        }))
+
+        let playersSurvival = survival.length
+        let playersCreative = creative.length
+
+        for (let i = 0; i < Math.max(playersSurvival, playersCreative); i++) {
+            const playerSurvival = (survival[i] || "").substring(0, maxWidth)
+            const playerCreative = (creative[i] || "").substring(0, maxWidth)
+            
+            const spacesSurvival = "\t".repeat(Math.max(0, (maxWidth - playerSurvival.length) / 4))
+            const spacesCreative = "\t".repeat(Math.max(0, (maxWidth - playerCreative.length) / 4))
+        
+            const tabs = Math.max(1, Math.floor((maxWidth - playerSurvival.length) / 4))
+            const tabCharacters = "\t".repeat(tabs)
+
+            players += `${playerSurvival}${spacesSurvival}${tabCharacters}${playerCreative}${spacesCreative}\n`
+        }
+
+        const online = survival.length + creative.length
+
+        if (online) {
+            topic = `Logins Minecraft server. Online: ${online}\nSurvival (${survival.length})\t\t\t\t   Creative (${creative.length})\n${players}`
+        } else {
+            topic = `Logins Minecraft server. There are no players online at this time.`
+        }
+        
+        channel.setTopic(topic)
+
+        // Waits for 5 minutes (Discord rate limit)
+        await new Promise(resolve => setTimeout(resolve, 300000))
+    }
 }
