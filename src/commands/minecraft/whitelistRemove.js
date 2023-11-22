@@ -40,7 +40,7 @@ export async function execute(message) {
     }
 
     // Sanitizes user before removing them to protect against xml attacks
-    await post(message, user.replace(/[^a-zA-Z0-9\s]/g, ''))
+    await post(message, user)
 }
 
 async function post(message, name) {
