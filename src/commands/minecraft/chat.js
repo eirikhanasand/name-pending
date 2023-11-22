@@ -87,8 +87,8 @@ async function updatePlayerCount(message) {
         const maxWidth = 20
         let players = ""
         let topic = ""
-        
-        await Promise.all(servers.map(async(server) => {
+
+        await Promise.allSettled(servers.map(async(server) => {
             const response = await fetch(`${url}:${server.port}/${server.name}-online`)
             const data = await response.json()
             
