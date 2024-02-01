@@ -1,20 +1,17 @@
-import { Client as DiscordClient, Collection, MessageReaction, Role } from "discord.js";
+import { Role } from "discord.js";
 
-export interface ClientWithCommands extends Client {
-    commands: Collection<string, any>
-}
-
-export interface Client extends DiscordClient {
-    commands: Collection<any, any>;
-}
-
-
-export interface Reaction extends MessageReaction {
-    _emoji: {
-        name: string
+declare module 'discord.js' {
+    interface Reaction {
+        _emoji: {
+            name: string;
+        };
+    }
+    interface Client {
+        commands: string[]
     }
 }
 
 export interface Roles {
     cache: Role[]
 }
+

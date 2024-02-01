@@ -1,9 +1,10 @@
-import url from '../../data/links.json' assert { type: 'json' }
+import url from '../../data/links.js'
 import handlePaths from './handlePaths.js'
 import remove from './utils.js'
 import editEmbed from './embeds.js'
-const websites = url.websites
-const websiteLinks = url.websiteLinks
+import { InteractionResponse } from 'discord.js'
+const websites = url.websites as any
+const websiteLinks = url.websiteLinks as any
 
 /**
  * Extensive fetch function
@@ -21,12 +22,12 @@ const websiteLinks = url.websiteLinks
  * Returns the link to archive the error page.
  * Catches any unhandled errors and logs their error code.
  * 
- * @param {string} link Link to fetch
- * @param {boolean} generated Terminates not found generated webpages to avoid fetching the 404 page multiple times.
- * @param {boolean} fast Provides a faster way to run the function by terminating early
+ * @param link Link to fetch
+ * @param generated Terminates not found generated webpages to avoid fetching the 404 page multiple times.
+ * @param fast Provides a faster way to run the function by terminating early
  * @returns link | nothing
  */
-export default async function fetchURL(link, generated, fast) {
+export default async function fetchURL(link: string, generated?: boolean, fast?: boolean) {
     try {
         let response = await fetch(link, {method: 'HEAD'})
         if (!response) console.log("No secure HEAD reply from " + link)
@@ -44,7 +45,7 @@ export default async function fetchURL(link, generated, fast) {
         if (!response) return console.log(`No reply from ${link}`)
         if (generated) return
         if (response.status) return link // Returning on error to archive error pages
-    } catch (e) {
+    } catch (e: any) {
         if (e.cause.code) {
             switch (e.cause.code) {
                 case 'ERR_TLS_CERT_ALTNAME_INVALID':    return console.log(`Invalid certificate ${link}`)
@@ -56,7 +57,7 @@ export default async function fetchURL(link, generated, fast) {
         return console.log(`Unhandled error ${e} for ${link}`)}
 }
 
-export async function archiveURLs(embed, stats) {
+export async function archiveURLs(embed: InteractionResponse<boolean>, stats: Stats) {
     // Start stats
     stats.domains_in_queue = websites
     stats.domains_in_fetch_queue = websites
@@ -65,8 +66,8 @@ export async function archiveURLs(embed, stats) {
     editEmbed(embed, stats)
     // End stats
 
-    let workingURLs = []
-    await Promise.allSettled(websites.map(async(website) => {
+    let workingURLs = [] as string[]
+    await Promise.allSettled(websites.map(async(website: string) => {
         // Start stats
         stats.domains_in_progress.push(website)
         remove(stats.domains_in_queue, website)
@@ -118,7 +119,7 @@ export async function archiveURLs(embed, stats) {
             remove(stats.domains_in_fetch_progress, website)
             // End stats
             
-        } catch (e) {
+        } catch (e: any) {
             // Start stats
             stats.domains_failed++
             remove(stats.domains_in_progress, website)
@@ -145,18 +146,18 @@ export async function archiveURLs(embed, stats) {
     await archiveWorkingURLs(embed, workingURLs, stats)
 }
 
-export function prettifyURL(url) {
+export function prettifyURL(url: string) {
     const isHttps = /^https:\/\//.test(url)
     if (isHttps) return url.slice(8)
     return url.slice(7)
 }
 
-export function isDomain(url) {
+export function isDomain(url: string) {
     const regex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})(\/)?$/
     return regex.test(url)
 }
 
-export async function archiveWorkingURLs(embed, links, stats) {
+export async function archiveWorkingURLs(embed: InteractionResponse<boolean>, links: string[], stats: Stats) {
     stats.status = "Archiving"
     editEmbed(embed, stats)
     const archiveURL = "https://web.archive.org/save/"
@@ -186,7 +187,7 @@ export async function archiveWorkingURLs(embed, links, stats) {
         return console.log("Archive recieved no working links.")
     }
 
-    await Promise.allSettled(links.map(async(url) => {
+    await Promise.allSettled(links.map(async(url: string) => {
         // Start stats
         const domain = isDomain(url)
         if (domain) {

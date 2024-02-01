@@ -1,9 +1,9 @@
 import { readdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { join, dirname } from 'path'
-import { Client, Collection, EmbedBuilder, Events, GatewayIntentBits } from 'discord.js'
+import { ChatInputCommandInteraction, Client, Collection, EmbedBuilder, Events, GatewayIntentBits, Reaction, TextChannel, User } from 'discord.js'
 import config from '../config.js'
-import info from '../../info.js'
+// import info from '../../info.js'
 import roles from './managed/roles.js'
 import { exec } from 'child_process'
 
@@ -18,7 +18,7 @@ const client = new Client({ intents: [
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildModeration
-] })
+] }) as any
 
 client.commands = new Collection()
 const foldersPath = join(__dirname, 'commands')
@@ -38,7 +38,7 @@ for (const folder of commandFolders) {
 	}
 }
 
-client.once(Events.ClientReady, async message => {
+client.once(Events.ClientReady, async (message: ChatInputCommandInteraction) => {
     // Restarts role listeners after restart
     roles.forEach(async (role) => {
         try {
@@ -49,7 +49,7 @@ client.once(Events.ClientReady, async message => {
             if (!channel) return console.log(`Channel with ID ${channelID} not found.`)
 
             // Fetches message
-            const roleMessage = await channel.messages.fetch(message)
+            const roleMessage = await (channel as any).messages.fetch(message);
             if (!message) return console.log(`Message with ID ${message} not found.`)
 
             // Finds the content and guild
@@ -60,22 +60,22 @@ client.once(Events.ClientReady, async message => {
             // Finds the relevant roles on the server
             const roleRegex = /<@&(\d+)>/g
             const messageRoles = content.match(roleRegex) || []
-            const roles = messageRoles.map(match => match.slice(3, -1))
+            const roles = messageRoles.map((match: string) => match.slice(3, -1))
 
             // Finds the corresponding icons
-            const icons = content.split('\n').map((icon) => 
+            const icons = content.split('\n').map((icon: string) => 
                 icon[1] === ':' ? icon.split(':')[1] : icon.substring(0, 2)
             )
             
             // Creates a collector that monitors the message for reactions
             const roleCollector = roleMessage.createReactionCollector({
-                filter: (reaction, user) => !user.bot, 
+                filter: (reaction: Reaction, user: User) => !user.bot, 
                 dispose: true
             })
 
-            roleCollector.on('collect', async(clicked, user) => {
+            roleCollector.on('collect', async(clickedReaction: Reaction, user: User) => {
                 const member = await guild.members.fetch(user.id)
-                const emoji = clicked._emoji.name
+                const emoji = clickedReaction._emoji.name
                 const reaction = emoji.length < 4 ? emoji.slice(0, 2) : emoji
 
                 for (let i = 0; i < icons.length; i++) {
@@ -86,9 +86,9 @@ client.once(Events.ClientReady, async message => {
                 }
             })
         
-            roleCollector.on('remove', async(clicked, user) => {
+            roleCollector.on('remove', async(clickedReaction: Reaction, user: User) => {
                 const member = await guild.members.fetch(user.id)
-                const emoji = clicked._emoji.name
+                const emoji = clickedReaction._emoji.name
                 const reaction = emoji.length < 4 ? emoji.slice(0, 2) : emoji
 
                 for (let i = 0; i < icons.length; i++) {
@@ -98,7 +98,7 @@ client.once(Events.ClientReady, async message => {
                     }
                 }
             })   
-        } catch (error) {
+        } catch (error: any) {
             // Removes deleted messages from storage
             const errorLinkArray = error.url.split('/')
             const messageIdToRemove = errorLinkArray[errorLinkArray.length - 1]
@@ -117,42 +117,42 @@ client.once(Events.ClientReady, async message => {
 
     console.log("Ready!")
 
-    if (info.channelID && info.username && info.userID) {
-        const mID = (await message.channels.fetch(info.channelID)).lastMessageId
-        const msg = await message.channels.fetch(info.channelID).then(channel => channel.messages.fetch(mID))
-        const embed = new EmbedBuilder()
-        .setTitle('Restart')
-        .setDescription('Restarted the bot.')
-        .setColor("#fd8738")
-        .setTimestamp()
-        .setAuthor({name: `Author: ${info.username} · ${info.userID}`})
-        .addFields(
-            {name: "Status", value: "Success", inline: true},
-            {name: "Reason", value: info.reason, inline: true},
-            {name: "Branch", value: info.branch, inline: true},
-        )
+    // if (info.channelID && info.username && info.userID) {
+    //     const mID = (await message.channels.fetch(info.channelID) as any).lastMessageId || ''
+    //     const msg = await message.channels.fetch(info.channelID).then((channel: any) => channel?.messages.fetch(mID))
+    //     const embed = new EmbedBuilder()
+    //     .setTitle('Restart')
+    //     .setDescription('Restarted the bot.')
+    //     .setColor("#fd8738")
+    //     .setTimestamp()
+    //     .setAuthor({name: `Author: ${info.username} · ${info.userID}`})
+    //     .addFields(
+    //         {name: "Status", value: "Success", inline: true},
+    //         {name: "Reason", value: info.reason, inline: true},
+    //         {name: "Branch", value: info.branch, inline: true},
+    //     )
 
-        try {
-            await msg.edit({ embeds: [embed]})
-        } catch (e) {
-            const channel = msg.channel
-            await channel.send({ embeds: [embed] })
-        }
+    //     try {
+    //         await msg.edit({ embeds: [embed]})
+    //     } catch (e) {
+    //         const channel = msg.channel
+    //         await channel.send({ embeds: [embed] })
+    //     }
 
-        const commands = [
-            `echo '{"branch": "", "reason": "", "channelID": "", "username": "", "userID": ""}' > ../info.json`,
-            'rm ../temp.sh'
-        ]
+    //     const commands = [
+    //         `echo '{"branch": "", "reason": "", "channelID": "", "username": "", "userID": ""}' > ../info.json`,
+    //         'rm ../temp.sh'
+    //     ]
     
-        exec(commands.join(' && '))
-    }
+    //     exec(commands.join(' && '))
+    // }
 
 })
 
-client.on(Events.InteractionCreate, async message => {
+client.on(Events.InteractionCreate, async (message: ChatInputCommandInteraction) => {
 	if (!message.isChatInputCommand()) return
 
-	const command = client.commands.get(message.commandName)
+	const command = (client as any).commands.get(message.commandName);
 
 	if (!command) return
 

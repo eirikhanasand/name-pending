@@ -40,6 +40,8 @@ type Stats = {
     author: string
     links_generated: number
     links_failed: number
+    paths_in_queue: number
+    domains_in_queue: string[]
 }
 
 type Status = {
@@ -52,6 +54,9 @@ type NameValueObject = {
     value: string
 }
 
-type MessageOptions = {
-    
+
+type ErrorType = {
+    cause: {
+        code: number
+    }
 }

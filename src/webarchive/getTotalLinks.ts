@@ -1,6 +1,6 @@
 import url from '../../data/links.js'
-const websites = url.websites
-const websiteLinks = url.websiteLinks
+const websites = url.websites as any
+const websiteLinks = url.websiteLinks as any
 
 export default function getTotalLinks() {
     const shared = {

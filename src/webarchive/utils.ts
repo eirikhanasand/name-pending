@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import editEmbed from './embeds.js'
 import { Embed } from 'discord.js'
 
-export default function remove(entries, id: number) {
+export default function remove(entries: string[], id: string) {
     const index = entries.indexOf(id)
     if (index !== -1) {
         entries.splice(index, 1)

@@ -1,5 +1,5 @@
 import { REST, Routes } from 'discord.js'
-import config from '../config.json' assert { type: "json"}
+import config from '../config.js'
 import { readdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { join, dirname } from 'path'

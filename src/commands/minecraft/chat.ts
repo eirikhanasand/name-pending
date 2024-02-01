@@ -1,6 +1,6 @@
 import { CacheType, ChatInputCommandInteraction, Message, SlashCommandBuilder } from 'discord.js'
 import http from "http"
-import { Reaction } from '../../../interfaces.js'
+import { Reaction } from 'discord.js'
 
 const url = "http://51.222.254.125"
 const port = 6969

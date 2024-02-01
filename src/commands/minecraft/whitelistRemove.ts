@@ -1,6 +1,7 @@
 import { CacheType, ChatInputCommandInteraction, Role, SlashCommandBuilder } from 'discord.js'
 import config from '../../../config.js'
 import log from '../../utils/logger.js'
+import { Roles } from '../../../interfaces.js'
 
 const url = "http://51.222.254.125"
 const servers = [{port: 6677, name: 'survival'}, {port: 6688, name: 'creative'}]
@@ -25,7 +26,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     const user = message.options.getString('user')?.slice(0, 30) || null
 
     // Checking if the author is allowed to remove users from the whitelist
-    const isAllowed = (message.member?.roles as any)?.cache.some((role: Role) => role.id === config.roleID)
+    const isAllowed = (message.member?.roles as unknown as Roles)?.cache.some((role: Role) => role.id === config.roleID)
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {

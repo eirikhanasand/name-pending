@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, CacheType, Role, Collection } from 'discord.js'
 import { exec } from 'child_process'
 import config from '../../../config.js'
+import { Roles } from '../../../interfaces.js'
 
 export const data = new SlashCommandBuilder()
     .setName('restart')
@@ -30,7 +31,7 @@ export async function execute(message: ChatInputCommandInteraction) {
         .addFields({name: "Loading...", value: "...", inline: true})
 
     // Checking if user should be allowed to remove users from the whitelist
-    const isAllowed = (message.member?.roles as any)?.cache.some((role: Role) => role.id === config.roleID)
+    const isAllowed = (message.member?.roles as unknown as Roles)?.cache.some((role: Role) => role.id === config.roleID)
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {

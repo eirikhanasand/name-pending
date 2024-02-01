@@ -1,8 +1,8 @@
-import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, User, ReactionEmoji, Guild, Role } from 'discord.js'
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, User, ReactionEmoji, Guild, Role, Reaction } from 'discord.js'
 import storedEmbeds from "../../managed/roles.js"
 import config from '../../../config.js'
 import { exec } from 'child_process'
-import { Reaction, Roles } from '../../../interfaces.js'
+import { Roles } from '../../../interfaces.js'
 
 export const data = new SlashCommandBuilder()
     .setName('roles')

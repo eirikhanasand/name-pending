@@ -21,7 +21,7 @@ export const data = new SlashCommandBuilder()
  */
 export async function execute(message: ChatInputCommandInteraction<CacheType>) {
     // Slices to avoid overflow errors, checks to avoid passing undefined parameters
-    const user = message.options.getString('user') ? message.options.getString('user').slice(0, 30) : null
+    const user = message.options.getString('user') ? message.options.getString('user')?.slice(0, 30) : null
 
     if (!user) {
         await message.reply({content: "You must provide a user: `/whitelist user:name`", ephemeral: true})

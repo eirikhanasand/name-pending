@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, Role, SlashCommandBuilder } from 'discord.js'
 import config from '../../../config.js'
 import { exec } from 'child_process'
+import { Roles } from '../../../interfaces.js'
 
 /**
  * Builds a new slash command with the given name, description and options
@@ -15,7 +16,7 @@ export const data = new SlashCommandBuilder()
  */
 export async function execute(message: ChatInputCommandInteraction) {
     // Checking if the author is allowed to setup services
-    const isAllowed = (message.member?.roles as any)?.cache.some((role: Role) => role.id === config.roleID)
+    const isAllowed = (message.member?.roles as unknown as Roles)?.cache.some((role: Role) => role.id === config.roleID)
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {

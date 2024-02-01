@@ -1,8 +1,8 @@
 import fetchURL from "./handleURL.js"
 
-export default async function handlePaths(stats, website, websiteLinks) {
-    const workingLinks = []
-    await Promise.allSettled(websiteLinks.map(async(path) => {
+export default async function handlePaths(stats: Stats, website: string, websiteLinks: string[]) {
+    const workingLinks = [] as string[]
+    await Promise.allSettled(websiteLinks.map(async(path: string) => {
         // Start stats
         stats.paths_in_progress++
         stats.paths_in_queue--
@@ -42,7 +42,7 @@ export default async function handlePaths(stats, website, websiteLinks) {
     return workingLinks
 }
 
-export async function handleGeneratedTest(website, generatedPath, stats, workingLinks) {
+export async function handleGeneratedTest(website: string, generatedPath: string, stats: Stats, workingLinks: string[]) {
     // Start stats
     stats.links_generated++
     // End stats
@@ -56,7 +56,7 @@ export async function handleGeneratedTest(website, generatedPath, stats, working
     workingLinks.push(result)
 }
 
-export function generateDailyLinks(path) {
+export function generateDailyLinks(path: string) {
     const links = []
     const today = new Date()
     const currentYear = today.getFullYear()
@@ -70,7 +70,7 @@ export function generateDailyLinks(path) {
     return links
 }
 
-export function generateWeeklyLinks(path) {
+export function generateWeeklyLinks(path: string) {
     const currentWeek = getCurrentWeekNumber()
     const currentYear = new Date().getFullYear()
     const links = []
@@ -84,7 +84,7 @@ export function generateWeeklyLinks(path) {
     return links
 }
 
-export function generateYearlyLinks(path) {
+export function generateYearlyLinks(path: string) {
     const currentYear = new Date().getFullYear()
     const links = []
 
@@ -103,7 +103,7 @@ export function getCurrentWeekNumber() {
     const startOfYear = new Date(date.getFullYear(), 0, 1)
 
     // Calculate days passed
-    const daysPassed = Math.floor((date - startOfYear) / (24 * 60 * 60 * 1000))
+    const daysPassed = Math.floor((date.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000))
 
     // Calculate the week number
     const weekNumber = Math.ceil((daysPassed + startOfYear.getDay() + 1) / 7)

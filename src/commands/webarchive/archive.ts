@@ -38,7 +38,7 @@ export async function execute(message: ChatInputCommandInteraction) {
         paths_in_fetch_queue: 0,
         progress: 0,
         status: "Starting",
-        startTime: new Date(),
+        startTime: new Date().getTime(),
         author: message.user.username,
         links_generated: 0
     }
