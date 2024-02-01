@@ -38,4 +38,20 @@ type Stats = {
     paths_in_fetch_queue: number
     domains_failed: number
     author: string
+    links_generated: number
+    links_failed: number
+}
+
+type Status = {
+    cooldown: Date
+    archives: number
+}
+
+type NameValueObject = {
+    name: string
+    value: string
+}
+
+type MessageOptions = {
+    
 }

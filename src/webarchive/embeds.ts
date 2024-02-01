@@ -1,7 +1,7 @@
-import { EmbedBuilder } from "discord.js"
+import { Embed, EmbedBuilder } from "discord.js"
 import { formatMillis } from "./utils.js"
 
-export default function editEmbed(embed: Embed, stats) {
+export default function editEmbed(embed: any, stats: Stats) {
     const totalWeight = 4 * (stats.total_domains + stats.total_paths) + 200
     const completedWeight = stats.domains_in_fetch_progress.length + (stats.finished_domains * 3) + stats.paths_in_fetch_progress + (stats.finished_paths * 3) + stats.links_generated
 

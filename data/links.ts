@@ -1,4 +1,4 @@
-{
+const links = {
     "websites": [
         "http://minecraft.login.no:8100",
         "https://agni.no",
@@ -177,3 +177,5 @@
         ]
     }
 }
+
+export default links

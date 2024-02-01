@@ -7,8 +7,8 @@ export const data = new SlashCommandBuilder()
     .setDescription('Status of how many domains are ready to be archived.')
 export async function execute(message: ChatInputCommandInteraction) {
     const info = getTotalLinks()
-    const stored = await readFile("data/status.txt")
-    const cooldown = formatCooldown(stored.cooldown)
+    const stored = await readFile("data/status.txt") as Status
+    const cooldown = formatCooldown(new Date(stored.cooldown).getTime())
     const status = new EmbedBuilder()
         .setTitle('Status')
         .setDescription('Oversikt over linker klare til arkivering og eventuell cooldown.')

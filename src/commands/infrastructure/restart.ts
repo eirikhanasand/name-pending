@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, CacheType } from 'discord.js'
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, CacheType, Role, Collection } from 'discord.js'
 import { exec } from 'child_process'
 import config from '../../../config.js'
 
@@ -30,7 +30,7 @@ export async function execute(message: ChatInputCommandInteraction) {
         .addFields({name: "Loading...", value: "...", inline: true})
 
     // Checking if user should be allowed to remove users from the whitelist
-    const isAllowed = message.member?.roles.cache.some(role => role.id === config.roleID)
+    const isAllowed = (message.member?.roles as any)?.cache.some((role: Role) => role.id === config.roleID)
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
@@ -84,6 +84,8 @@ async function reply(message: ChatInputCommandInteraction<CacheType>, service: s
             case "notification": return {title: 'Restart', description: 'Restarting the notification microservice.'}
             case "beehive": return {title: 'Restart', description: 'Restarting beehive.'}
         }
+
+        return { title: 'Unknown', description: 'Unknown'}
     }
 
     const content = description()
@@ -158,52 +160,53 @@ async function restartBot(message: ChatInputCommandInteraction<CacheType>, reaso
  * @param {ChatInputCommandInteraction<CacheType>} message 
  */
 async function restartNotification(message: ChatInputCommandInteraction<CacheType>, reason: string, branch: string) {
-    const embed = new EmbedBuilder()
-        .setTitle('Restart')
-        .setDescription('Restarting the notification microservice.')
-        .setColor("#fd8738")
-        .setTimestamp()
-        .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
-        .addFields(
-            {name: "Status", value: "Starting...", inline: true},
-            {name: "Reason", value: reason, inline: true},
-        )
-    await message.editReply({ embeds: [embed]})
+    await message.editReply('Missing API key.')
+    // const embed = new EmbedBuilder()
+    //     .setTitle('Restart')
+    //     .setDescription('Restarting the notification microservice.')
+    //     .setColor("#fd8738")
+    //     .setTimestamp()
+    //     .setAuthor({name: `Author: ${message.user.username} · ${message.user.id}`})
+    //     .addFields(
+    //         {name: "Status", value: "Starting...", inline: true},
+    //         {name: "Reason", value: reason, inline: true},
+    //     )
+    // await message.editReply({ embeds: [embed]})
 
-    const restart = [
-        'rm -rf automatednotifications',
-        `git clone -b ${branch} https://git.logntnu.no/tekkom/apps/automatednotifications.git`,
-        'cd automatednotifications',
-        'npm i',
-        'touch .secrets.ts',
-        `echo 'export const api_key = "${config.notification_api_key}"\nexport const api_url = "${config.notification_api_url}"' > .secrets.ts`,
-        `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
-        'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/apps/automatednotifications:latest .',
-        'docker image pull registry.git.logntnu.no/tekkom/apps/automatednotifications:latest',
-        'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/apps/automatednotifications:latest nucleus-notifications',
-        'cd ..',
-        'rm -rf automatednotifications',
-    ]
+    // const restart = [
+    //     'rm -rf automatednotifications',
+    //     `git clone -b ${branch} https://git.logntnu.no/tekkom/apps/automatednotifications.git`,
+    //     'cd automatednotifications',
+    //     'npm i',
+    //     'touch .secrets.ts',
+    //     `echo 'export const api_key = "${config.notification_api_key}"\nexport const api_url = "${config.notification_api_url}"' > .secrets.ts`,
+    //     `docker login --username ${config.docker_username} --password ${config.docker_password} registry.git.logntnu.no`,
+    //     'docker buildx build --platform linux/amd64,linux/arm64 --push -t registry.git.logntnu.no/tekkom/apps/automatednotifications:latest .',
+    //     'docker image pull registry.git.logntnu.no/tekkom/apps/automatednotifications:latest',
+    //     'docker service update --with-registry-auth --image registry.git.logntnu.no/tekkom/apps/automatednotifications:latest nucleus-notifications',
+    //     'cd ..',
+    //     'rm -rf automatednotifications',
+    // ]
 
-    // Run a command on your system using the exec function
-    const child = exec(restart.join(' && '))
-    reply(message, "notification", `Spawned child ${child.pid}`, reason, branch)
+    // // Run a command on your system using the exec function
+    // const child = exec(restart.join(' && '))
+    // reply(message, "notification", `Spawned child ${child.pid}`, reason, branch)
 
-    // Pipes the output of the child process to the main application console
-    child.stdout?.on('data', (data) => {
-        console.log(data)
-        reply(message, "notification", `${data.slice(0, 1024)}`, reason, branch)
-    })
+    // // Pipes the output of the child process to the main application console
+    // child.stdout?.on('data', (data) => {
+    //     console.log(data)
+    //     reply(message, "notification", `${data.slice(0, 1024)}`, reason, branch)
+    // })
 
-    child.stderr?.on('data', (data) => {
-        console.error(data)
-        reply(message, "notification", `${data.slice(0, 1024)}`, reason, branch)
-    })
+    // child.stderr?.on('data', (data) => {
+    //     console.error(data)
+    //     reply(message, "notification", `${data.slice(0, 1024)}`, reason, branch)
+    // })
 
-    child.on('close', () => {
-        reply(message, "notification", `Killed child ${child.pid}`, reason, branch)
-        reply(message, "notification", `Success`, reason, branch)
-    })
+    // child.on('close', () => {
+    //     reply(message, "notification", `Killed child ${child.pid}`, reason, branch)
+    //     reply(message, "notification", `Success`, reason, branch)
+    // })
 }
 
 /**

@@ -9,8 +9,8 @@ export const data = new SlashCommandBuilder()
     .setDescription('Archives all of Logins webpages in real time.')
 export async function execute(message: ChatInputCommandInteraction) {
     const currentTime = new Date()
-    const stored = readFile("./data/status.txt")
-    const cooldown = stored.cooldown-currentTime
+    const stored = await readFile("./data/status.txt") as Status
+    const cooldown = new Date(stored.cooldown).getTime() - currentTime.getTime()
     const info = getTotalLinks()
 
     if (cooldown > 0) return await message.reply({ embeds: [cooldownEmbed(cooldown)] })

@@ -1,5 +1,7 @@
 import { CacheType, ChatInputCommandInteraction, Message, SlashCommandBuilder } from 'discord.js'
 import http from "http"
+import { Reaction } from '../../../interfaces.js'
+
 const url = "http://51.222.254.125"
 const port = 6969
 const servers = [{port: 6677, name: 'survival'}, {port: 6688, name: 'creative'}]
@@ -29,8 +31,8 @@ export async function execute(message: ChatInputCommandInteraction<CacheType>) {
         const reactionCollector = m.createReactionCollector({ time: 60000 })
 
         // Logs the reaction interaction in game
-        reactionCollector.on('collect', (reaction, user) => {
-            post(`${user.tag} reacted with ${reaction.emoji.name}`)
+        reactionCollector.on('collect', (reaction: Reaction, user) => {
+            post(`${user.tag} reacted with ${reaction._emoji.name}`)
         })
     })
 
@@ -42,12 +44,12 @@ export async function execute(message: ChatInputCommandInteraction<CacheType>) {
  * Posts the message from Discord on all servers
  * @param {Discord_Message} message 
  */
-function post(message: ChatInputCommandInteraction<CacheType>) {
+function post(message: string) {
     servers.forEach((server) => {
         fetch(`${url}:${server.port}/${server.name}-message`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: message as object as any
+            body: message
         })
     })
 }

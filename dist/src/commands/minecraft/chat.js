@@ -22,7 +22,7 @@ export async function execute(message) {
         const reactionCollector = m.createReactionCollector({ time: 60000 });
         // Logs the reaction interaction in game
         reactionCollector.on('collect', (reaction, user) => {
-            post(`${user.tag} reacted with ${reaction.emoji.name}`);
+            post(`${user.tag} reacted with ${reaction._emoji.name}`);
         });
     });
     updatePlayerCount(message);

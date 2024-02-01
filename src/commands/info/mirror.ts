@@ -1,5 +1,6 @@
 import config from '../../../config.js'
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
+import { ChatInputCommandInteraction, GuildBasedChannel, Message, Role, SlashCommandBuilder } from "discord.js"
+import { Roles } from '../../../interfaces.js'
 
 export const data = new SlashCommandBuilder()
     .setName('mirror')
@@ -20,13 +21,18 @@ export const data = new SlashCommandBuilder()
 export async function execute(message: ChatInputCommandInteraction) {
     await message.reply({content: "Building mirror...", ephemeral: true })
 
-    const isAllowed = message.member?.roles.cache.some(role => role.id === config.roleID)
+    const isAllowed = (message.member?.roles as unknown as Roles)?.cache.some((role: Role) => role.id === config.roleID)
 
     if (!isAllowed) {
         return message.reply("Unauthorized.")
     }
 
     const channelName = message.options.getString('export-channel')
+
+    if (!channelName) {
+        return message.reply('Invalid or undefined export channel.')
+    }
+
     let exportChannel = message.guild?.channels.fetch(channelName)
 
     if (!exportChannel) {
@@ -34,6 +40,11 @@ export async function execute(message: ChatInputCommandInteraction) {
     }
 
     const loggingChannelName = message.options.getString('logging-channel')
+
+    if (!loggingChannelName) {
+        return message.reply('Invalid or undefined logging-channel')        
+    }
+
     let loggingChannel = message.guild?.channels.fetch(loggingChannelName)
 
     if (!loggingChannel) {
@@ -41,10 +52,15 @@ export async function execute(message: ChatInputCommandInteraction) {
     }
 
     const roleName = message.options.getString('role')
+
+    if (!roleName) {
+        return message.reply('Invalid role.')
+    }
+
     const role = message.guild?.roles.fetch(roleName)
 
     const collector = exportChannel.createMessageCollector(
-        { filter: (message) => message.member.roles.cache.some(r => r.id === role.id)}
+        { filter: (message: Message) => message.member?.roles.cache.some(r => r.id === role.id)}
     )
 
     collector.on('collect', m => {

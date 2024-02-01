@@ -75,6 +75,7 @@ export async function archiveURLs(embed, stats) {
     stats.paths_in_queue = stats.total_paths;
     stats.paths_in_fetch_queue = stats.total_paths;
     editEmbed(embed, stats);
+
     // End stats
     let workingURLs = [];
     await Promise.allSettled(websites.map(async (website) => {
