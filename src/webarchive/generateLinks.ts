@@ -1,4 +1,4 @@
-export default function generateDailyLinks(path) {
+export default function generateDailyLinks(path: string) {
     const links = []
     const today = new Date()
     const currentYear = today.getFullYear()
@@ -12,7 +12,7 @@ export default function generateDailyLinks(path) {
     return links
 }
 
-export function generateWeeklyLinks(path) {
+export function generateWeeklyLinks(path: string) {
     const currentWeek = getCurrentWeekNumber()
     const currentYear = new Date().getFullYear()
     const links = []
@@ -26,7 +26,7 @@ export function generateWeeklyLinks(path) {
     return links
 }
 
-export function generateYearlyLinks(path) {
+export function generateYearlyLinks(path: string) {
     const currentYear = new Date().getFullYear()
     const links = []
 

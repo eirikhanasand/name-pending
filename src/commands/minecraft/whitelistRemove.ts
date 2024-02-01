@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import config from "../../../config.json" assert {type: "json"}
 import log from '../../utils/logger.js'
 
@@ -20,12 +20,12 @@ export const data = new SlashCommandBuilder()
  * Executes the whitelist command passed from Discord
  * @param {*} message Message initiating the command, passed by Discord
  */
-export async function execute(message) {
+export async function execute(message: ChatInputCommandInteraction) {
     // Slices to avoid overflow errors, checks to avoid passing undefined parameters
     const user = message.options.getString('user') ? message.options.getString('user').slice(0, 30) : null
 
     // Checking if the author is allowed to remove users from the whitelist
-    const isAllowed = message.member.roles.cache.some(role => role.id === config.roleID)
+    const isAllowed = message.member?.roles.cache.some(role => role.id === config.roleID)
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {

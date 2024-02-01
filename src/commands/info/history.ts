@@ -1,9 +1,9 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js'
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js'
 
 export const data = new SlashCommandBuilder()
     .setName('history')
     .setDescription('The history of the bot')
-export async function execute(message) {
+export async function execute(message: ChatInputCommandInteraction) {
     const embed = new EmbedBuilder()
         .setTitle('Historie')
         .setDescription('Bottens historie')

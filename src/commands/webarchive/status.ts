@@ -1,11 +1,11 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js'
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js'
 import getTotalLinks from '../../webarchive/getTotalLinks.js'
 import { formatCooldown, readFile } from '../../webarchive/utils.js'
 
 export const data = new SlashCommandBuilder()
     .setName('status')
     .setDescription('Status of how many domains are ready to be archived.')
-export async function execute(message) {
+export async function execute(message: ChatInputCommandInteraction) {
     const info = getTotalLinks()
     const stored = await readFile("data/status.txt")
     const cooldown = formatCooldown(stored.cooldown)

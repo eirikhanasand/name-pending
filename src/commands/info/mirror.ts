@@ -1,5 +1,5 @@
 import config from "../../../config.json" assert {type: "json"}
-import { SlashCommandBuilder } from "discord.js"
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js"
 
 export const data = new SlashCommandBuilder()
     .setName('mirror')
@@ -17,38 +17,38 @@ export const data = new SlashCommandBuilder()
         .setDescription('Role of the logged-individuals.')
     )
 
-export async function execute(message) {
+export async function execute(message: ChatInputCommandInteraction) {
     await message.reply({content: "Building mirror...", ephemeral: true })
 
-    const isAllowed = message.member.roles.cache.some(role => role.id === config.roleID)
+    const isAllowed = message.member?.roles.cache.some(role => role.id === config.roleID)
 
     if (!isAllowed) {
         return message.reply("Unauthorized.")
     }
 
     const channelName = message.options.getString('export-channel')
-    let exportChannel = message.guild.channels.fetch(channelName)
+    let exportChannel = message.guild?.channels.fetch(channelName)
 
     if (!exportChannel) {
         return message.reply('The export-channel channel does not exist.')
     }
 
     const loggingChannelName = message.options.getString('logging-channel')
-    let loggingChannel = message.guild.channels.fetch(loggingChannelName)
+    let loggingChannel = message.guild?.channels.fetch(loggingChannelName)
 
     if (!loggingChannel) {
         return message.reply('The logging-channel channel does not exist.')
     }
 
     const roleName = message.options.getString('role')
-    const role = message.guild.roles.fetch(roleName)
+    const role = message.guild?.roles.fetch(roleName)
 
     const collector = exportChannel.createMessageCollector(
         { filter: (message) => message.member.roles.cache.some(r => r.id === role.id)}
     )
 
     collector.on('collect', m => {
-        loggingChannel.postMessage(m)
+        loggingChannel?.postMessage(m)
     })
 
     // Setup success message

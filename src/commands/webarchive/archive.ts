@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js'
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js'
 import getTotalLinks from '../../webarchive/getTotalLinks.js'
 import { archiveURLs } from '../../webarchive/handleURL.js'
 import { readFile } from '../../webarchive/utils.js'
@@ -7,7 +7,7 @@ import { cooldownEmbed } from '../../webarchive/embeds.js'
 export const data = new SlashCommandBuilder()
     .setName('archive')
     .setDescription('Archives all of Logins webpages in real time.')
-export async function execute(message) {
+export async function execute(message: ChatInputCommandInteraction) {
     const currentTime = new Date()
     const stored = readFile("./data/status.txt")
     const cooldown = stored.cooldown-currentTime

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js'
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js'
 import storedEmbeds from "../../managed/roles.js"
 import config from "../../../config.json" assert {type: "json"}
 import { exec } from 'child_process'
@@ -23,9 +23,9 @@ export const data = new SlashCommandBuilder()
         .setDescription('Icons to display to the left of each role')
     )
 
-export async function execute(message) {
+export async function execute(message: ChatInputCommandInteraction) {
     // Checking if the author is allowed to setup services
-    const isAllowed = message.member.roles.cache.some(role => role.id === config.roleID)
+    const isAllowed = message.member?.roles.cache.some(role => role.id === config.roleID)
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
@@ -40,7 +40,7 @@ export async function execute(message) {
     const roleIcons = Array.from(roleIconsString.trim().split(' '))
 
     roleIcons.forEach((icon) => {
-        const emoji = message.guild.emojis.cache.find(emoji => emoji.name === icon)
+        const emoji = message.guild?.emojis.cache.find(emoji => emoji.name === icon)
         const params = message.options._hoistedOptions.map(param => `${param.name}:${param.value}`)
         const input = `/roles ${params.join(' ')}`
 
