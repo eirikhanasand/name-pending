@@ -1,4 +1,4 @@
-import config from "../../../config.json" assert {type: "json"}
+import config from "../../config.json" assert {type: "json"}
 
 /**
  * Logs the status of a whitelist message to the log channel
