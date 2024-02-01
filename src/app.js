@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url'
 import { join, dirname } from 'path'
 import { Client, Collection, EmbedBuilder, Events, GatewayIntentBits } from 'discord.js'
 import config from '../config.json' assert { type: "json" }
-import info from '../../info.json' assert { type: "json" }
+// import info from '../../info.json' assert { type: "json" }
 import roles from './managed/roles.js'
 import { exec } from 'child_process'
 
@@ -117,35 +117,35 @@ client.once(Events.ClientReady, async message => {
 
     console.log("Ready!")
 
-    if (info.channelID && info.username && info.userID) {
-        const mID = (await message.channels.fetch(info.channelID)).lastMessageId
-        const msg = await message.channels.fetch(info.channelID).then(channel => channel.messages.fetch(mID))
-        const embed = new EmbedBuilder()
-        .setTitle('Restart')
-        .setDescription('Restarted the bot.')
-        .setColor("#fd8738")
-        .setTimestamp()
-        .setAuthor({name: `Author: ${info.username} · ${info.userID}`})
-        .addFields(
-            {name: "Status", value: "Success", inline: true},
-            {name: "Reason", value: info.reason, inline: true},
-            {name: "Branch", value: info.branch, inline: true},
-        )
+    // if (info.channelID && info.username && info.userID) {
+    //     const mID = (await message.channels.fetch(info.channelID)).lastMessageId
+    //     const msg = await message.channels.fetch(info.channelID).then(channel => channel.messages.fetch(mID))
+    //     const embed = new EmbedBuilder()
+    //     .setTitle('Restart')
+    //     .setDescription('Restarted the bot.')
+    //     .setColor("#fd8738")
+    //     .setTimestamp()
+    //     .setAuthor({name: `Author: ${info.username} · ${info.userID}`})
+    //     .addFields(
+    //         {name: "Status", value: "Success", inline: true},
+    //         {name: "Reason", value: info.reason, inline: true},
+    //         {name: "Branch", value: info.branch, inline: true},
+    //     )
 
-        try {
-            await msg.edit({ embeds: [embed]})
-        } catch (e) {
-            const channel = msg.channel
-            await channel.send({ embeds: [embed] })
-        }
+    //     try {
+    //         await msg.edit({ embeds: [embed]})
+    //     } catch (e) {
+    //         const channel = msg.channel
+    //         await channel.send({ embeds: [embed] })
+    //     }
 
-        const commands = [
-            `echo '{"branch": "", "reason": "", "channelID": "", "username": "", "userID": ""}' > ../info.json`,
-            'rm ../temp.sh'
-        ]
+    //     const commands = [
+    //         `echo '{"branch": "", "reason": "", "channelID": "", "username": "", "userID": ""}' > ../info.json`,
+    //         'rm ../temp.sh'
+    //     ]
     
-        exec(commands.join(' && '))
-    }
+    //     exec(commands.join(' && '))
+    // }
 
 })
 
