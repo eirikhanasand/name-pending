@@ -26,31 +26,75 @@ export async function execute(message) {
         return message.reply("Unauthorized.")
     }
 
+    console.log("1")
+    const regex = /\d+/;
+
     const channelName = message.options.getString('export-channel')
-    let exportChannel = message.guild.channels.fetch(channelName)
+    const channelMatch = channelName.match(regex)
+
+    if (!channelMatch) {
+        console.log("No match for channel-name.")
+        return
+    }
+
+    let exportChannel = message.guild.channels.cache.find(channel => channel.id === channelMatch[0])
 
     if (!exportChannel) {
         return message.reply('The export-channel channel does not exist.')
     }
 
     const loggingChannelName = message.options.getString('logging-channel')
-    let loggingChannel = message.guild.channels.fetch(loggingChannelName)
+    const loggingMatch = loggingChannelName.match(regex)
+
+    if (!loggingMatch) {
+        console.log("No match for logging-channel-name.")
+        return
+    }
+    let loggingChannel = message.guild.channels.cache.find(channel => channel.id === loggingMatch[0])
 
     if (!loggingChannel) {
         return message.reply('The logging-channel channel does not exist.')
     }
 
     const roleName = message.options.getString('role')
-    const role = message.guild.roles.fetch(roleName)
+    const match = roleName.match(regex)
+
+    if (!match) {
+        console.log("No match for role-name.")
+        return
+    }
+    message.guild.roles.cache.forEach(entry => {
+         if (entry.id == match[0]) console.log("role : " + entry.name)
+    })
+
+    const role = message.guild.roles.cache.find(role => role.id === match[0])
+
+    const filter = msg => msg.member.roles.cache.find(r => r.id == role.id)
 
     const collector = exportChannel.createMessageCollector(
-        { filter: (message) => message.member.roles.cache.some(r => r.id === role.id)}
+        {filter}
     )
-
     collector.on('collect', m => {
-        loggingChannel.postMessage(m)
+        loggingChannel.send(m.author.globalName + " : ")
+
+        if (!(m.content == "")) {
+            loggingChannel.send(m.content)
+        }
+        const allowedFileSize = 50 * 1024 * 1024; // 50 MB
+
+        m.attachments.forEach(attach => {
+            let size = attach.size
+
+            if (size < allowedFileSize) {
+                loggingChannel.send({
+                    files: [attach.attachment]
+                })
+            } else {
+                loggingChannel.send(attach.attachment)
+            }
+        })
     })
 
     // Setup success message
-    // message.editReply(`Now mirroring from ${channelName} to ${loggingChannel} for role ${roleName}.`)
+     message.editReply(`Now mirroring from ${exportChannel.name} to ${loggingChannel.name} for role ${role.name}.`)
 }
