@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js'
 import config from "../../../config.json" assert {type: "json"}
-import log from './logger.js'
+import log from '../../utils/logger.js'
 
 const url = "http://51.222.254.125"
 const servers = [{port: 6677, name: 'survival'}, {port: 6688, name: 'creative'}]
