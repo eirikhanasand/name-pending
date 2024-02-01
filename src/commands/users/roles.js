@@ -43,7 +43,7 @@ export async function execute(message) {
         const emoji = message.guild.emojis.cache.find(emoji => emoji.name === icon)
         const params = message.options._hoistedOptions.map(param => `${param.name}:${param.value}`)
         const input = `/roles ${params.join(' ')}`
-        console.log(icon)
+
         if (!(isValidEmoji(icon) || emoji)) {
             return message.reply({
                 content: `There is no emoji named \`\`${icon}\`\`\ \nYou entered: \`\`\`text\n${input}\`\`\``, 
