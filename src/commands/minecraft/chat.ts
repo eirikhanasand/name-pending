@@ -1,4 +1,4 @@
-import { CacheType, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
+import { CacheType, ChatInputCommandInteraction, Message, SlashCommandBuilder } from 'discord.js'
 import http from "http"
 const url = "http://51.222.254.125"
 const port = 6969
@@ -8,11 +8,11 @@ export const data = new SlashCommandBuilder()
     .setName('chat')
     .setDescription('Establishes a connection between Minecraft and this Discord chat')
 
-export async function execute(message: ChatInputCommandInteraction) {
+export async function execute(message: ChatInputCommandInteraction<CacheType>) {
     await message.reply({content: 'Connection established!', ephemeral: true})
 
     // Filter to check that the author is not a bot to prevent an infinite loop
-    const filter = (response) => !response.author.bot
+    const filter = (response: Message) => !response.author.bot
 
     // Message collector that collects all messages written in Discord
     const collector = message.channel?.createMessageCollector({ filter })

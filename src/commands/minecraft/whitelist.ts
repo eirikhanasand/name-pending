@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { CacheType, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import log from '../../utils/logger.js'
 
 const url = "http://51.222.254.125"
@@ -19,7 +19,7 @@ export const data = new SlashCommandBuilder()
  * Executes the whitelist command passed from Discord
  * @param {*} message Message initiating the command, passed by Discord
  */
-export async function execute(message) {
+export async function execute(message: ChatInputCommandInteraction<CacheType>) {
     // Slices to avoid overflow errors, checks to avoid passing undefined parameters
     const user = message.options.getString('user') ? message.options.getString('user').slice(0, 30) : null
 
@@ -32,7 +32,7 @@ export async function execute(message) {
     await post(message, user)
 }
 
-async function post(message, name) {
+async function post(message: ChatInputCommandInteraction<CacheType>, name: string) {
     let content = ""
 
     await Promise.all(

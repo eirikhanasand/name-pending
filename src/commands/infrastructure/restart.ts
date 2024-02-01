@@ -1,6 +1,6 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js'
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, CacheType } from 'discord.js'
 import { exec } from 'child_process'
-import config from '../../../config.json' assert { type: "json" }
+import config from '../../../config.js'
 
 export const data = new SlashCommandBuilder()
     .setName('restart')
@@ -17,7 +17,7 @@ export const data = new SlashCommandBuilder()
         .setName('branch')
         .setDescription('Branch to launch from')
     )
-export async function execute(message) {
+export async function execute(message: ChatInputCommandInteraction) {
     const service = message.options.getString('service')
     const reason = message.options.getString('reason')
     const branch = message.options.getString('branch')
@@ -30,7 +30,7 @@ export async function execute(message) {
         .addFields({name: "Loading...", value: "...", inline: true})
 
     // Checking if user should be allowed to remove users from the whitelist
-    const isAllowed = message.member.roles.cache.some(role => role.id === config.roleID)
+    const isAllowed = message.member?.roles.cache.some(role => role.id === config.roleID)
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
@@ -43,8 +43,8 @@ export async function execute(message) {
         await message.editReply({ embeds: [embed]})
     }
 
-    if (!serviceExists(service) || !reason) {
-        await replyInvalid(message, service, reason, "Default")
+    if (!serviceExists(service || '') || !reason) {
+        await replyInvalid(message, service || '', reason || '', "Default")
         return
     }
 
@@ -62,7 +62,7 @@ export async function execute(message) {
             return
         }
         default: {
-            await replyInvalid(message, service, reason, branch ? branch : "Default")
+            await replyInvalid(message, service || '', reason, branch ? branch : "Default")
             return
         }
     }
@@ -71,12 +71,12 @@ export async function execute(message) {
 /**
  * Replies to the message with a custom status
  * 
- * @param {ChatInputCommandInteraction<CacheType>} message message to reply to
- * @param {string} status Status message
- * @param {string} reason Reason for reply
- * @returns {void} Updates the message and returns void when done
+ * @param message message to reply to
+ * @param status Status message
+ * @param reason Reason for reply
+ * @returns Updates the message and returns void when done
  */
-async function reply(message, service, status, reason, branch) {
+async function reply(message: ChatInputCommandInteraction<CacheType>, service: string, status: string, reason: string, branch: string) {
     
     function description() {
         switch (service) {
@@ -105,10 +105,10 @@ async function reply(message, service, status, reason, branch) {
 
 /**
  * Restarts the bot itself
- * @param {ChatInputCommandInteraction<CacheType>} message 
+ * @param message 
  */
-async function restartBot(message, reason, branch) {
-    let childPID, previousChildPID
+async function restartBot(message: ChatInputCommandInteraction<CacheType>, reason: string, branch: string) {
+    let childPID = '', previousChildPID
 
     const restart = [
         'cd ..',
@@ -133,16 +133,16 @@ async function restartBot(message, reason, branch) {
 
     // Run a command on your system using the exec function
     const child = exec(restart.join(' && '))
-    childPID = child.pid
+    childPID = String(child.pid)
     reply(message, "error", `Spawned child ${childPID}`, reason, branch)
 
     // Pipes the output of the child process to the main application console
-    child.stdout.on('data', (data) => {
+    child.stdout?.on('data', (data) => {
         console.log(data)
         reply(message, "error", `${data.slice(0, 1024)}`, reason, branch)
     })
 
-    child.stderr.on('data', (data) => {
+    child.stderr?.on('data', (data) => {
         console.error(data)
         reply(message, "error", `${data.slice(0, 1024)}`, reason, branch)
     })
@@ -157,7 +157,7 @@ async function restartBot(message, reason, branch) {
  * Restarts the notification service
  * @param {ChatInputCommandInteraction<CacheType>} message 
  */
-async function restartNotification(message, reason, branch) {
+async function restartNotification(message: ChatInputCommandInteraction<CacheType>, reason: string, branch: string) {
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('Restarting the notification microservice.')
@@ -190,12 +190,12 @@ async function restartNotification(message, reason, branch) {
     reply(message, "notification", `Spawned child ${child.pid}`, reason, branch)
 
     // Pipes the output of the child process to the main application console
-    child.stdout.on('data', (data) => {
+    child.stdout?.on('data', (data) => {
         console.log(data)
         reply(message, "notification", `${data.slice(0, 1024)}`, reason, branch)
     })
 
-    child.stderr.on('data', (data) => {
+    child.stderr?.on('data', (data) => {
         console.error(data)
         reply(message, "notification", `${data.slice(0, 1024)}`, reason, branch)
     })
@@ -210,7 +210,7 @@ async function restartNotification(message, reason, branch) {
  * Restarts beehive
  * @param {ChatInputCommandInteraction<CacheType>} message 
  */
-async function restartBeehive(message, reason, branch) {
+async function restartBeehive(message: ChatInputCommandInteraction<CacheType>, reason: string, branch: string) {
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('Restarts beehive.')
@@ -242,12 +242,12 @@ async function restartBeehive(message, reason, branch) {
     reply(message, "beehive", `Spawned child ${child.pid}`, reason, branch)
 
     // Pipes the output of the child process to the main application console
-    child.stdout.on('data', (data) => {
+    child.stdout?.on('data', (data) => {
         console.log(data)
         reply(message, "beehive", `${data.slice(0, 1024)}`, reason, branch)
     })
 
-    child.stderr.on('data', (data) => {
+    child.stderr?.on('data', (data) => {
         console.error(data)
         reply(message, "beehive", `${data.slice(0, 1024)}`, reason, branch)
     })
@@ -258,7 +258,7 @@ async function restartBeehive(message, reason, branch) {
     })
 }
 
-async function replyInvalid(message, service, reason, branch) {
+async function replyInvalid(message: ChatInputCommandInteraction<CacheType>, service: string, reason: string, branch: string) {
     const embed = new EmbedBuilder()
         .setTitle('Restart')
         .setDescription('**Restarts the specified service.**\n\n**Valid services:**\nnotification\nself')
@@ -273,7 +273,7 @@ async function replyInvalid(message, service, reason, branch) {
     await message.editReply({ embeds: [embed]})
 }
 
-function serviceExists(service) {
+function serviceExists(service: string) {
     const services = ["self", "notification", "beehive"]
 
     return services.includes(service)

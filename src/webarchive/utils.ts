@@ -1,7 +1,8 @@
 import * as fs from 'fs'
 import editEmbed from './embeds.js'
+import { Embed } from 'discord.js'
 
-export default function remove(entries, id) {
+export default function remove(entries, id: number) {
     const index = entries.indexOf(id)
     if (index !== -1) {
         entries.splice(index, 1)
@@ -12,7 +13,7 @@ export default function remove(entries, id) {
  * Fetches data from text files
  * Add a file param if expanding to multiple files
  */
-export async function readFile(file) {
+export async function readFile(file: string) {
 
     return new Promise((res) => {
         fs.readFile(file, async (err, data) => {
@@ -33,7 +34,7 @@ export async function readFile(file) {
  * @param {string} fileName Filename to write to
  * @param {array} content Content to write to file 
  */
-export async function writeFile(content) {
+export async function writeFile(content: Content) {
     const file = "../../data/status.txt"
     const stringifiedContent = JSON.stringify(content)
 
@@ -48,10 +49,10 @@ export async function writeFile(content) {
  * @param {*} cooldown Cooldown object
  * @returns {string} Formatted cooldown
  */
-export function formatCooldown(storedCooldown) {
+export function formatCooldown(storedCooldown: number) {
     const currentTime = new Date()
     currentTime.setHours(currentTime.getHours() + 2)
-    const cooldownMillis = new Date(storedCooldown) - currentTime
+    const cooldownMillis = storedCooldown - currentTime.getTime()
 
     if (cooldownMillis <= 0) return "Ready!"
 
@@ -63,7 +64,7 @@ export function formatCooldown(storedCooldown) {
  * @param {number} millis Milliseconds
  * @returns {string} Formatted string
  */
-export function formatMillis(millis) {
+export function formatMillis(millis: number) {
     const totalSeconds = Math.floor(millis / 1000)
     const seconds = totalSeconds % 60
     const minutes = Math.floor(totalSeconds / 60)
@@ -71,7 +72,7 @@ export function formatMillis(millis) {
     return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
 }
 
-export function update(embed, stats) {
+export function update(embed: Embed, stats: Stats) {
     const totalWeight = 4 * (stats.total_domains + stats.total_paths) + 200
     const completedWeight = stats.domains_in_fetch_progress.length + (stats.finished_domains * 3) + stats.paths_in_fetch_progress + (stats.finished_paths * 3) + stats.links_generated
 

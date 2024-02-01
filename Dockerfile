@@ -1,12 +1,11 @@
-# Docker in docker base
-FROM docker:dind
+# Dockerfile
+FROM node:20-alpine
 
-# Copies content
+# Set the working directory
+WORKDIR /usr/src/app
+
+RUN npm install node-cron node-fetch fs
+
 COPY . .
-
-# Adds necesarry packages
-RUN apk add git openssh-client docker openrc nodejs npm
-
-RUN dockerd --host=unix:///var/run/docker.sock &
 
 CMD npm start

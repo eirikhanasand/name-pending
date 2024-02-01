@@ -4,3 +4,5 @@ config.json
 tekkom-bot
 automatednotifications
 frontend
+config.ts
+config.js

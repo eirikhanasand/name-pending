@@ -1,7 +1,7 @@
 import { EmbedBuilder } from "discord.js"
 import { formatMillis } from "./utils.js"
 
-export default function editEmbed(embed, stats) {
+export default function editEmbed(embed: Embed, stats) {
     const totalWeight = 4 * (stats.total_domains + stats.total_paths) + 200
     const completedWeight = stats.domains_in_fetch_progress.length + (stats.finished_domains * 3) + stats.paths_in_fetch_progress + (stats.finished_paths * 3) + stats.links_generated
 
@@ -20,9 +20,9 @@ export default function editEmbed(embed, stats) {
     }
 }
 
-export function startingEmbed(stats) {
+export function startingEmbed(stats: Stats) {
     const currentTime = new Date()
-    const millis = formatMillis(currentTime-stats.startTime)
+    const millis = formatMillis(currentTime.getTime() - stats.startTime)
     const embed = new EmbedBuilder()
         .setTitle('Archive')
         .setDescription('Arkiverer hele Logins digitale fotavtrykk i sanntid.')
@@ -41,7 +41,7 @@ export function startingEmbed(stats) {
     return embed
 }
 
-export function cooldownEmbed(cooldown) {
+export function cooldownEmbed(cooldown: number) {
     const embed = new EmbedBuilder()
         .setTitle('Archive')
         .setDescription('Arkiverer hele Logins digitale fotavtrykk i sanntid.')
@@ -55,9 +55,9 @@ export function cooldownEmbed(cooldown) {
     return embed
 }
 
-export function archivingEmbed(stats) {
+export function archivingEmbed(stats: Stats) {
     const currentTime = new Date()
-    const millis = formatMillis(currentTime-stats.startTime)
+    const millis = formatMillis(currentTime.getTime() - stats.startTime)
     const domainsFailed = stats.total_domains - stats.finished_domains - stats.domains_in_progress.length
     const pathsFailed = stats.total_paths - stats.finished_paths - stats.paths_in_progress
     const embed = new EmbedBuilder()
@@ -95,9 +95,9 @@ export function archivingEmbed(stats) {
     return embed
 }
 
-export function fetchingEmbed(stats) {
+export function fetchingEmbed(stats: Stats) {
     const currentTime = new Date()
-    const millis = formatMillis(currentTime-stats.startTime)
+    const millis = formatMillis(currentTime.getTime() - stats.startTime)
     const embed = new EmbedBuilder()
         .setTitle('Archive')
         .setDescription('Arkiverer hele Logins digitale fotavtrykk i sanntid.')
@@ -131,10 +131,10 @@ export function fetchingEmbed(stats) {
     return embed
 }
 
-export function finishedEmbed(stats) {
+export function finishedEmbed(stats: Stats) {
     const currentTime = new Date()
     const cooldown = new Date()
-    const millis = formatMillis(currentTime-stats.startTime)
+    const millis = formatMillis(currentTime.getTime() - stats.startTime)
     cooldown.setMinutes(cooldown.getMinutes() + 45)
 
     const embed = new EmbedBuilder()

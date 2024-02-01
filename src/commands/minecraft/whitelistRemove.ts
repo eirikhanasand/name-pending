@@ -43,7 +43,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     await post(message, user)
 }
 
-async function post(message, name) {
+async function post(message: ChatInputCommandInteraction<CacheType>, name: string) {
     let content = ""
 
     await Promise.all(

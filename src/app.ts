@@ -2,8 +2,8 @@ import { readdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { join, dirname } from 'path'
 import { Client, Collection, EmbedBuilder, Events, GatewayIntentBits } from 'discord.js'
-import config from '../config.json' assert { type: "json" }
-import info from '../../info.json' assert { type: "json" }
+import config from '../config.js'
+import info from '../../info.js'
 import roles from './managed/roles.js'
 import { exec } from 'child_process'
 

@@ -1,9 +1,9 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js'
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js'
 
 export const data = new SlashCommandBuilder()
     .setName('registry')
     .setDescription('Guide on how to use our registry.')
-export async function execute(message) {
+export async function execute(message: ChatInputCommandInteraction) {
     const embed = new EmbedBuilder()
         .setTitle('Registry')
         .setDescription('Guide on how to use our registry')

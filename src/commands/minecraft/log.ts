@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
-import config from "../../../config.json" assert {type: "json"}
+import config from '../../../config.js'
 import { exec } from 'child_process'
 
 /**
