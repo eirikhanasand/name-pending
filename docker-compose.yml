@@ -1,6 +1,6 @@
-version: '1'
+version: '4'
 services:
-  dcsg:
+  tekkom-bot:
     build:
       context: .
       dockerfile: Dockerfile
