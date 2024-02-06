@@ -11,7 +11,7 @@ ENV PYTHON python3
 WORKDIR /usr/src/app
 
 # Install required dependencies
-RUN npm install node-cron node-fetch fs discord.js git node-pty
+RUN npm install node-cron node-fetch fs discord.js git node-pty typescript
 
 # Copy contents
 COPY . .
