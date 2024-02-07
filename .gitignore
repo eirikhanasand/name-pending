@@ -6,3 +6,4 @@ automatednotifications
 frontend
 config.ts
 config.js
+.secrets.json
