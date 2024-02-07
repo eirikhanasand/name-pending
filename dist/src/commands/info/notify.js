@@ -29,7 +29,7 @@ export async function execute(message) {
     const topic = message.options.getString('topic');
     const screen = message.options.getString('screen');
     // Checking if the author is allowed to remove users from the whitelist
-    const isAllowed = message.member?.roles?.cache.some((role) => role.id === config.roleID);
+    const isAllowed = message.member?.roles?.cache.some((role) => role.id === config.roleID || role.id === config.styret);
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
         return await message.reply({ content: "Unauthorized.", ephemeral: true });
@@ -40,18 +40,13 @@ export async function execute(message) {
             ephemeral: true
         });
     }
+    await message.reply({ content: "Working...", ephemeral: true });
     // Sanitizes user before removing them to protect against xml attacks
     const response = await notify(title, description, topic, screen ? screen : undefined);
     if (response) {
-        return await message.reply({
-            content: `Successfully sent notification to topic ${topic} at ${new Date().toISOString()}`,
-            ephemeral: true
-        });
+        return await message.editReply(`Successfully sent notification to topic ${topic} at ${new Date().toISOString()}`);
     }
-    return await message.reply({
-        content: `Failed to send notification ${title} to ${topic}. Please try again later.`,
-        ephemeral: true
-    });
+    return await message.editReply(`Failed to send notification ${title} to ${topic}. Please try again later.`);
 }
 async function notify(title, description, topic, screen) {
     // Sets the topic to maintenance if the topic is not available
@@ -80,5 +75,5 @@ async function notify(title, description, topic, screen) {
     if (response) {
         return true;
     }
-    return console.log("Network response failed for ", title, "Response: ", response);
+    return false;
 }

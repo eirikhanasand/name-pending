@@ -39,27 +39,24 @@ export async function execute(message: ChatInputCommandInteraction) {
         return await message.reply({ content: "Unauthorized.", ephemeral: true })
     }
 
+    
     if (!title || !description || !topic) {
         return await message.reply({
             content: `You must provide a ${title ? '' : 'title'} ${description ? '' : 'description'} ${topic ? '' : 'topic'} to send notifications`,
             ephemeral: true
         })
     }
+    
+    await message.reply({ content: "Working...", ephemeral: true })
 
     // Sanitizes user before removing them to protect against xml attacks
     const response = await notify(title, description, topic, screen ? screen : undefined)
 
     if (response) {
-        return await message.reply({
-            content: `Successfully sent notification to topic ${topic} at ${new Date().toISOString()}`,
-            ephemeral: true
-        })
+        return await message.editReply(`Successfully sent notification to topic ${topic} at ${new Date().toISOString()}`)
     }
 
-    return await message.reply({
-        content: `Failed to send notification ${title} to ${topic}. Please try again later.`,
-        ephemeral: true
-    })
+    return await message.editReply(`Failed to send notification ${title} to ${topic}. Please try again later.`)
 }
 
 async function notify(title: string, description: string, topic: string, screen: string | undefined) {
@@ -93,5 +90,5 @@ async function notify(title: string, description: string, topic: string, screen:
         return true
     }
 
-    return console.log("Network response failed for ", title, "Response: ", response)
+    return false
 }
