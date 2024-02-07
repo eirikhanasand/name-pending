@@ -60,3 +60,44 @@ type ErrorType = {
         code: number
     }
 }
+
+type DetailedEvent = {
+    id: number | string
+    visible: boolean
+    name_no: string
+    name_en: string
+    description_no: string
+    description_en: string
+    informational_no: string
+    informational_en: string
+    time_type: string
+    time_start: string
+    time_end: string
+    time_publish: string
+    time_signup_release: string
+    time_signup_deadline: string
+    canceled: boolean
+    digital: boolean
+    highlight: boolean
+    image_small: string
+    image_banner: string
+    link_facebook: string
+    link_discord: string
+    link_signup: string
+    link_stream: string
+    capacity: number | null
+    full: boolean
+    category: number
+    location: null,
+    parent: null,
+    rule: null,
+    updated_at: string
+    created_at: string
+    deleted_at: string
+    category_name_no: string
+    category_name_en: string
+}
+
+type EventWithOnlyID = {
+    id: string
+}

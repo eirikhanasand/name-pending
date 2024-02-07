@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, Role, SlashCommandBuilder } from 'discord.js'
 import config from '../../../config.js'
 import { Roles } from '../../../interfaces.js'
+import sendNotification from '../../utils/sendNotification.js'
 
 /**
  * Builds a new slash command with the given name, description and options
@@ -29,7 +30,9 @@ export async function execute(message: ChatInputCommandInteraction) {
     const title = message.options.getString('title')
     const description = message.options.getString('description')
     const topic = message.options.getString('topic')
-    const screen = message.options.getString('screen')
+    const screen = {
+        id: message.options.getString('screen')
+    } as EventWithOnlyID
 
     // Checking if the author is allowed to remove users from the whitelist
     const isAllowed = (message.member?.roles as unknown as Roles)?.cache.some((role: Role) => role.id === config.roleID || role.id === config.styret)
@@ -50,45 +53,11 @@ export async function execute(message: ChatInputCommandInteraction) {
     await message.reply({ content: "Working...", ephemeral: true })
 
     // Sanitizes user before removing them to protect against xml attacks
-    const response = await notify(title, description, topic, screen ? screen : undefined)
+    const response = await sendNotification({title, description, topic, screen})
 
     if (response) {
         return await message.editReply(`Successfully sent notification to topic ${topic} at ${new Date().toISOString()}`)
     }
 
     return await message.editReply(`Failed to send notification ${title} to ${topic}. Please try again later.`)
-}
-
-async function notify(title: string, description: string, topic: string, screen: string | undefined) {
-    // Sets the topic to maintenance if the topic is not available
-    if (!topic) topic = "maintenance"
-
-    // Defines the message to be sent
-    const message = {
-        to: `/topics/${topic}`,
-        notification: {
-            title: title,
-            body: description,
-        },
-        data: screen
-    }
-    
-    // Defines the fetch request to be sent with all info attached
-    const options = {
-        method: "POST",
-        headers: {
-            "Authorization": `key=${config.api_key}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(message)
-    }
-
-    // Sends the notification and waits for response
-    const response = await fetch(config.api_url, options)
-
-    if (response) {
-        return true
-    }
-
-    return false
 }
