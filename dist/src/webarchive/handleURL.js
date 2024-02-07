@@ -1,4 +1,4 @@
-import url from '../../data/links.json' assert { type: 'json' };
+import url from '../../data/links.js';
 import handlePaths from './handlePaths.js';
 import remove from './utils.js';
 import editEmbed from './embeds.js';
@@ -20,9 +20,9 @@ const websiteLinks = url.websiteLinks;
  * Returns the link to archive the error page.
  * Catches any unhandled errors and logs their error code.
  *
- * @param {string} link Link to fetch
- * @param {boolean} generated Terminates not found generated webpages to avoid fetching the 404 page multiple times.
- * @param {boolean} fast Provides a faster way to run the function by terminating early
+ * @param link Link to fetch
+ * @param generated Terminates not found generated webpages to avoid fetching the 404 page multiple times.
+ * @param fast Provides a faster way to run the function by terminating early
  * @returns link | nothing
  */
 export default async function fetchURL(link, generated, fast) {
@@ -75,7 +75,6 @@ export async function archiveURLs(embed, stats) {
     stats.paths_in_queue = stats.total_paths;
     stats.paths_in_fetch_queue = stats.total_paths;
     editEmbed(embed, stats);
-
     // End stats
     let workingURLs = [];
     await Promise.allSettled(websites.map(async (website) => {

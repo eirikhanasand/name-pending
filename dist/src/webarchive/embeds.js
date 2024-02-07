@@ -17,7 +17,7 @@ export default function editEmbed(embed, stats) {
 }
 export function startingEmbed(stats) {
     const currentTime = new Date();
-    const millis = formatMillis(currentTime - stats.startTime);
+    const millis = formatMillis(currentTime.getTime() - stats.startTime);
     const embed = new EmbedBuilder()
         .setTitle('Archive')
         .setDescription('Arkiverer hele Logins digitale fotavtrykk i sanntid.')
@@ -39,7 +39,7 @@ export function cooldownEmbed(cooldown) {
 }
 export function archivingEmbed(stats) {
     const currentTime = new Date();
-    const millis = formatMillis(currentTime - stats.startTime);
+    const millis = formatMillis(currentTime.getTime() - stats.startTime);
     const domainsFailed = stats.total_domains - stats.finished_domains - stats.domains_in_progress.length;
     const pathsFailed = stats.total_paths - stats.finished_paths - stats.paths_in_progress;
     const embed = new EmbedBuilder()
@@ -53,7 +53,7 @@ export function archivingEmbed(stats) {
 }
 export function fetchingEmbed(stats) {
     const currentTime = new Date();
-    const millis = formatMillis(currentTime - stats.startTime);
+    const millis = formatMillis(currentTime.getTime() - stats.startTime);
     const embed = new EmbedBuilder()
         .setTitle('Archive')
         .setDescription('Arkiverer hele Logins digitale fotavtrykk i sanntid.')
@@ -66,7 +66,7 @@ export function fetchingEmbed(stats) {
 export function finishedEmbed(stats) {
     const currentTime = new Date();
     const cooldown = new Date();
-    const millis = formatMillis(currentTime - stats.startTime);
+    const millis = formatMillis(currentTime.getTime() - stats.startTime);
     cooldown.setMinutes(cooldown.getMinutes() + 45);
     const embed = new EmbedBuilder()
         .setTitle('Archive')

@@ -34,7 +34,7 @@ export function getCurrentWeekNumber() {
     // January 1st of the current year
     const startOfYear = new Date(date.getFullYear(), 0, 1);
     // Calculate days passed
-    const daysPassed = Math.floor((date - startOfYear) / (24 * 60 * 60 * 1000));
+    const daysPassed = Math.floor((date.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
     // Calculate the week number
     const weekNumber = Math.ceil((daysPassed + startOfYear.getDay() + 1) / 7);
     return weekNumber;

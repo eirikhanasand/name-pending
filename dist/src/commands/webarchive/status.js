@@ -7,7 +7,7 @@ export const data = new SlashCommandBuilder()
 export async function execute(message) {
     const info = getTotalLinks();
     const stored = await readFile("data/status.txt");
-    const cooldown = formatCooldown(stored.cooldown);
+    const cooldown = formatCooldown(new Date(stored.cooldown).getTime());
     const status = new EmbedBuilder()
         .setTitle('Status')
         .setDescription('Oversikt over linker klare til arkivering og eventuell cooldown.')

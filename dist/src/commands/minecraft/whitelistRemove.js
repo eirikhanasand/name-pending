@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import config from "../../../config.json" assert { type: "json" };
+import config from '../../../config.js';
 import log from '../../utils/logger.js';
 const url = "http://51.222.254.125";
 const servers = [{ port: 6677, name: 'survival' }, { port: 6688, name: 'creative' }];
@@ -18,9 +18,9 @@ export const data = new SlashCommandBuilder()
  */
 export async function execute(message) {
     // Slices to avoid overflow errors, checks to avoid passing undefined parameters
-    const user = message.options.getString('user') ? message.options.getString('user').slice(0, 30) : null;
+    const user = message.options.getString('user')?.slice(0, 30) || null;
     // Checking if the author is allowed to remove users from the whitelist
-    const isAllowed = message.member?.roles.cache.some(role => role.id === config.roleID);
+    const isAllowed = message.member?.roles?.cache.some((role) => role.id === config.roleID);
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
         return await message.reply({ content: "Unauthorized.", ephemeral: true });

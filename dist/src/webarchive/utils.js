@@ -48,7 +48,7 @@ export async function writeFile(content) {
 export function formatCooldown(storedCooldown) {
     const currentTime = new Date();
     currentTime.setHours(currentTime.getHours() + 2);
-    const cooldownMillis = new Date(storedCooldown) - currentTime;
+    const cooldownMillis = storedCooldown - currentTime.getTime();
     if (cooldownMillis <= 0)
         return "Ready!";
     return formatMillis(cooldownMillis);

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import config from "../../../config.json" assert { type: "json" };
+import config from '../../../config.js';
 import { exec } from 'child_process';
 /**
  * Builds a new slash command with the given name, description and options
@@ -13,7 +13,7 @@ export const data = new SlashCommandBuilder()
  */
 export async function execute(message) {
     // Checking if the author is allowed to setup services
-    const isAllowed = message.member?.roles.cache.some(role => role.id === config.roleID);
+    const isAllowed = message.member?.roles?.cache.some((role) => role.id === config.roleID);
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
         return await message.reply("Unauthorized.");

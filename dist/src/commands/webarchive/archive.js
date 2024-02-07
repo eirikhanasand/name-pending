@@ -8,8 +8,8 @@ export const data = new SlashCommandBuilder()
     .setDescription('Archives all of Logins webpages in real time.');
 export async function execute(message) {
     const currentTime = new Date();
-    const stored = readFile("./data/status.txt");
-    const cooldown = stored.cooldown - currentTime;
+    const stored = await readFile("./data/status.txt");
+    const cooldown = new Date(stored.cooldown).getTime() - currentTime.getTime();
     const info = getTotalLinks();
     if (cooldown > 0)
         return await message.reply({ embeds: [cooldownEmbed(cooldown)] });
@@ -36,7 +36,7 @@ export async function execute(message) {
         paths_in_fetch_queue: 0,
         progress: 0,
         status: "Starting",
-        startTime: new Date(),
+        startTime: new Date().getTime(),
         author: message.user.username,
         links_generated: 0
     };

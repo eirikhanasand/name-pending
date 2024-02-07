@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import storedEmbeds from "../../managed/roles.js";
-import config from "../../../config.json" assert { type: "json" };
+import config from '../../../config.js';
 import { exec } from 'child_process';
 export const data = new SlashCommandBuilder()
     .setName('roles')
@@ -19,20 +19,33 @@ export const data = new SlashCommandBuilder()
     .setDescription('Icons to display to the left of each role'));
 export async function execute(message) {
     // Checking if the author is allowed to setup services
-    const isAllowed = message.member?.roles.cache.some(role => role.id === config.roleID);
+    const isAllowed = message.member?.roles?.cache.some((role) => role.id === config.roleID);
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
         return await message.reply("Unauthorized.");
     }
     const title = message.options.getString('title');
+    if (!title) {
+        return await message.reply('Missing title');
+    }
     const name = message.options.getString('description');
+    if (!name) {
+        return await message.reply('Missing description');
+    }
     const roleString = message.options.getString('roles');
+    if (!roleString) {
+        return await message.reply('Missing roles');
+    }
     const roleIconsString = message.options.getString('icons');
+    if (!roleIconsString) {
+        return await message.reply('Missing icons');
+    }
     const roles = Array.from(roleString.trim().split(' '));
     const roleIcons = Array.from(roleIconsString.trim().split(' '));
     roleIcons.forEach((icon) => {
         const emoji = message.guild?.emojis.cache.find(emoji => emoji.name === icon);
-        const params = message.options._hoistedOptions.map(param => `${param.name}:${param.value}`);
+        const options = message.options;
+        const params = options._hoistedOptions.map((param) => `${param.name}:${param.value}`);
         const input = `/roles ${params.join(' ')}`;
         if (!(isValidEmoji(icon) || emoji)) {
             return message.reply({
@@ -43,6 +56,9 @@ export async function execute(message) {
     });
     const value = roles.map((role, index) => `${roleIcons[index] ? roleIcons[index] : '❓'} <@&${role}>`).join('\n');
     const guild = message.guild;
+    if (!guild) {
+        return await message.reply('Guild unavailable.');
+    }
     const embed = new EmbedBuilder()
         .setTitle(title)
         .setColor("#fd8738")
@@ -79,6 +95,7 @@ export async function execute(message) {
         for (let i = 0; i < roleIcons.length; i++) {
             const pattern = /<:(\w+):/;
             const match = pattern.exec(roleIcons[i]);
+            const emoji = reaction._emoji.name;
             if (match && match[1] === reaction._emoji.name) {
                 member.roles.remove(roles[i]);
                 break;

@@ -1,4 +1,4 @@
-import url from '../../data/links.json' assert { type: 'json' };
+import url from '../../data/links.js';
 const websites = url.websites;
 const websiteLinks = url.websiteLinks;
 export default function getTotalLinks() {
