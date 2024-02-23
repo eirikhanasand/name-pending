@@ -1,7 +1,6 @@
-import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, User, ReactionEmoji, Guild, Role, Reaction } from 'discord.js'
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, User, Role, Reaction } from 'discord.js'
 import storedEmbeds from "../../managed/roles.js"
 import config from '../../../config.js'
-import { exec } from 'child_process'
 import { Roles } from '../../../interfaces.js'
 
 export const data = new SlashCommandBuilder()
@@ -61,14 +60,20 @@ export async function execute(message: ChatInputCommandInteraction) {
     const roleIcons = Array.from(roleIconsString.trim().split(' '))
 
     roleIcons.forEach((icon) => {
-        const emoji = message.guild?.emojis.cache.find(emoji => emoji.name === icon)
+        let name = ''
+        const match = icon.match(/<:(.*):[0-9]+>/)
+
+        if (match) {
+            name = match[1]
+        }
+
         const options: any = message.options
         const params = options._hoistedOptions.map((param: NameValueObject) => `${param.name}:${param.value}`)
         const input = `/roles ${params.join(' ')}`
 
-        if (!(isValidEmoji(icon) || emoji)) {
+        if (!isValidEmoji(icon) && !name.length) {
             return message.reply({
-                content: `There is no emoji named \`\`${icon}\`\`\ \nYou entered: \`\`\`text\n${input}\`\`\``, 
+                content: `There is no emoji named \`\`${name || icon}\`\`\ \nYou entered: \`\`\`text\n${input}\`\`\``, 
                 ephemeral: true
             })
         }
@@ -90,8 +95,6 @@ export async function execute(message: ChatInputCommandInteraction) {
     const response = await message.reply({ embeds: [embed], fetchReply: true })
 
     storedEmbeds.push({"channelID": message.channelId, "message": response.id})
-    const save = ['cd src/managed', `echo 'const roles = ${JSON.stringify(storedEmbeds)}\nexport default roles' > roles.js`]
-    const child = exec(save.join(' && '))
 
     for (let i = 0; i < roleIcons.length; i++) {
         response.react(roleIcons[i])
@@ -125,7 +128,6 @@ export async function execute(message: ChatInputCommandInteraction) {
         for (let i = 0; i < roleIcons.length; i++) {
             const pattern = /<:(\w+):/
             const match = pattern.exec(roleIcons[i])
-            const emoji = reaction._emoji.name
 
             if (match && match[1] === reaction._emoji.name) {
                 member.roles.remove(roles[i])
@@ -139,6 +141,6 @@ export async function execute(message: ChatInputCommandInteraction) {
 }
 
 function isValidEmoji(emoji: string) {
-    const validEmojiRegex = /^([\uD800-\uDBFF][\uDC00-\uDFFF])|[\u2600-\u27FF\u2B50\u2934\u2935\u2B06\u2194\u2195\u25AA\u25AB\u25FE\u25FD\u25FC\u25B6\u25C0\u23E9\u23EA\u23F8\u23F9\u23FA\u25B6\u25C0]$/
-    return validEmojiRegex.test(emoji)
+    const validEmojiRegex = /^([\uD800-\uDBFF][\uDC00-\uDFFF])|[\u2600-\u27FF\u2B50\u2934\u2935\u2B06\u2194\u2195\u25AA\u25AB\u25FE\u25FD\u25FC\u25B6\u25C0\u23E9\u23EA\u23F8\u23F9\u23FA\u25B6\u25C0⛏️]$/
+    return validEmojiRegex.test(emoji);
 }

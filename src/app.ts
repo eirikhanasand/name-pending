@@ -1,9 +1,8 @@
 import { readdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { join, dirname } from 'path'
-import { ChatInputCommandInteraction, Client, Collection, EmbedBuilder, Events, GatewayIntentBits, Reaction, TextChannel, User } from 'discord.js'
+import { ChatInputCommandInteraction, Client, Collection, EmbedBuilder, Events, GatewayIntentBits, Reaction, User } from 'discord.js'
 import config from '../config.js'
-// import info from '../../info.js'
 import roles from './managed/roles.js'
 import { exec } from 'child_process'
 
@@ -38,7 +37,7 @@ for (const folder of commandFolders) {
 	}
 }
 
-client.once(Events.ClientReady, async (message: ChatInputCommandInteraction) => {
+client.once(Events.ClientReady, async () => {
     // Restarts role listeners after restart
     roles.forEach(async (role) => {
         try {
@@ -77,9 +76,10 @@ client.once(Events.ClientReady, async (message: ChatInputCommandInteraction) => 
                 const member = await guild.members.fetch(user.id)
                 const emoji = clickedReaction._emoji.name
                 const reaction = emoji.length < 4 ? emoji.slice(0, 2) : emoji
-
+                console.log(icons)
                 for (let i = 0; i < icons.length; i++) {
                     if (icons[i] === reaction) {
+                        console.log(roles[i])
                         member.roles.add(roles[i])
                         break
                     }
@@ -109,44 +109,10 @@ client.once(Events.ClientReady, async (message: ChatInputCommandInteraction) => 
                   break;
                 }
             }
-
-            const save = ['cd src/managed', `echo 'const roles = ${JSON.stringify(roles)}\nexport default roles' > roles.js`]
-            const child = exec(save.join(' && '))
         }
     })
 
     console.log("Ready!")
-
-    // if (info.channelID && info.username && info.userID) {
-    //     const mID = (await message.channels.fetch(info.channelID) as any).lastMessageId || ''
-    //     const msg = await message.channels.fetch(info.channelID).then((channel: any) => channel?.messages.fetch(mID))
-    //     const embed = new EmbedBuilder()
-    //     .setTitle('Restart')
-    //     .setDescription('Restarted the bot.')
-    //     .setColor("#fd8738")
-    //     .setTimestamp()
-    //     .setAuthor({name: `Author: ${info.username} · ${info.userID}`})
-    //     .addFields(
-    //         {name: "Status", value: "Success", inline: true},
-    //         {name: "Reason", value: info.reason, inline: true},
-    //         {name: "Branch", value: info.branch, inline: true},
-    //     )
-
-    //     try {
-    //         await msg.edit({ embeds: [embed]})
-    //     } catch (e) {
-    //         const channel = msg.channel
-    //         await channel.send({ embeds: [embed] })
-    //     }
-
-    //     const commands = [
-    //         `echo '{"branch": "", "reason": "", "channelID": "", "username": "", "userID": ""}' > ../info.json`,
-    //         'rm ../temp.sh'
-    //     ]
-    
-    //     exec(commands.join(' && '))
-    // }
-
 })
 
 client.on(Events.InteractionCreate, async (message: ChatInputCommandInteraction) => {
