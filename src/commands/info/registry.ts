@@ -10,6 +10,9 @@ export async function execute(message: ChatInputCommandInteraction) {
         .setColor("#fd8738")
         .setTimestamp()
         .addFields(
+            {name: "**[LOCAL]**", value: "docker login registry.git.logntnu.no", inline: true},
+            {name: "**Description**", value: "Logs into Logins gitlab registry. Use the LDAP username and a access token with sufficient permissions.", inline: true},
+            {name: " ", value: " ", inline: false},
             {name: "**[OPTIONAL]**", value: "docker service create --name <repository_name> --with-registry-auth registry.git.logntnu.no/tekkom/<repository>:latest", inline: true},
             {name: "**Description**", value: "Creates a new registry item, use if the registry does not exist.", inline: true},
             {name: " ", value: " ", inline: false},
