@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "outDir": "dist",
+        "strict": true,
+        "target": "es2022",
+    },
+    "include": [
+        "**/*.ts",
+        "**/*.d.ts",
+        "**/*.json", "secret.ts",
+    ],
+    "exclude": ["node_modules"]
+}

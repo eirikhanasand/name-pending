@@ -1,0 +1,8 @@
+version: '4'
+services:
+  tekkom-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app

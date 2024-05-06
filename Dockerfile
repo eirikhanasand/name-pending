@@ -1,12 +1,21 @@
-# Docker in docker base
-FROM docker:dind
+# Dockerfile
+FROM node:20-alpine
 
-# Copies content
+# Install required system dependencies
+RUN apk add --no-cache python3 make g++
+
+# Set environment variables to point to Python
+ENV PYTHON python3
+ENV GOOGLE_APPLICATION_CREDENTIALS /usr/src/app/.secrets.json
+
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Install required dependencies
+RUN npm install node-cron node-fetch fs discord.js git node-pty typescript firebase-admin
+
+# Copy contents
 COPY . .
 
-# Adds necesarry packages
-RUN apk add git openssh-client docker openrc nodejs npm
-
-RUN dockerd --host=unix:///var/run/docker.sock &
-
+# Start application
 CMD npm start
