@@ -2,7 +2,7 @@ import { readdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { join, dirname } from 'path'
 import { ChatInputCommandInteraction, Client, Collection, EmbedBuilder, Events, GatewayIntentBits, Reaction, User } from 'discord.js'
-import config from '../.secrets.js'
+import config from '../secrets/.secrets.js'
 import roles from './managed/roles.js'
 
 const token = config.token

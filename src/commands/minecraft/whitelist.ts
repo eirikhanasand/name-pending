@@ -1,6 +1,6 @@
 import { CacheType, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import log from '../../utils/logger.js'
-import config from '../../../.secrets.js'
+import config from '../../../secrets/.secrets.js'
 
 /**
  * Builds a new slash command with the given name, description and options

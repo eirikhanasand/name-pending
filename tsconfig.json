@@ -8,13 +8,6 @@
         "strict": true,
         "target": "es2022",
     },
-    "paths": {
-        "@*": ["./src/*"],
-        "@utils/*": ["./src/utils/*"],
-        "@config": ["./.secrets.js"],
-        "@components/*": ["./src/components/*"],
-        "@parent/*": ["./*"]
-    },
     "include": [
         "**/*.ts",
         "**/*.d.ts",

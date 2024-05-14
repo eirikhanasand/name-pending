@@ -1,5 +1,5 @@
 import { CacheType, ChatInputCommandInteraction, TextChannel } from 'discord.js'
-import config from "../../.secrets.js"
+import config from "../../secrets/.secrets.js"
 
 /**
  * Logs the status of a whitelist message to the log channel
