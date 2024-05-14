@@ -48,10 +48,10 @@ export default async function fetchURL(link: string, generated?: boolean, fast?:
     } catch (e: any) {
         if (e.cause.code) {
             switch (e.cause.code) {
-                case 'ERR_TLS_CERT_ALTNAME_INVALID':    return console.log(`Invalid certificate ${link}`)
-                case 'ECONNREFUSED':                    return console.log(`Connection refused ${link}`)
-                case 'ETIMEDOUT':                       return console.log(`Timed out ${link}`)
-                default:                                return console.log(`Unhandled error ${e.cause.code} for ${link}`)
+                case 'ERR_TLS_CERT_ALTNAME_INVALID': return console.log(`Invalid certificate ${link}`)
+                case 'ECONNREFUSED': return console.log(`Connection refused ${link}`)
+                case 'ETIMEDOUT': return console.log(`Timed out ${link}`)
+                default: return console.log(`Unhandled error ${e.cause.code} for ${link}`)
             }
         }
         return console.log(`Unhandled error ${e} for ${link}`)}

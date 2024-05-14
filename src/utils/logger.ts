@@ -1,11 +1,10 @@
 import { CacheType, ChatInputCommandInteraction, TextChannel } from 'discord.js'
-import config from '../../config.js'
+import config from "../../.secrets.js"
 
 /**
  * Logs the status of a whitelist message to the log channel
  * @param {*} message Message object from Discord
- * @param {*} user Author of the message
- * @param {*} status Status of the request
+ * @param {*} content Content to log
  */
 export default function log(message: ChatInputCommandInteraction<CacheType>, content: string) {
     const guild = message.guild

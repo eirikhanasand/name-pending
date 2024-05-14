@@ -2,12 +2,10 @@ import { readdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { join, dirname } from 'path'
 import { ChatInputCommandInteraction, Client, Collection, EmbedBuilder, Events, GatewayIntentBits, Reaction, User } from 'discord.js'
-import config from '../config.js'
+import config from '../.secrets.js'
 import roles from './managed/roles.js'
-import { exec } from 'child_process'
 
 const token = config.token
-
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -76,10 +74,9 @@ client.once(Events.ClientReady, async () => {
                 const member = await guild.members.fetch(user.id)
                 const emoji = clickedReaction._emoji.name
                 const reaction = emoji.length < 4 ? emoji.slice(0, 2) : emoji
-                console.log(icons)
+
                 for (let i = 0; i < icons.length; i++) {
                     if (icons[i] === reaction) {
-                        console.log(roles[i])
                         member.roles.add(roles[i])
                         break
                     }
@@ -124,10 +121,8 @@ client.on(Events.InteractionCreate, async (message: ChatInputCommandInteraction)
 
 	try {
 		await command.execute(message)
-	} catch (error) {
-        // Ignoring error as another process is handling it
-        // console.log(error)
-	}
+    // Catched elsewhere
+	} catch (_) {}
 })
 
 client.login(token)

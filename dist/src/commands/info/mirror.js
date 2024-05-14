@@ -1,5 +1,5 @@
-import config from '../../../config.js';
 import { SlashCommandBuilder } from "discord.js";
+import config from "../../../.secrets.js";
 export const data = new SlashCommandBuilder()
     .setName('mirror')
     .setDescription('Sets up the logging functionally from an export-channel to a designated logging-channel.')

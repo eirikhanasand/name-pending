@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js';
 import log from '../../utils/logger.js';
-const url = "http://51.222.254.125";
-const servers = [{ port: 6677, name: 'survival' }, { port: 6688, name: 'creative' }];
+import config from '../../../.secrets.js';
 /**
  * Builds a new slash command with the given name, description and options
  */
@@ -27,8 +26,8 @@ export async function execute(message) {
 }
 async function post(message, name) {
     let content = "";
-    await Promise.all(servers.map(async (server) => {
-        const fullUrl = `${url}:${server.port}/${server.name}-whitelist`;
+    await Promise.all(config.minecraft_servers.map(async (server) => {
+        const fullUrl = `${config.minecraft_url}:${server.port}/${server.name}-whitelist`;
         const response = await fetch(fullUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', name, action: "add" }

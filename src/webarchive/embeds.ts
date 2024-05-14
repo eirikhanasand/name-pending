@@ -1,4 +1,4 @@
-import { Embed, EmbedBuilder } from "discord.js"
+import { EmbedBuilder } from "discord.js"
 import { formatMillis } from "./utils.js"
 
 export default function editEmbed(embed: any, stats: Stats) {

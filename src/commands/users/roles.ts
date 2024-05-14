@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, User, Role, Reaction } from 'discord.js'
 import storedEmbeds from "../../managed/roles.js"
-import config from '../../../config.js'
+import config from '../../../.secrets.js'
 import { Roles } from '../../../interfaces.js'
 
 export const data = new SlashCommandBuilder()
@@ -101,7 +101,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     }
 
     const responseCollector = response.createReactionCollector({
-        filter: (reaction, user) => !user.bot, 
+        filter: (_, user) => !user.bot, 
         dispose: true
     })
 

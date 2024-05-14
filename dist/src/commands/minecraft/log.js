@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import config from '../../../config.js';
-import { exec } from 'child_process';
+import config from '../../../.secrets.js';
 /**
  * Builds a new slash command with the given name, description and options
  */
@@ -18,9 +17,6 @@ export async function execute(message) {
     if (!isAllowed) {
         return await message.reply("Unauthorized.");
     }
-    const storechannel = [
-        `echo """{\\"token\\": \\"${config.token}\\", \\"clientId\\": \\"${config.clientId}\\", \\"guildId\\": \\"${config.guildId}\\", \\"docker_username\\": \\"${config.docker_username}\\", \\"docker_password\\": \\"${config.docker_password}\\", \\"roleID\\": \\"${config.roleID}\\", \\"minecraft_command\\": \\"${config.minecraft_command}\\", \\"minecraft_log\\": \\"${message.channelId}\\"}""" > config.json`
-    ];
-    const child = exec(storechannel.join(' && '));
+    config.minecraft_log = message.channelId;
     await message.reply({ content: `Now logging whitelist commands in <#${message.channelId}>`, ephemeral: true });
 }

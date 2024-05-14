@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import storedEmbeds from "../../managed/roles.js";
-import config from '../../../config.js';
+import config from '../../../.secrets.js';
 export const data = new SlashCommandBuilder()
     .setName('roles')
     .setDescription('Handles roles')
@@ -73,7 +73,7 @@ export async function execute(message) {
         response.react(roleIcons[i]);
     }
     const responseCollector = response.createReactionCollector({
-        filter: (reaction, user) => !user.bot,
+        filter: (_, user) => !user.bot,
         dispose: true
     });
     responseCollector.on('collect', async (reaction, user) => {

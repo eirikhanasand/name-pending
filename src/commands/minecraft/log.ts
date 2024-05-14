@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, Role, SlashCommandBuilder } from 'discord.js'
-import config from '../../../config.js'
+import config from '../../../.secrets.js'
 import { exec } from 'child_process'
 import { Roles } from '../../../interfaces.js'
 
@@ -22,12 +22,8 @@ export async function execute(message: ChatInputCommandInteraction) {
     if (!isAllowed) {
         return await message.reply("Unauthorized.")
     }
-
-    const storechannel = [
-        `echo """{\\"token\\": \\"${config.token}\\", \\"clientId\\": \\"${config.clientId}\\", \\"guildId\\": \\"${config.guildId}\\", \\"docker_username\\": \\"${config.docker_username}\\", \\"docker_password\\": \\"${config.docker_password}\\", \\"roleID\\": \\"${config.roleID}\\", \\"minecraft_command\\": \\"${config.minecraft_command}\\", \\"minecraft_log\\": \\"${message.channelId}\\"}""" > config.json`
-    ]
     
-    const child = exec(storechannel.join(' && '))
+    config.minecraft_log = message.channelId
 
     await message.reply({ content: `Now logging whitelist commands in <#${message.channelId}>`, ephemeral: true })
 }

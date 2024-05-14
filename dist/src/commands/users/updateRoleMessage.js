@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import storedEmbeds from "../../managed/roles.js";
-import config from '../../../config.js';
+import config from '../../../.secrets.js';
 export const data = new SlashCommandBuilder()
     .setName('updaterolemessage')
     .setDescription('Handles roles')

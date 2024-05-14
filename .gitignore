@@ -1,9 +1,6 @@
 node_modules
-config.json
 .DS_Store
 tekkom-bot
-automatednotifications
-frontend
-config.ts
-config.js
-.secrets.json
+.secrets.ts
+dist/
+dist/.secrets.js

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import config from '../../../config.js';
+import config from '../../../.secrets.js';
 import sendNotification from '../../utils/sendNotification.js';
 /**
  * Builds a new slash command with the given name, description and options

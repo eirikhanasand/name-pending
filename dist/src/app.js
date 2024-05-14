@@ -2,7 +2,7 @@ import { readdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
 import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
-import config from '../config.js';
+import config from '../.secrets.js';
 import roles from './managed/roles.js';
 const token = config.token;
 const __filename = fileURLToPath(import.meta.url);
@@ -64,10 +64,8 @@ client.once(Events.ClientReady, async () => {
                 const member = await guild.members.fetch(user.id);
                 const emoji = clickedReaction._emoji.name;
                 const reaction = emoji.length < 4 ? emoji.slice(0, 2) : emoji;
-                console.log(icons);
                 for (let i = 0; i < icons.length; i++) {
                     if (icons[i] === reaction) {
-                        console.log(roles[i]);
                         member.roles.add(roles[i]);
                         break;
                     }
@@ -107,11 +105,9 @@ client.on(Events.InteractionCreate, async (message) => {
         return;
     try {
         await command.execute(message);
+        // Catched elsewhere
     }
-    catch (error) {
-        // Ignoring error as another process is handling it
-        // console.log(error)
-    }
+    catch (_) { }
 });
 client.login(token);
 export default client;
