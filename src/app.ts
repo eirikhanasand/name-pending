@@ -129,5 +129,3 @@ client.login(token)
 
 
 export default client
-
-// temp
