@@ -6,7 +6,7 @@ RUN apk add --no-cache python3 make g++
 
 # Set environment variables to point to Python
 ENV PYTHON python3
-ENV GOOGLE_APPLICATION_CREDENTIALS /usr/src/app/.secrets.json
+ENV GOOGLE_APPLICATION_CREDENTIALS /usr/src/app/secrets/.secrets.json
 
 # Set the working directory
 WORKDIR /usr/src/app
