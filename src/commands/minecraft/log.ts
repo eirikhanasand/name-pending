@@ -1,6 +1,5 @@
 import { ChatInputCommandInteraction, Role, SlashCommandBuilder } from 'discord.js'
 import config from '../../../.secrets.js'
-import { exec } from 'child_process'
 import { Roles } from '../../../interfaces.js'
 
 /**
