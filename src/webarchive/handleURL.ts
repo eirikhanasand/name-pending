@@ -3,6 +3,7 @@ import handlePaths from './handlePaths.js'
 import remove from './utils.js'
 import editEmbed from './embeds.js'
 import { InteractionResponse } from 'discord.js'
+
 const websites = url.websites as any
 const websiteLinks = url.websiteLinks as any
 

@@ -5,3 +5,4 @@ tekkom-bot
 .secrets.json
 dist/
 dist/.secrets.js
+.env

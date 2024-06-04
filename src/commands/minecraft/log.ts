@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, Role, SlashCommandBuilder } from 'discord.js'
-import config from '../../../secrets/.secrets.js'
+import config from '../../utils/config.js'
 import { Roles } from '../../../interfaces.js'
 
 /**

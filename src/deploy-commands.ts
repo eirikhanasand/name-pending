@@ -1,5 +1,5 @@
 import { REST, Routes } from 'discord.js'
-import config from '../secrets/.secrets.js'
+import config from './utils/config.js'
 import { readdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { join, dirname } from 'path'
@@ -46,16 +46,25 @@ const rest = new REST({ version: '10' }).setToken(token);
 // Deploying commands to Discord
 (async () => {
     try {
-        console.log(`Started refreshing ${commands.length} application (/) commands.`)
+        console.log(`Started refreshing ${commands.length} application (/) commands.`);
+
+        // Check for duplicate command names
+        const commandNames = commands.map(cmd => cmd.name);
+        const duplicates = commandNames.filter((name, index) => commandNames.indexOf(name) !== index);
+
+        if (duplicates.length > 0) {
+            console.error(`Duplicate command names found: ${duplicates.join(', ')}`);
+            return;
+        }
 
         // Refreshing all commands
         const data = await rest.put(
             Routes.applicationGuildCommands(clientId, guildId),
             { body: commands }
-        ) as RestData[]
+        ) as RestData[];
 
-        console.log(`Successfully reloaded ${data.length} application (/) commands.`)
+        console.log(`Successfully reloaded ${data.length} application (/) commands.`);
     } catch (error) {
-        console.error(error)
+        console.error("here", error);
     }
-})()
+})();

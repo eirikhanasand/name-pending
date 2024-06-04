@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, Role, SlashCommandBuilder, TextChannel } from "discord.js"
 import { Roles } from '../../../interfaces.js'
-import config from "../../../secrets/.secrets.js"
+import config from "../../utils/config.js"
 
 export const data = new SlashCommandBuilder()
     .setName('mirror')

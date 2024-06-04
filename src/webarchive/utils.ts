@@ -31,7 +31,6 @@ export async function readFile(file: string) {
 /**
  * Writes data to text files.
  * 
- * @param {string} fileName Filename to write to
  * @param {array} content Content to write to file 
  */
 export async function writeFile(content: Content) {
@@ -47,7 +46,7 @@ export async function writeFile(content: Content) {
 /**
  * Formats the cooldown to minutes and seconds
  * @param {*} cooldown Cooldown object
- * @returns {string} Formatted cooldown
+ * @returns Formatted cooldown
  */
 export function formatCooldown(storedCooldown: number) {
     const currentTime = new Date()
@@ -62,7 +61,7 @@ export function formatCooldown(storedCooldown: number) {
 /**
  * Formats milliseconds into seconds and minute of format MM:SS
  * @param {number} millis Milliseconds
- * @returns {string} Formatted string
+ * @returns Formatted string
  */
 export function formatMillis(millis: number) {
     const totalSeconds = Math.floor(millis / 1000)
@@ -86,7 +85,7 @@ export function update(embed: Embed, stats: Stats) {
 /**
  * Function for returning the current time formatted as HH:MM, DD/MM, YEAR
  *
- * @returns {string} String
+ * @returns String
  */
 export function currentTime() {
     const time = new Date()

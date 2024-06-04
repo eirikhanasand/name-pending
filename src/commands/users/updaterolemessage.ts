@@ -1,7 +1,14 @@
-import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, User, Role, Reaction } from 'discord.js'
 import storedEmbeds from "../../managed/roles.js"
-import config from '../../../secrets/.secrets.js'
+import config from '../../utils/config.js'
 import { Roles } from '../../../interfaces.js'
+import { 
+    SlashCommandBuilder, 
+    EmbedBuilder, 
+    ChatInputCommandInteraction, 
+    User, 
+    Role, 
+    Reaction 
+} from 'discord.js'
 
 export const data = new SlashCommandBuilder()
     .setName('updaterolemessage')

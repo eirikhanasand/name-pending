@@ -1,10 +1,7 @@
 import { CacheType, ChatInputCommandInteraction, Message, SlashCommandBuilder } from 'discord.js'
 import http from "http"
 import { Reaction } from 'discord.js'
-
-const url = "http://51.222.254.125"
-const port = 6969
-const servers = [{port: 6677, name: 'survival'}, {port: 6688, name: 'creative'}]
+import config from '../../utils/config.js'
 
 export const data = new SlashCommandBuilder()
     .setName('chat')
@@ -45,8 +42,8 @@ export async function execute(message: ChatInputCommandInteraction<CacheType>) {
  * @param {Discord_Message} message 
  */
 function post(message: string) {
-    servers.forEach((server) => {
-        fetch(`${url}:${server.port}/${server.name}-message`, {
+    config.minecraft_servers.forEach((server) => {
+        fetch(`${config.minecraft_url}:${server.port}/${server.name}-message`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: message
@@ -71,7 +68,7 @@ async function listen(message: ChatInputCommandInteraction) {
         }
     })
 
-    server.listen(port)
+    server.listen(config.minecraft_port)
 }
 
 /**
@@ -90,8 +87,8 @@ async function updatePlayerCount(message: ChatInputCommandInteraction) {
         let players = ""
         let topic = ""
 
-        await Promise.allSettled(servers.map(async(server) => {
-            const response = await fetch(`${url}:${server.port}/${server.name}-online`)
+        await Promise.allSettled(config.minecraft_servers.map(async(server) => {
+            const response = await fetch(`${config.minecraft_url}:${server.port}/${server.name}-online`)
             const data = await response.json()
             
             switch (server.name) {
