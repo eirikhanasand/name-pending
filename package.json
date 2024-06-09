@@ -1,11 +1,13 @@
 {
     "name": "tekkom-bot",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "TekKom Bot",
     "main": "src/app.js",
     "type": "module",
     "scripts": {
         "start": "tsc && node dist/src/deploy-commands.js && node dist/src/app.js",
+        "build": "tsc",
+        "prod": "node dist/src/app.js",
         "fast": "tsc && node dist/src/app.js"
     },
     "author": "Login - Linjeforeningen for IT",

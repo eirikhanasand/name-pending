@@ -19,5 +19,7 @@ RUN npm install
 # Copies contents
 COPY . .
 
+RUN npm run build
+
 # Stars the application
-CMD npm start
+CMD npm run prod
