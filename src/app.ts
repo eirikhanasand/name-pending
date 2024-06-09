@@ -1,9 +1,17 @@
 import { readdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { join, dirname } from 'path'
-import { ChatInputCommandInteraction, Client, Collection, EmbedBuilder, Events, GatewayIntentBits, Reaction, User } from 'discord.js'
 import config from './utils/config.js'
 import roles from './managed/roles.js'
+import { 
+    ChatInputCommandInteraction, 
+    Client, 
+    Collection, 
+    Events, 
+    GatewayIntentBits, 
+    Reaction, 
+    User 
+} from 'discord.js'
 
 const token = config.token
 const __filename = fileURLToPath(import.meta.url)

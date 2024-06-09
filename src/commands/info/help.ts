@@ -79,13 +79,6 @@ async function help(message: ChatInputCommandInteraction, command: string | null
             embed = createEmbed("Help", "Help for **whitelist_remove**", fields)
             break
         }
-        case "archive": {
-            const fields = [
-                {name: "archive", value: "Archives Logins digital footprint to webarchive. Currently unstable. Use the command by typing the following: `/archive`"}
-            ] as EmbedField[]
-            embed = createEmbed("Help", "Help for **archive**", fields)
-            break
-        }
         case "status": {
             const fields = [
                 {name: "status", value: "Displays websites ready to be archived. Currently unstable. Use the command by typing the following: `/status`"}
@@ -120,7 +113,6 @@ async function help(message: ChatInputCommandInteraction, command: string | null
                 "setup                                 Sets up the specified service",
                 "whitelist                            Whitelists the specified user",
                 "whitelist_remove           Removes the specified user from the whitelist",
-                "archive                              Archives Logins digital footprint to the webarchive",
                 "status                                Displays domains ready to be archived"
             ]
             const fields = [
