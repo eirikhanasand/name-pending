@@ -44,10 +44,14 @@ export async function execute(message) {
         });
     }
     await message.reply({ content: "Working...", ephemeral: true });
-    // Sanitizes user before removing them to protect against xml attacks
-    const response = await sendNotification({ title, description, topic, screen });
-    if (response) {
-        return await message.editReply(`Successfully sent notification to topic ${topic} at ${new Date().toISOString()}`);
+    try {
+        const response = await sendNotification({ title, description, topic, screen });
+        if (response) {
+            return await message.editReply(`Successfully sent notification to topic ${topic} at ${new Date().toISOString()}`);
+        }
+        return await message.editReply(`Failed to send notification ${title} to ${topic}, but no errors were caught.`);
     }
-    return await message.editReply(`Failed to send notification ${title} to ${topic}. Please try again later.`);
+    catch (error) {
+        return await message.editReply(`Failed to send notification ${title} to ${topic}. Error: ${error}.`);
+    }
 }

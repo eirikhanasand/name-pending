@@ -43,6 +43,7 @@ export async function execute(message: ChatInputCommandInteraction<CacheType>) {
  */
 function post(message: string) {
     config.minecraft_servers.forEach((server) => {
+        console.log(`${config.minecraft_url}:${server.port}/${server.name}-message`)
         fetch(`${config.minecraft_url}:${server.port}/${server.name}-message`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},

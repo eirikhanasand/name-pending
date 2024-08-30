@@ -32,6 +32,7 @@ export async function execute(message) {
  */
 function post(message) {
     config.minecraft_servers.forEach((server) => {
+        console.log(`${config.minecraft_url}:${server.port}/${server.name}-message`);
         fetch(`${config.minecraft_url}:${server.port}/${server.name}-message`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

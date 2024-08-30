@@ -33,15 +33,15 @@ export async function execute(message: ChatInputCommandInteraction) {
     const screen = {
         id: message.options.getString('screen')
     } as EventWithOnlyID
-
+    
     // Checking if the author is allowed to remove users from the whitelist
     const isAllowed = (message.member?.roles as unknown as Roles)?.cache.some((role: Role) => role.id === config.roleID || role.id === config.styret)
-
+    
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
         return await message.reply({ content: "Unauthorized.", ephemeral: true })
     }
-
+    
     
     if (!title || !description || !topic) {
         return await message.reply({
@@ -50,14 +50,19 @@ export async function execute(message: ChatInputCommandInteraction) {
         })
     }
     
-    await message.reply({ content: "Working...", ephemeral: true })
+    try {
+        await message.reply({ content: "Working...", ephemeral: true })
 
-    // Sanitizes user before removing them to protect against xml attacks
-    const response = await sendNotification({title, description, topic, screen})
+        const response = await sendNotification({title, description, topic, screen})
+        
+        if (response) {
+            return await message.editReply(`Successfully sent notification to topic ${topic} at ${new Date().toISOString()}`)
+        }
 
-    if (response) {
-        return await message.editReply(`Successfully sent notification to topic ${topic} at ${new Date().toISOString()}`)
+        return await message.editReply(`Failed to send notification ${title} to ${topic}, but no errors were caught.`)
+    } catch (error) {
+        return await message.editReply(`Failed to send notification ${title} to ${topic}. Error: ${error}.`)
     }
 
-    return await message.editReply(`Failed to send notification ${title} to ${topic}. Please try again later.`)
+
 }
