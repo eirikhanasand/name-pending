@@ -1,4 +1,4 @@
-import { CacheType, ChatInputCommandInteraction, Message, SlashCommandBuilder } from 'discord.js'
+import { CacheType, ChatInputCommandInteraction, Message, SlashCommandBuilder, TextChannel } from 'discord.js'
 import http from "http"
 import { Reaction } from 'discord.js'
 import config from '../../utils/config.js'
@@ -14,16 +14,22 @@ export async function execute(message: ChatInputCommandInteraction<CacheType>) {
     const filter = (response: Message) => !response.author.bot
 
     // Message collector that collects all messages written in Discord
-    const collector = message.channel?.createMessageCollector({ filter })
+
+    if (!message.channel || !message.channel?.isTextBased()) {
+        return await message.reply({content: 'This command can only be used in text channels.', ephemeral: true})
+    }
+
+    const textChannel = message.channel as TextChannel
+    const collector = textChannel.createMessageCollector({ filter })
 
     // Seperate collector that listens to reactions on all messages
-    const botMessageCollector = message.channel?.createMessageCollector()
+    const botMessageCollector = textChannel.createMessageCollector()
 
-    collector?.on('collect', m => {
+    collector?.on('collect', (m: Message) => {
         post(`${m.author.username || m.author.globalName || m.author.id}: ${m.content}`)
     })
 
-    botMessageCollector?.on('collect', m => {
+    botMessageCollector?.on('collect', (m: Message) => {
         // Listens for reactions for 1 minute on each message
         const reactionCollector = m.createReactionCollector({ time: 60000 })
 
@@ -57,14 +63,16 @@ function post(message: string) {
  * @param {Discord_Message} message 
  */
 async function listen(message: ChatInputCommandInteraction) {
+    const textChannel = message.channel as TextChannel
+
     const server = http.createServer((req) => {
         if (req.headers['type'] === 'death') {
             req.on('data', chunk => {
-                message.channel?.send(`**${chunk.toString()}**`)
+                textChannel.send(`**${chunk.toString()}**`)
             })
         } else {
             req.on('data', chunk => {
-                message.channel?.send(chunk.toString())
+                textChannel.send(chunk.toString())
             })
         }
     })
@@ -93,8 +101,8 @@ async function updatePlayerCount(message: ChatInputCommandInteraction) {
             const data = await response.json()
             
             switch (server.name) {
-                case "survival": survival = data; break;
-                case "creative": creative = data; break;
+                case "survival": survival = data; break
+                case "creative": creative = data; break
             }
         }))
 

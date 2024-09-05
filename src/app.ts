@@ -12,6 +12,10 @@ import {
     Reaction, 
     User 
 } from 'discord.js'
+import addRole, { removeRole } from './utils/roles.js'
+import { schedule } from 'node-cron'
+import autoCreate from './utils/wiki.js'
+import autoCreateMeetings from './utils/autoCreateMeetings.js'
 
 const token = config.token
 const __filename = fileURLToPath(import.meta.url)
@@ -44,78 +48,50 @@ for (const folder of commandFolders) {
 }
 
 client.once(Events.ClientReady, async () => {
-    // Restarts role listeners after restart
-    roles.forEach(async (role) => {
+    for (const role of roles) {
         try {
             const { message, channelID } = role
 
-            // Fetches channel
+            // Fetch channel and message
             const channel = await client.channels.fetch(channelID)
-            if (!channel) return console.log(`Channel with ID ${channelID} not found.`)
+            if (!channel) {
+                return console.log(`Channel with ID ${channelID} not found.`)
+            }
 
-            // Fetches message
-            const roleMessage = await (channel as any).messages.fetch(message);
-            if (!message) return console.log(`Message with ID ${message} not found.`)
+            const roleMessage = await (channel as any).messages.fetch(message)
+            if (!roleMessage) {
+                return console.log(`Message with ID ${message} not found.`)
+            }
 
-            // Finds the content and guild
+            // Extract guild, roles, and icons
             const guild = client.guilds.cache.get(roleMessage.guildId)
             const content = roleMessage.embeds[0].data.fields[0].value
-            if (!guild) return console.log(`Guild ${roleMessage.guildId} does not exist.`)
+            if (!guild) {
+                return console.log(`Guild ${roleMessage.guildId} does not exist.`)
+            }
 
-            // Finds the relevant roles on the server
             const roleRegex = /<@&(\d+)>/g
             const messageRoles = content.match(roleRegex) || []
-            const roles = messageRoles.map((match: string) => match.slice(3, -1))
+            const roleIds = messageRoles.map((match: string) => match.slice(3, -1))
 
-            // Finds the corresponding icons
-            const icons = content.split('\n').map((icon: string) => 
+            const icons = content.split('\n').map((icon: string) =>
                 icon[1] === ':' ? icon.split(':')[1] : icon.substring(0, 2)
             )
-            
-            // Creates a collector that monitors the message for reactions
+
+            // Create a reaction collector
             const roleCollector = roleMessage.createReactionCollector({
-                filter: (reaction: Reaction, user: User) => !user.bot, 
-                dispose: true
+                filter: (reaction: Reaction, user: User) => !user.bot,
+                dispose: true,
             })
 
-            roleCollector.on('collect', async(clickedReaction: Reaction, user: User) => {
-                const member = await guild.members.fetch(user.id)
-                const emoji = clickedReaction._emoji.name
-                const reaction = emoji.length < 4 ? emoji.slice(0, 2) : emoji
-
-                for (let i = 0; i < icons.length; i++) {
-                    if (icons[i] === reaction) {
-                        member.roles.add(roles[i])
-                        break
-                    }
-                }
-            })
-        
-            roleCollector.on('remove', async(clickedReaction: Reaction, user: User) => {
-                const member = await guild.members.fetch(user.id)
-                const emoji = clickedReaction._emoji.name
-                const reaction = emoji.length < 4 ? emoji.slice(0, 2) : emoji
-
-                for (let i = 0; i < icons.length; i++) {
-                    if (icons[i] === reaction) {
-                        member.roles.remove(roles[i])
-                        break
-                    }
-                }
-            })   
+            addRole({ collector: roleCollector, guild, roles: roleIds, icons})
+            removeRole({ collector: roleCollector, guild, roles: roleIds, icons})
         } catch (error: any) {
-            // Removes deleted messages from storage
-            const errorLinkArray = error.url.split('/')
-            const messageIdToRemove = errorLinkArray[errorLinkArray.length - 1]
-
-            for (let i = 0; i < roles.length; i++) {
-                if (roles[i].message === messageIdToRemove) {
-                  roles.splice(i, 1);
-                  break;
-                }
-            }
+            console.error("Error processing roles:", error)
         }
-    })
+    }
+
+    autoCreateMeetings(client)
 
     console.log("Ready!")
 })
@@ -123,7 +99,7 @@ client.once(Events.ClientReady, async () => {
 client.on(Events.InteractionCreate, async (message: ChatInputCommandInteraction) => {
 	if (!message.isChatInputCommand()) return
 
-	const command = (client as any).commands.get(message.commandName);
+	const command = (client as any).commands.get(message.commandName)
 
 	if (!command) return
 

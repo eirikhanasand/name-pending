@@ -32,7 +32,7 @@ const app = initializeApp({
         auth_provider_x509_cert_url: AUTH_CERT_URL,
         client_x509_cert_url: CLIENT_CERT_URL,
         universe_domain: UNIVERSE_DOMAIN
-    }),
+    })
 });
 /**
  * Posts notification to FCM.
@@ -71,4 +71,4 @@ export default async function sendNotification({ title, description, screen, top
 }
 // Examples of direct notifications that can be sent by node sendNotifications.ts
 // Topics: norwegianTOPIC, englishTOPIC, ...
-// sendNotification({title: "Tittel", description: "Beskrivelse", topic: "maintenance"});
+// sendNotification({title: "Tittel", description: "Beskrivelse", topic: "maintenance"})

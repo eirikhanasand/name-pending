@@ -42,10 +42,10 @@ async function post(message: ChatInputCommandInteraction<CacheType>, name: strin
             })
             
             switch (response.status) {
-                case 304: content = `${name} is already whitelisted.`; break;
-                case 418: content = `Added ${name} to the whitelist.`; break;
-                case 404: content = `There is no Minecraft account named ${name}. Please try again.`; break;
-                default: content = "Please try again."; break;
+                case 304: content = `${name} is already whitelisted.`; break
+                case 418: content = `Added ${name} to the whitelist.`; break
+                case 404: content = `There is no Minecraft account named ${name}. Please try again.`; break
+                default: content = "Please try again."; break
             }
         })
     )

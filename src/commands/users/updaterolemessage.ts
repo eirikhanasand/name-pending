@@ -184,5 +184,5 @@ export async function execute(message: ChatInputCommandInteraction) {
 
 function isValidEmoji(emoji: string) {
     const validEmojiRegex = /^([\uD800-\uDBFF][\uDC00-\uDFFF])|[\u2600-\u27FF\u2B50\u2934\u2935\u2B06\u2194\u2195\u25AA\u25AB\u25FE\u25FD\u25FC\u25B6\u25C0\u23E9\u23EA\u23F8\u23F9\u23FA\u25B6\u25C0⛏️]$/
-    return validEmojiRegex.test(emoji);
+    return validEmojiRegex.test(emoji)
 }

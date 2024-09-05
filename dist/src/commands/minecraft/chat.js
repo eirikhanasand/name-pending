@@ -9,13 +9,17 @@ export async function execute(message) {
     // Filter to check that the author is not a bot to prevent an infinite loop
     const filter = (response) => !response.author.bot;
     // Message collector that collects all messages written in Discord
-    const collector = message.channel?.createMessageCollector({ filter });
+    if (!message.channel || !message.channel?.isTextBased()) {
+        return await message.reply({ content: 'This command can only be used in text channels.', ephemeral: true });
+    }
+    const textChannel = message.channel;
+    const collector = textChannel.createMessageCollector({ filter });
     // Seperate collector that listens to reactions on all messages
-    const botMessageCollector = message.channel?.createMessageCollector();
-    collector?.on('collect', m => {
+    const botMessageCollector = textChannel.createMessageCollector();
+    collector?.on('collect', (m) => {
         post(`${m.author.username || m.author.globalName || m.author.id}: ${m.content}`);
     });
-    botMessageCollector?.on('collect', m => {
+    botMessageCollector?.on('collect', (m) => {
         // Listens for reactions for 1 minute on each message
         const reactionCollector = m.createReactionCollector({ time: 60000 });
         // Logs the reaction interaction in game
@@ -45,15 +49,16 @@ function post(message) {
  * @param {Discord_Message} message
  */
 async function listen(message) {
+    const textChannel = message.channel;
     const server = http.createServer((req) => {
         if (req.headers['type'] === 'death') {
             req.on('data', chunk => {
-                message.channel?.send(`**${chunk.toString()}**`);
+                textChannel.send(`**${chunk.toString()}**`);
             });
         }
         else {
             req.on('data', chunk => {
-                message.channel?.send(chunk.toString());
+                textChannel.send(chunk.toString());
             });
         }
     });

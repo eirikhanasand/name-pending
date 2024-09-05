@@ -2,9 +2,10 @@ import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, User, R
 import storedEmbeds from "../../managed/roles.js"
 import config from '../../utils/config.js'
 import { Roles } from '../../../interfaces.js'
+import addRole, { removeRole } from '../../utils/roles.js'
 
 export const data = new SlashCommandBuilder()
-    .setName('roles')
+    .setName('rolesg')
     .setDescription('Handles roles')
     .addStringOption((option) => option
         .setName('title')
@@ -56,7 +57,9 @@ export async function execute(message: ChatInputCommandInteraction) {
         return await message.reply('Missing icons')
     }
 
-    const roles = Array.from(roleString.trim().split(' '))
+    const roles = Array.from(
+        roleString.trim().split(' ').map(role => role.replace(/[^\d\s]/g, ''))
+    )
     const roleIcons = Array.from(roleIconsString.trim().split(' '))
 
     roleIcons.forEach((icon) => {
@@ -105,42 +108,11 @@ export async function execute(message: ChatInputCommandInteraction) {
         dispose: true
     })
 
-    responseCollector.on('collect', async(reaction: Reaction, user) => {
-        const member = await guild.members.fetch(user.id)
-
-        for (let i = 0; i < roleIcons.length; i++) {
-            const pattern = /<:(\w+):/
-            const match = pattern.exec(roleIcons[i])
-
-            if (match && match[1] === reaction._emoji.name) {
-                member.roles.add(roles[i])
-                break
-            } else if (roleIcons[i] === reaction._emoji.name) {
-                member.roles.add(roles[i])
-                break
-            }
-        }
-    })
-
-    responseCollector.on('remove', async(reaction: Reaction, user: User) => {
-        const member = await guild.members.fetch(user.id)
-
-        for (let i = 0; i < roleIcons.length; i++) {
-            const pattern = /<:(\w+):/
-            const match = pattern.exec(roleIcons[i])
-
-            if (match && match[1] === reaction._emoji.name) {
-                member.roles.remove(roles[i])
-                break
-            } else if (roleIcons[i] === reaction._emoji.name) {
-                member.roles.remove(roles[i])
-                break
-            }
-        }
-    })
+    addRole({ collector: responseCollector, guild, roles, icons: roleIcons})
+    removeRole({ collector: responseCollector, guild, roles, icons: roleIcons})
 }
 
 function isValidEmoji(emoji: string) {
     const validEmojiRegex = /^([\uD800-\uDBFF][\uDC00-\uDFFF])|[\u2600-\u27FF\u2B50\u2934\u2935\u2B06\u2194\u2195\u25AA\u25AB\u25FE\u25FD\u25FC\u25B6\u25C0\u23E9\u23EA\u23F8\u23F9\u23FA\u25B6\u25C0⛏️]$/
-    return validEmojiRegex.test(emoji);
+    return validEmojiRegex.test(emoji)
 }

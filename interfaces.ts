@@ -1,10 +1,10 @@
-import { Role } from "discord.js";
+import { Role } from "discord.js"
 
 declare module 'discord.js' {
     interface Reaction {
         _emoji: {
-            name: string;
-        };
+            name: string
+        }
     }
     interface Client {
         commands: string[]

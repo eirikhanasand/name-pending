@@ -43,8 +43,8 @@ export async function execute(message) {
             ephemeral: true
         });
     }
-    await message.reply({ content: "Working...", ephemeral: true });
     try {
+        await message.reply({ content: "Working...", ephemeral: true });
         const response = await sendNotification({ title, description, topic, screen });
         if (response) {
             return await message.editReply(`Successfully sent notification to topic ${topic} at ${new Date().toISOString()}`);
