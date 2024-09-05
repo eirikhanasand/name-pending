@@ -3,19 +3,27 @@ import { fileURLToPath } from 'url';
 import { join, dirname } from 'path';
 import config from './utils/config.js';
 import roles from './managed/roles.js';
-import { Client, Collection, Events, GatewayIntentBits } from 'discord.js';
+import { Client, Collection, Events, GatewayIntentBits, Partials } from 'discord.js';
 import addRole, { removeRole } from './utils/roles.js';
 import autoCreateMeetings from './utils/autoCreateMeetings.js';
 const token = config.token;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const client = new Client({ intents: [
+const client = new Client({
+    intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.GuildModeration
-    ] });
+    ],
+    partials: [
+        Partials.Message,
+        Partials.Channel,
+        Partials.Reaction,
+        Partials.User
+    ],
+});
 client.commands = new Collection();
 const foldersPath = join(__dirname, 'commands');
 const commandFolders = readdirSync(foldersPath);
@@ -46,6 +54,16 @@ client.once(Events.ClientReady, async () => {
             if (!roleMessage) {
                 return console.log(`Message with ID ${message} not found.`);
             }
+            // Fetches missing partial data for the message
+            if (roleMessage.partial) {
+                try {
+                    await roleMessage.fetch();
+                }
+                catch (error) {
+                    console.error(`Something went wrong when fetching role message partial: ${error}`);
+                    return;
+                }
+            }
             // Extract guild, roles, and icons
             const guild = client.guilds.cache.get(roleMessage.guildId);
             const content = roleMessage.embeds[0].data.fields[0].value;
@@ -62,7 +80,6 @@ client.once(Events.ClientReady, async () => {
                 dispose: true,
             });
             addRole({ collector: roleCollector, guild, roles: roleIds, icons });
-            removeRole({ collector: roleCollector, guild, roles: roleIds, icons });
         }
         catch (error) {
             console.error("Error processing roles:", error);
@@ -72,8 +89,11 @@ client.once(Events.ClientReady, async () => {
     console.log("Ready!");
 });
 client.on(Events.InteractionCreate, async (message) => {
-    if (!message.isChatInputCommand())
+    if (!message.isChatInputCommand()) {
+        console.log("noncommandinteraction");
         return;
+    }
+    console.log("commandinteraction");
     const command = client.commands.get(message.commandName);
     if (!command)
         return;
@@ -82,6 +102,20 @@ client.on(Events.InteractionCreate, async (message) => {
         // Catched elsewhere
     }
     catch (_) { }
+});
+client.on(Events.MessageReactionRemove, async (reaction, user) => {
+    // When a reaction is received, check if the structure is partial
+    if (reaction.partial) {
+        // If the message this reaction belongs to was removed, the fetching might result in an API error which should be handled
+        try {
+            await reaction.fetch();
+        }
+        catch (error) {
+            console.error('Something went wrong when fetching the message:', error);
+            return;
+        }
+    }
+    removeRole({ reaction, user });
 });
 client.login(token);
 export default client;

@@ -109,7 +109,6 @@ export async function execute(message: ChatInputCommandInteraction) {
     })
 
     addRole({ collector: responseCollector, guild, roles, icons: roleIcons})
-    removeRole({ collector: responseCollector, guild, roles, icons: roleIcons})
 }
 
 function isValidEmoji(emoji: string) {

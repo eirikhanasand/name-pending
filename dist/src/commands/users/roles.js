@@ -1,9 +1,9 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import storedEmbeds from "../../managed/roles.js";
 import config from '../../utils/config.js';
-import addRole, { removeRole } from '../../utils/roles.js';
+import addRole from '../../utils/roles.js';
 export const data = new SlashCommandBuilder()
-    .setName('rolesg')
+    .setName('roles')
     .setDescription('Handles roles')
     .addStringOption((option) => option
     .setName('title')
@@ -78,7 +78,6 @@ export async function execute(message) {
         dispose: true
     });
     addRole({ collector: responseCollector, guild, roles, icons: roleIcons });
-    removeRole({ collector: responseCollector, guild, roles, icons: roleIcons });
 }
 function isValidEmoji(emoji) {
     const validEmojiRegex = /^([\uD800-\uDBFF][\uDC00-\uDFFF])|[\u2600-\u27FF\u2B50\u2934\u2935\u2B06\u2194\u2195\u25AA\u25AB\u25FE\u25FD\u25FC\u25B6\u25C0\u23E9\u23EA\u23F8\u23F9\u23FA\u25B6\u25C0⛏️]$/;
