@@ -5,7 +5,7 @@ import { Roles } from '../../../interfaces.js'
 import addRole, { removeRole } from '../../utils/roles.js'
 
 export const data = new SlashCommandBuilder()
-    .setName('rolesg')
+    .setName('roles')
     .setDescription('Handles roles')
     .addStringOption((option) => option
         .setName('title')
