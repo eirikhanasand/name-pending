@@ -9,6 +9,7 @@ import {
     Collection, 
     Events, 
     GatewayIntentBits, 
+    InteractionType, 
     Partials, 
     Reaction, 
     User 
@@ -112,20 +113,20 @@ client.once(Events.ClientReady, async () => {
     console.log("Ready!")
 })
 
-client.on(Events.InteractionCreate, async (message: ChatInputCommandInteraction) => {
-	if (!message.isChatInputCommand()) {
-        console.log("noncommandinteraction")
+client.on(Events.InteractionCreate, async (interaction: ChatInputCommandInteraction) => {
+	if (!interaction.isChatInputCommand()) {
         return
     }
 
-    console.log("commandinteraction")
+    if (interaction.type === InteractionType.MessageComponent) {
+        return handleComponents(interaction)
+    }
 
-	const command = (client as any).commands.get(message.commandName)
-
+	const command = (client as any).commands.get(interaction.commandName)
 	if (!command) return
 
 	try {
-		await command.execute(message)
+		await command.execute(interaction)
     // Catched elsewhere
 	} catch (_) {}
 })

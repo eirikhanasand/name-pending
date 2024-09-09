@@ -90,10 +90,8 @@ client.once(Events.ClientReady, async () => {
 });
 client.on(Events.InteractionCreate, async (message) => {
     if (!message.isChatInputCommand()) {
-        console.log("noncommandinteraction");
         return;
     }
-    console.log("commandinteraction");
     const command = client.commands.get(message.commandName);
     if (!command)
         return;
