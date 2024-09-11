@@ -22,7 +22,7 @@ export default async function autoCreateMeetings(client: Client) {
     schedule('0 16 * * 4', () => {
         const weekNumber = getNextWeekYearAndWeek(false).currentWeek
         if (weekNumber % 2 !== 0) {
-            autoCreate({ channel, isStyret: false });
+            autoCreate({ channel, isStyret: false })
         }
     })
 }

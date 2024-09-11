@@ -48,5 +48,5 @@ export default async function handleViewTicket(interaction: ButtonInteraction) {
     await interaction.reply({
         components: [channel],
         ephemeral: true
-    });
+    })
 }

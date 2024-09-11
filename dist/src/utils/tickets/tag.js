@@ -40,6 +40,7 @@ export async function tagTicket(interaction) {
                 : newTags; // Just uses the tags if no topic is available
             // Updates the channel description with the appended tags
             await channel.setTopic(updatedTopic);
+            channel.send(`${interaction.user.username} tagged the ticket with ${newTags}`);
         }
     }
     catch (err) {

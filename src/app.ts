@@ -75,9 +75,9 @@ client.once(Events.ClientReady, async () => {
             // Fetches missing partial data for the message
             if (roleMessage.partial) {
                 try {
-                    await roleMessage.fetch();
+                    await roleMessage.fetch()
                 } catch (error) {
-                    console.error(`Something went wrong when fetching role message partial: ${error}`);
+                    console.error(`Something went wrong when fetching role message partial: ${error}`)
                     return
                 }
             }

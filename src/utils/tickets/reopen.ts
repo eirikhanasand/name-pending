@@ -37,17 +37,17 @@ export async function reopenTicket(interaction: ButtonInteraction, view?: boolea
     }
 
     // @ts-expect-error
-    const channel = guild.channels.cache.get(interaction.values[0]) as TextChannel | undefined;
+    const channel = guild.channels.cache.get(interaction.values[0]) as TextChannel | undefined
     if (!channel || !(channel instanceof TextChannel)) {
         return await interaction.reply({
             content: `Could not find the specified channel.`,
             ephemeral: true,
-        });
+        })
     }
 
     try {
         // Fetches "tickets" category
-        const archive = guild?.channels.cache.find(c => c instanceof CategoryChannel && c.name === "tickets") as CategoryChannel;
+        const archive = guild?.channels.cache.find(c => c instanceof CategoryChannel && c.name === "tickets") as CategoryChannel
     
         if (!archive) {
             return await interaction.reply({

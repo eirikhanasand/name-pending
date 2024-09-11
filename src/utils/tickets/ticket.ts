@@ -5,8 +5,8 @@ import {
     PermissionsBitField, 
     TextChannel 
 } from "discord.js"
-import { ticketIdPattern } from "../../../constants.js";
-import formatChannelName from "./format.js";
+import { ticketIdPattern } from "../../../constants.js"
+import formatChannelName from "./format.js"
 
 export default async function isTicketChannel(interaction: ButtonInteraction): Promise<boolean> {
     // @ts-expect-error
@@ -16,7 +16,7 @@ export default async function isTicketChannel(interaction: ButtonInteraction): P
         await interaction.reply({
             content: 'This command can only be used in ticket channels.\nUse /view to view your tickets.',
             ephemeral: true,
-        });
+        })
 
         return false
     }

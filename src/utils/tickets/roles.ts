@@ -10,7 +10,7 @@ export default async function manageRoles(interaction: ButtonInteraction, ping?:
     try {
         // Check if interaction has already been deferred
         if (!interaction.deferred) {
-            await interaction.deferUpdate();
+            await interaction.deferUpdate()
         }
 
         // Get the channel where the roles should be added
@@ -18,23 +18,23 @@ export default async function manageRoles(interaction: ButtonInteraction, ping?:
 
         // Assuming interaction is of type RoleSelectMenuBuilder
         // @ts-expect-error
-        const selectedRoles = interaction.values;
+        const selectedRoles = interaction.values
 
         if (selectedRoles.length === 0) {
-            throw new Error('No roles selected.');
+            throw new Error('No roles selected.')
         }
 
         // Fetch the roles from the guild
-        const guild = interaction.guild;
+        const guild = interaction.guild
         if (!guild) {
-            throw new Error('Guild not found.');
+            throw new Error('Guild not found.')
         }
 
-        const possibleRoles = await Promise.all(selectedRoles.map((roleId: string) => guild.roles.fetch(roleId).catch(() => null)));
-        const validRoles = possibleRoles.filter((role: Role | null) => role !== null) as Role[];
+        const possibleRoles = await Promise.all(selectedRoles.map((roleId: string) => guild.roles.fetch(roleId).catch(() => null)))
+        const validRoles = possibleRoles.filter((role: Role | null) => role !== null) as Role[]
 
         // Update channel permissions based on the roles
-        const permissionOverwrites = channel.permissionOverwrites as PermissionOverwriteManager;
+        const permissionOverwrites = channel.permissionOverwrites as PermissionOverwriteManager
         const permission = remove ? false : true
 
         for (const role of validRoles) {
@@ -48,22 +48,22 @@ export default async function manageRoles(interaction: ButtonInteraction, ping?:
         }
 
         // Get the category of the channel and update its permissions
-        const category = channel.parent as CategoryChannel;
+        const category = channel.parent as CategoryChannel
         if (category) {
-            const categoryOverwrites = category.permissionOverwrites as PermissionOverwriteManager;
+            const categoryOverwrites = category.permissionOverwrites as PermissionOverwriteManager
 
             for (const role of validRoles) {
                 await categoryOverwrites.edit(role, {
                     ViewChannel: true,
-                });
+                })
             }
         }
 
         const roleObjects = await Promise.all(
             await selectedRoles.map((roleId: string) => guild.roles.fetch(roleId).catch(() => null))
         )
-        const roleStrings = roleObjects.map((role: Role | null) => role?.name || '');
-        const roles = ping === undefined ? validRoles.join(', ') : roleStrings.join(', ');
+        const roleStrings = roleObjects.map((role: Role | null) => role?.name || '')
+        const roles = ping === undefined ? validRoles.join(', ') : roleStrings.join(', ')
 
         const content = remove 
             ? `${interaction.user.username} removed ${roleStrings.join(', ')} from the ticket.`
@@ -72,13 +72,13 @@ export default async function manageRoles(interaction: ButtonInteraction, ping?:
         interaction.channel?.send({content})
 
     } catch (err) {
-        const error = err as Error;
+        const error = err as Error
 
         // Handle errors appropriately
         if (error.name === 'InteractionAlreadyReplied') {
-            console.warn('Interaction has already been replied to or deferred.');
+            console.warn('Interaction has already been replied to or deferred.')
         } else {
-            console.error('Failed to update permissions:', error);
+            console.error('Failed to update permissions:', error)
         }
     }
 }

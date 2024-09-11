@@ -45,7 +45,7 @@ export async function removeRole({reaction, user}: RemoveProps) {
             try {
                 // Fetches the member from the guild
                 // @ts-expect-error
-                const member = await reaction.message.guild.members.fetch(user.id);
+                const member = await reaction.message.guild.members.fetch(user.id)
 
                 // Removees the role from the member
                 if (member && roleIds[i]) {

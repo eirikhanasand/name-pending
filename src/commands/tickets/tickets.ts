@@ -37,27 +37,27 @@ async function create(message: ChatInputCommandInteraction) {
     const create = new ButtonBuilder()
         .setCustomId('create_ticket')
         .setLabel('Create Ticket')
-        .setStyle(ButtonStyle.Primary);
+        .setStyle(ButtonStyle.Primary)
     // 'View tickets' button
     const view = new ButtonBuilder()
         .setCustomId('view_ticket')
         .setLabel('View tickets')
-        .setStyle(ButtonStyle.Secondary);
+        .setStyle(ButtonStyle.Secondary)
 
     // 'Close ticket' button
     const close = new ButtonBuilder()
         .setCustomId('close_ticket')
         .setLabel('Close Ticket')
-        .setStyle(ButtonStyle.Secondary);
+        .setStyle(ButtonStyle.Secondary)
     
     // 'Reopen ticket' button
     const reopen = new ButtonBuilder()
         .setCustomId('reopen_ticket')
         .setLabel('Reopen Ticket')
-        .setStyle(ButtonStyle.Secondary);
+        .setStyle(ButtonStyle.Secondary)
 
     // Creates the button row in UI
     const buttons = new ActionRowBuilder<ButtonBuilder>()
-        .addComponents(create, view, close, reopen);
-    await message.reply({ embeds: [embed], components: [buttons] });
+        .addComponents(create, view, close, reopen)
+    await message.reply({ embeds: [embed], components: [buttons] })
 }

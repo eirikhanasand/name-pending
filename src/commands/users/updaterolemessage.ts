@@ -127,7 +127,7 @@ export async function execute(message: ChatInputCommandInteraction) {
         .addFields({name, value})
 
     // Fetches message
-    const roleMessage = await message.channel?.messages.fetch(messageID);
+    const roleMessage = await message.channel?.messages.fetch(messageID)
     if (!roleMessage) {
         return await message.editReply(`Message with ID ${messageID} not found.`)
     }
