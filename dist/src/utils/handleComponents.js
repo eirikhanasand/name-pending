@@ -1,4 +1,3 @@
-import { ButtonInteraction, ChatInputCommandInteraction } from "discord.js";
 import handleTagTicket, { tagTicket } from "./tickets/tag.js";
 import { handleCloseSelectedTicket, handleCloseTicket } from "./tickets/close.js";
 import handleViewTicket from "./tickets/view.js";
@@ -9,10 +8,8 @@ import manageUser from "./tickets/users.js";
 import handleAddToTicket, { handleAddViewerToTicket } from "./tickets/add.js";
 import manageRoles from "./tickets/roles.js";
 import handleRemoveFromTicket from "./tickets/remove.js";
-
-export default async function handleComponents(interaction: ButtonInteraction | ChatInputCommandInteraction, id: string | undefined) {    
-    const buttonInteraction = interaction as ButtonInteraction;
-
+export default async function handleComponents(interaction, id) {
+    const buttonInteraction = interaction;
     // id is present if interaction is ChatInputCommandInteraction
     switch (id || buttonInteraction.customId) {
         case 'create_ticket':
@@ -53,19 +50,19 @@ export default async function handleComponents(interaction: ButtonInteraction | 
             break;
         case 'add':
             await handleAddToTicket(buttonInteraction);
-            break
+            break;
         case 'add_user_viewer_to_ticket':
             await manageUser(buttonInteraction, false);
-            break
+            break;
         case 'add_role_viewer_to_ticket':
             await addRoleToCreate(buttonInteraction, false);
-            break
+            break;
         case 'addviewer':
             await handleAddViewerToTicket(buttonInteraction);
-            break
+            break;
         case 'remove':
             await handleRemoveFromTicket(buttonInteraction);
-            break
+            break;
         case 'view_ticket_command':
             await reopenTicket(buttonInteraction, true);
             break;

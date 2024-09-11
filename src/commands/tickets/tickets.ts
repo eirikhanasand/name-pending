@@ -1,4 +1,11 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js"
+import { 
+    ActionRowBuilder, 
+    ButtonBuilder, 
+    ButtonStyle, 
+    ChatInputCommandInteraction, 
+    EmbedBuilder, 
+    SlashCommandBuilder 
+} from "discord.js"
 
 export const data = new SlashCommandBuilder()
     .setName('tickets')
@@ -37,12 +44,6 @@ async function create(message: ChatInputCommandInteraction) {
         .setLabel('View tickets')
         .setStyle(ButtonStyle.Secondary);
 
-    // 'Tag ticket' button
-    const tag = new ButtonBuilder()
-        .setCustomId('tag_ticket')
-        .setLabel('Tag Ticket')
-        .setStyle(ButtonStyle.Secondary);
-
     // 'Close ticket' button
     const close = new ButtonBuilder()
         .setCustomId('close_ticket')
@@ -55,13 +56,8 @@ async function create(message: ChatInputCommandInteraction) {
         .setLabel('Reopen Ticket')
         .setStyle(ButtonStyle.Secondary);
 
-    // primary = blue
-    // secondary = grey 
-    // danger = red
-    // success = green
-
     // Creates the button row in UI
     const buttons = new ActionRowBuilder<ButtonBuilder>()
-        .addComponents(create, view, tag, close, reopen);
+        .addComponents(create, view, close, reopen);
     await message.reply({ embeds: [embed], components: [buttons] });
 }

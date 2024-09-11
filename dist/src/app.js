@@ -6,6 +6,8 @@ import roles from './managed/roles.js';
 import { Client, Collection, Events, GatewayIntentBits, Partials } from 'discord.js';
 import addRole, { removeRole } from './utils/roles.js';
 import autoCreateMeetings from './utils/autoCreateMeetings.js';
+import handleComponents from './utils/handleComponents.js';
+import getID from './utils/tickets/getID.js';
 const token = config.token;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -15,7 +17,7 @@ const client = new Client({
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessageReactions,
-        GatewayIntentBits.GuildModeration
+        GatewayIntentBits.GuildModeration,
     ],
     partials: [
         Partials.Message,
@@ -88,15 +90,65 @@ client.once(Events.ClientReady, async () => {
     autoCreateMeetings(client);
     console.log("Ready!");
 });
-client.on(Events.InteractionCreate, async (message) => {
-    if (!message.isChatInputCommand()) {
+client.on(Events.InteractionCreate, async (interaction) => {
+    if (!interaction.isChatInputCommand() && !('customId' in interaction)) {
+        console.error('NO CHAT LOL');
         return;
     }
-    const command = client.commands.get(message.commandName);
-    if (!command)
+    const command = client.commands.get(interaction.commandName);
+    if (!command && !('customId' in interaction)) {
+        console.error('NO COMMAND LOL');
         return;
+    }
+    const components = [
+        'add_role_to_ticket',
+        'add_user_to_ticket',
+        'archive_ticket',
+        'close_ticket',
+        'add_tag_to_create',
+        'add_role_to_create',
+        'add_user_to_create',
+        'remove_role_from_ticket',
+        'remove_user_from_ticket',
+        'reopen_channel',
+        'add_tag_to_open_ticket',
+        'view_ticket_command',
+        'add_role_to_view_ticket_command',
+        'add_user_to_view_ticket_command',
+        'create_ticket',
+        'view_ticket',
+        'tag_ticket',
+        'close_ticket',
+        'reopen_ticket',
+        'create',
+        'ticket',
+        'close',
+        'reopen',
+        'tagticket',
+        'add',
+        'remove',
+        'get',
+        'view',
+        'close_ticket_selected',
+        'addviewer',
+        'add_role_viewer_to_ticket',
+        'add_user_viewer_to_ticket',
+    ];
+    if (components.includes(interaction.commandName) || ('customId' in interaction && components.includes(interaction.customId))) {
+        return handleComponents(interaction, getID(interaction.commandName));
+    }
+    else {
+        // @ts-expect-error
+        if (interaction.customId === 'ticket_modal') {
+            // Handled in tickets/create.ts
+            return;
+        }
+        // @ts-expect-error
+        console.error(`${interaction.commandName || interaction.customId} is not a valid command in app.ts`);
+    }
+    1;
     try {
-        await command.execute(message);
+        await command.execute(interaction);
         // Catched elsewhere
     }
     catch (_) { }

@@ -1,8 +1,10 @@
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js"
+
 export const data = new SlashCommandBuilder()
-    .setName('tagticket')
-    .setDescription('Tags a ticket.');
+    .setName('create')
+    .setDescription('Creates a ticket.')
+
 export async function execute() {
     // Handled by handleComponents() in app.ts
-    return;
+    return
 }

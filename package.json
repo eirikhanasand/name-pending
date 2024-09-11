@@ -1,11 +1,11 @@
 {
     "name": "tekkom-bot",
-    "version": "1.3.2",
+    "version": "1.4.0",
     "description": "TekKom Bot",
     "main": "src/app.js",
     "type": "module",
     "scripts": {
-        "start": "tsc && node dist/src/deploy-commands.js && node dist/src/app.js",
+        "start": "rm -rf dist; tsc; node dist/src/deploy-commands.js; node dist/src/app.js",
         "build": "tsc",
         "prod": "node dist/src/app.js",
         "fast": "tsc && node dist/src/app.js"

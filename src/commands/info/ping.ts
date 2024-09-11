@@ -4,5 +4,5 @@ export const data = new SlashCommandBuilder()
     .setName('ping')
     .setDescription('Replies with Pong!')
 export async function execute(message: ChatInputCommandInteraction) {
-    await message.reply('Pong!')
+    await message.reply(`Pong!`)
 }

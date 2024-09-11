@@ -9,7 +9,7 @@ async function create(message) {
     // Funksjon som lager selve ticket systemet
     const embed = new EmbedBuilder()
         .setTitle('Support tickets')
-        .setDescription('Feel free to open a support ticket if you have encountered any problems or have any questions, and we will reach out to you as soon as possible.')
+        .setDescription('Feel free to open a support ticket if you have encountered any problems, need someone to do something, or have any questions, and we will reach out to you as soon as possible.')
         .setColor("#fd8738")
         .setTimestamp()
         .addFields({ name: "Create", value: "Creates a new ticket" }, { name: "View", value: "Views existing ticket, pings you in the channel if already open, or adds you to the channel if not" }, 
@@ -25,11 +25,6 @@ async function create(message) {
         .setCustomId('view_ticket')
         .setLabel('View tickets')
         .setStyle(ButtonStyle.Secondary);
-    // 'Tag ticket' button
-    const tag = new ButtonBuilder()
-        .setCustomId('tag_ticket')
-        .setLabel('Tag Ticket')
-        .setStyle(ButtonStyle.Secondary);
     // 'Close ticket' button
     const close = new ButtonBuilder()
         .setCustomId('close_ticket')
@@ -40,12 +35,8 @@ async function create(message) {
         .setCustomId('reopen_ticket')
         .setLabel('Reopen Ticket')
         .setStyle(ButtonStyle.Secondary);
-    // primary = blue
-    // secondary = grey 
-    // danger = red
-    // success = green
-    // Create the action row and add the button to it
-    const createRow = new ActionRowBuilder()
-        .addComponents(create, view, tag, close, reopen);
-    await message.reply({ embeds: [embed], components: [createRow] });
+    // Creates the button row in UI
+    const buttons = new ActionRowBuilder()
+        .addComponents(create, view, close, reopen);
+    await message.reply({ embeds: [embed], components: [buttons] });
 }
