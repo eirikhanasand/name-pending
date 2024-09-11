@@ -76,7 +76,7 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
             name: newChannelName,
             type: ChannelType.GuildText,
             parent: category?.id,
-            topic: title,  // Set the title as the channel's topic/description
+            topic: title,
             permissionOverwrites: [
                 {
                     // Denies access to everyone
@@ -126,7 +126,7 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
         })
 
         // Acknowledge modal submission
-        await submittedModal.reply({ content: 'Your ticket has been created!', ephemeral: true })
+        await submittedModal.reply({ content: `Your ticket <#${newChannel.id}> has been created!`, ephemeral: true })
     } catch (error) {
         console.error("Error creating ticket channel:", error)
         await interaction.reply({ content: "There was an error creating the ticket. Please try again.", ephemeral: true })

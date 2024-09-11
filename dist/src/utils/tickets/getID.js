@@ -13,6 +13,6 @@ export default function getID(command) {
         case 'addviewer': return 'addviewer';
         case 'remove': return 'remove';
     }
-    console.error(`Command ${command} is unmapped.`);
-    return `${command} is unmapped.`;
+    console.error(`Command ${command} is unmapped in getID.`);
+    return `${command} is unmapped in getID.`;
 }

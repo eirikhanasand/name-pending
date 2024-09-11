@@ -17,6 +17,7 @@ import addRole, { removeRole } from './utils/roles.js'
 import autoCreateMeetings from './utils/autoCreateMeetings.js'
 import handleComponents from './utils/handleComponents.js'
 import getID from './utils/tickets/getID.js'
+import validCommands from './utils/valid.js'
 
 const token = config.token
 const __filename = fileURLToPath(import.meta.url)
@@ -128,42 +129,7 @@ client.on(Events.InteractionCreate, async (interaction: ChatInputCommandInteract
         return
     }
 
-    const components = [
-        'add_role_to_ticket',
-        'add_user_to_ticket',
-        'archive_ticket',
-        'close_ticket',
-        'add_tag_to_create',
-        'add_role_to_create',
-        'add_user_to_create',
-        'remove_role_from_ticket',
-        'remove_user_from_ticket',
-        'reopen_channel',
-        'add_tag_to_open_ticket',
-        'view_ticket_command',
-        'add_role_to_view_ticket_command',
-        'add_user_to_view_ticket_command',
-        'create_ticket',
-        'view_ticket',
-        'tag_ticket',
-        'close_ticket',
-        'reopen_ticket',
-        'create',
-        'ticket',
-        'close',
-        'reopen',
-        'tagticket',
-        'add',
-        'remove',
-        'get',
-        'view',
-        'close_ticket_selected',
-        'addviewer',
-        'add_role_viewer_to_ticket',
-        'add_user_viewer_to_ticket',
-    ]
-
-    if (components.includes(interaction.commandName) || ('customId' in interaction && components.includes(interaction.customId as string))) {
+    if (validCommands.includes(interaction.commandName) || ('customId' in interaction && validCommands.includes(interaction.customId as string))) {
         return handleComponents(interaction, getID(interaction.commandName))
     } else {
         // @ts-expect-error

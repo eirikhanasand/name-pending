@@ -35,8 +35,15 @@ export default async function manageRoles(interaction: ButtonInteraction, ping?:
         const totalMembers = validRoles.reduce((acc: number, role: Role) => acc + role.members.size, 0)
 
         if (!validRoles.length || totalMembers >= 25) {
-            // @ts-expect-error
-            return interaction.channel?.send(`<@${interaction.user.id}> the role${possibleRoles.length > 1 ? 's you selected have' : ' you selected has'} too many members to be pinged. Try \`/addviewer\` instead to add without pinging.`)
+            if (ping === false) {
+                // @ts-expect-error
+                return interaction.channel?.send({
+                    content: `The role${validRoles.length > 1 ? 's you selected are' : ' you selected is'} not allowed in tickets.`,
+                })
+            } else {
+                // @ts-expect-error
+                return interaction.channel?.send(`<@${interaction.user.id}> the role${possibleRoles.length > 1 ? 's you selected have' : ' you selected has'} too many members to be pinged. Try \`/addviewer\` instead to add without pinging.`)
+            }
         }
 
         // Update channel permissions based on the roles
@@ -68,7 +75,7 @@ export default async function manageRoles(interaction: ButtonInteraction, ping?:
         const roleObjects = await Promise.all(
             await selectedRoles.map((roleId: string) => guild?.roles.fetch(roleId).catch(() => null))
         )
-        const roleStrings = roleObjects.map((role: Role | null) => role?.name && role.members.size <= 0 || '')
+        const roleStrings = roleObjects.map((role: Role | null) => role?.name)
         const roles = ping === undefined ? validRoles.join(', ') : roleStrings.join(', ')
 
         const content = remove 
