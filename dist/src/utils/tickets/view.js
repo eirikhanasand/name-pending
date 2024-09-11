@@ -16,7 +16,7 @@ export default async function handleViewTicket(interaction) {
     if (options.length === 0) {
         // If no channels are available, send a message saying so
         await interaction.reply({
-            content: 'You have no open tickets to close.',
+            content: 'You have no open tickets to view.',
             ephemeral: true,
         });
         return;
