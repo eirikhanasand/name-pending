@@ -26,11 +26,9 @@ async function create(message: ChatInputCommandInteraction) {
         .addFields(
             { name: "Create", value: "Creates a new ticket" }, 
             { name: "View", value: "Views existing ticket, pings you in the channel if already open, or adds you to the channel if not" },
-            // also adds button to remove yourself from the channel or reopen it 
             { name: "Tag", value: "Tags a ticket with a topic" }, 
             { name: "Close", value: "Closes a ticket" }, 
             { name: "Reopen", value: "Reopens a ticket" }, 
-            // ... er allerede i ticketen, vil du legge til flere (Ja/Nei) - tekstfelt for å pinge roller som eventuelt skal legges til
         )
 
     // 'Create ticket' button

@@ -31,7 +31,13 @@ export default async function manageRoles(interaction: ButtonInteraction, ping?:
         }
 
         const possibleRoles = await Promise.all(selectedRoles.map((roleId: string) => guild.roles.fetch(roleId).catch(() => null)))
-        const validRoles = possibleRoles.filter((role: Role | null) => role !== null) as Role[]
+        const validRoles = possibleRoles.filter((role: Role | null) => (role !== null && role.members.size <= 25)) as Role[]
+        const totalMembers = validRoles.reduce((acc: number, role: Role) => acc + role.members.size, 0)
+
+        if (!validRoles.length || totalMembers >= 25) {
+            // @ts-expect-error
+            return interaction.channel?.send(`<@${interaction.user.id}> the role${possibleRoles.length > 1 ? 's you selected have' : ' you selected has'} too many members to be pinged. Try \`/addviewer\` instead to add without pinging.`)
+        }
 
         // Update channel permissions based on the roles
         const permissionOverwrites = channel.permissionOverwrites as PermissionOverwriteManager
@@ -60,9 +66,9 @@ export default async function manageRoles(interaction: ButtonInteraction, ping?:
         }
 
         const roleObjects = await Promise.all(
-            await selectedRoles.map((roleId: string) => guild.roles.fetch(roleId).catch(() => null))
+            await selectedRoles.map((roleId: string) => guild?.roles.fetch(roleId).catch(() => null))
         )
-        const roleStrings = roleObjects.map((role: Role | null) => role?.name || '')
+        const roleStrings = roleObjects.map((role: Role | null) => role?.name && role.members.size <= 0 || '')
         const roles = ping === undefined ? validRoles.join(', ') : roleStrings.join(', ')
 
         const content = remove 

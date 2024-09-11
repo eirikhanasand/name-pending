@@ -5,14 +5,13 @@ export default async function handleCreateTicket(interaction) {
     if (!guild) {
         return interaction.reply({ content: "This command can only be used in a server.", ephemeral: true });
     }
-    // Fetch all channels in the server
     const channels = guild.channels.cache;
     // Find all channels with names matching the ticket[ID] pattern
     const ticketChannels = channels
         .filter(channel => channel instanceof TextChannel && /^ticket\d+$/.test(channel.name))
         .map(channel => parseInt(channel.name.replace("ticket", ""), 10))
-        .sort((a, b) => a - b); // Sort ticket IDs
-    // Find the lowest available ticket number
+        .sort((a, b) => a - b);
+    // Finds the lowest available ticket number
     let newTicketId = 1;
     for (const id of ticketChannels) {
         if (newTicketId === id) {
@@ -39,7 +38,8 @@ export default async function handleCreateTicket(interaction) {
     try {
         // Wait for modal submission
         const filter = (i) => i.customId === 'ticket_modal' && i.user.id === interaction.user.id;
-        const submittedModal = await interaction.awaitModalSubmit({ filter, time: 300000 }); // 5 minutes to submit
+        // 5 minutes to submit
+        const submittedModal = await interaction.awaitModalSubmit({ filter, time: 300000 });
         // Retrieve the submitted title
         const title = submittedModal.fields.getTextInputValue('ticket_title');
         // Create the new channel in a category (if you have a category for tickets)
@@ -76,12 +76,12 @@ export default async function handleCreateTicket(interaction) {
             .setCustomId('add_role_to_create')
             .setPlaceholder('Add roles')
             .setMinValues(1)
-            .setMaxValues(25);
+            .setMaxValues(3);
         const selectUsers = new UserSelectMenuBuilder()
             .setCustomId('add_user_to_create')
             .setPlaceholder('Add users')
             .setMinValues(1)
-            .setMaxValues(25);
+            .setMaxValues(10);
         // Creates the rows that are displayed to the users
         const tags = new ActionRowBuilder().addComponents(selectTags);
         const roles = new ActionRowBuilder().addComponents(selectRoles);

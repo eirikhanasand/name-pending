@@ -18,7 +18,12 @@ export default async function manageRoles(interaction, ping, remove) {
             throw new Error('Guild not found.');
         }
         const possibleRoles = await Promise.all(selectedRoles.map((roleId) => guild.roles.fetch(roleId).catch(() => null)));
-        const validRoles = possibleRoles.filter((role) => role !== null);
+        const validRoles = possibleRoles.filter((role) => (role !== null && role.members.size <= 25));
+        const totalMembers = validRoles.reduce((acc, role) => acc + role.members.size, 0);
+        if (!validRoles.length || totalMembers >= 25) {
+            // @ts-expect-error
+            return interaction.channel?.send(`<@${interaction.user.id}> the role${possibleRoles.length > 1 ? 's you selected have' : ' you selected has'} too many members to be pinged. Try \`/addviewer\` instead to add without pinging.`);
+        }
         // Update channel permissions based on the roles
         const permissionOverwrites = channel.permissionOverwrites;
         const permission = remove ? false : true;
@@ -41,8 +46,8 @@ export default async function manageRoles(interaction, ping, remove) {
                 });
             }
         }
-        const roleObjects = await Promise.all(await selectedRoles.map((roleId) => guild.roles.fetch(roleId).catch(() => null)));
-        const roleStrings = roleObjects.map((role) => role?.name || '');
+        const roleObjects = await Promise.all(await selectedRoles.map((roleId) => guild?.roles.fetch(roleId).catch(() => null)));
+        const roleStrings = roleObjects.map((role) => role?.name && role.members.size <= 0 || '');
         const roles = ping === undefined ? validRoles.join(', ') : roleStrings.join(', ');
         const content = remove
             ? `${interaction.user.username} removed ${roleStrings.join(', ')} from the ticket.`

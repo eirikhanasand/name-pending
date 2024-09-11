@@ -12,9 +12,7 @@ async function create(message) {
         .setDescription('Feel free to open a support ticket if you have encountered any problems, need someone to do something, or have any questions, and we will reach out to you as soon as possible.')
         .setColor("#fd8738")
         .setTimestamp()
-        .addFields({ name: "Create", value: "Creates a new ticket" }, { name: "View", value: "Views existing ticket, pings you in the channel if already open, or adds you to the channel if not" }, 
-    // also adds button to remove yourself from the channel or reopen it 
-    { name: "Tag", value: "Tags a ticket with a topic" }, { name: "Close", value: "Closes a ticket" }, { name: "Reopen", value: "Reopens a ticket" });
+        .addFields({ name: "Create", value: "Creates a new ticket" }, { name: "View", value: "Views existing ticket, pings you in the channel if already open, or adds you to the channel if not" }, { name: "Tag", value: "Tags a ticket with a topic" }, { name: "Close", value: "Closes a ticket" }, { name: "Reopen", value: "Reopens a ticket" });
     // 'Create ticket' button
     const create = new ButtonBuilder()
         .setCustomId('create_ticket')

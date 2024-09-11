@@ -12,6 +12,7 @@ export default async function handleTagTicket(interaction: ButtonInteraction) {
         .setCustomId('add_tag_to_open_ticket')
         .setPlaceholder('Select a tag')
         .addOptions(topics)
+        .setMaxValues(5)
 
     const tags = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectTags)
 
@@ -37,19 +38,22 @@ export async function tagTicket(interaction: ButtonInteraction) {
         // Fetch the current topic (description)
         const currentTopic = channel.topic || ''
 
-        // Prepare the tag string
         // @ts-expect-error
         const newTags = interaction.values
             .map((tag: string) => `🏷️ ${tag}`)
-            // Filters out tags that already exist in the topic
             .filter((tag: string) => !currentTopic.includes(tag))
             .join(', ')
+        
+        // @ts-expect-error
+        const alreadyTagged = interaction.values
+            .map((tag: string) => `🏷️ ${tag}`)
+            .length;
 
         // If there are new tags, append them to the current topic
         if (newTags) {
             const updatedTopic = currentTopic
                 // Append to the existing topic
-                ? `${currentTopic} · ${newTags}`
+                ? `${currentTopic}${alreadyTagged ? ',' : ' ·'} ${newTags}`
                 // Just uses the tags if no topic is available
                 : newTags
 

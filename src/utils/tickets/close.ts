@@ -39,20 +39,35 @@ export async function handleCloseTicket(interaction: ButtonInteraction) {
                 ViewChannel: false,
             })
 
-            // Removes all roles from the channel
-            const roles = currentChannel.guild.roles.cache.filter(role => role.id !== currentChannel.guild.id)
-            roles.forEach(async (role) => {
-                await currentChannel.permissionOverwrites.edit(role.id, {
-                    ViewChannel: false,
-                })
-            })
+            // Removes all roles from the channel except the bots role.
+            const botMember = currentChannel.guild.members.me;
 
-            const members = currentChannel.guild.members.cache.filter(member => member.id !== interaction.user.id)
+            const roles = currentChannel.guild.roles.cache.filter(role => role.id !== currentChannel.guild.id);
+
+            roles.forEach(async (role) => {
+                // Skip removing if the bot has the role
+                if (botMember?.roles.cache.has(role.id)) return;
+
+                // Check if the role already has permission overwrites in the channel
+                const permissionOverwrites = currentChannel.permissionOverwrites.cache.get(role.id);
+                
+                if (permissionOverwrites) {
+                    // Remove the permission overwrite for the role
+                    await currentChannel.permissionOverwrites.delete(role.id);
+                }
+            });
+
+            // Removes all members from the channel (except the user)
+            const members = currentChannel.guild.members.cache.filter(member => member.id !== interaction.user.id);
             members.forEach(async (member) => {
-                await currentChannel.permissionOverwrites.edit(member.id, {
-                    ViewChannel: false,
-                })
-            })
+                // Check if the member already has permission overwrites in the channel
+                const permissionOverwrites = currentChannel.permissionOverwrites.cache.get(member.id);
+                
+                if (permissionOverwrites) {
+                    // Remove the permission overwrite for the member
+                    await currentChannel.permissionOverwrites.delete(member.id);
+                }
+            });
         
             // Lets the user know that the ticket has been archived
             await interaction.reply({

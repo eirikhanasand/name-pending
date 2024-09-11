@@ -106,13 +106,13 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
             .setCustomId('add_role_to_create')
             .setPlaceholder('Add roles')
             .setMinValues(1)
-            .setMaxValues(25)
+            .setMaxValues(3)
 
         const selectUsers = new UserSelectMenuBuilder()
             .setCustomId('add_user_to_create')
             .setPlaceholder('Add users')
             .setMinValues(1)
-            .setMaxValues(25)
+            .setMaxValues(10)
 
         // Creates the rows that are displayed to the users
         const tags = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectTags)
