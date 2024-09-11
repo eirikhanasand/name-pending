@@ -141,12 +141,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
     else {
         // @ts-expect-error
-        if (interaction.customId === 'ticket_modal') {
-            // Handled in tickets/create.ts
-            return;
+        const customId = interaction.customId;
+        if (customId && customId !== 'ticket_modal') {
+            // @ts-expect-error
+            console.error(`${interaction.commandName || interaction.customId} is not a valid command in app.ts`);
         }
-        // @ts-expect-error
-        console.error(`${interaction.commandName || interaction.customId} is not a valid command in app.ts`);
     }
     1;
     try {
