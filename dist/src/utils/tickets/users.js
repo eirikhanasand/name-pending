@@ -1,3 +1,4 @@
+import { OverwriteType } from "discord.js";
 export default async function manageUsers(interaction, ping, remove) {
     try {
         // Check if interaction has already been deferred
@@ -18,7 +19,8 @@ export default async function manageUsers(interaction, ping, remove) {
             throw new Error('Guild not found.');
         }
         const users = await Promise.all(selectedUsers.map((userId) => guild.members.fetch(userId).catch(() => null)));
-        const validUsers = users.filter((user) => user !== null);
+        const alreadyAddedUsers = channel.permissionOverwrites.cache.filter((overwrite) => overwrite.type === OverwriteType.Member).map((overwrite) => overwrite.id);
+        const validUsers = users.filter((user) => user !== null && !alreadyAddedUsers.includes(user.id));
         // Update channel permissions based on the users
         const permissionOverwrites = channel.permissionOverwrites;
         const permission = remove ? false : true;

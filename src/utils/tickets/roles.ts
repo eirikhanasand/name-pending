@@ -1,6 +1,7 @@
 import { 
     ButtonInteraction, 
     CategoryChannel, 
+    OverwriteType, 
     PermissionOverwriteManager, 
     Role, 
     TextChannel 
@@ -31,7 +32,8 @@ export default async function manageRoles(interaction: ButtonInteraction, ping?:
         }
 
         const possibleRoles = await Promise.all(selectedRoles.map((roleId: string) => guild.roles.fetch(roleId).catch(() => null)))
-        const validRoles = possibleRoles.filter((role: Role | null) => (role !== null && role.members.size <= 25)) as Role[]
+        const alreadyAddedRoles = channel.permissionOverwrites.cache.filter((overwrite) => overwrite.type === OverwriteType.Role).map((overwrite) => overwrite.id)
+        const validRoles = possibleRoles.filter((role: Role | null) => (role !== null && role.members.size <= 25 && !alreadyAddedRoles.includes(role.id))) as Role[]
         const totalMembers = validRoles.reduce((acc: number, role: Role) => acc + role.members.size, 0)
 
         if (!validRoles.length || totalMembers >= 25) {

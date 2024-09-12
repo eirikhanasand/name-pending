@@ -1,3 +1,4 @@
+import { OverwriteType } from "discord.js";
 export default async function manageRoles(interaction, ping, remove) {
     try {
         // Check if interaction has already been deferred
@@ -18,7 +19,8 @@ export default async function manageRoles(interaction, ping, remove) {
             throw new Error('Guild not found.');
         }
         const possibleRoles = await Promise.all(selectedRoles.map((roleId) => guild.roles.fetch(roleId).catch(() => null)));
-        const validRoles = possibleRoles.filter((role) => (role !== null && role.members.size <= 25));
+        const alreadyAddedRoles = channel.permissionOverwrites.cache.filter((overwrite) => overwrite.type === OverwriteType.Role).map((overwrite) => overwrite.id);
+        const validRoles = possibleRoles.filter((role) => (role !== null && role.members.size <= 25 && !alreadyAddedRoles.includes(role.id)));
         const totalMembers = validRoles.reduce((acc, role) => acc + role.members.size, 0);
         if (!validRoles.length || totalMembers >= 25) {
             if (ping === false) {

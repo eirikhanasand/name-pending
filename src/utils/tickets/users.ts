@@ -3,7 +3,8 @@ import {
     TextChannel, 
     CategoryChannel, 
     PermissionOverwriteManager, 
-    User 
+    User, 
+    OverwriteType
 } from "discord.js"
 
 export default async function manageUsers(interaction: ButtonInteraction, ping?: false, remove?: true) {
@@ -31,7 +32,8 @@ export default async function manageUsers(interaction: ButtonInteraction, ping?:
         }
 
         const users = await Promise.all(selectedUsers.map((userId: string) => guild.members.fetch(userId).catch(() => null)))
-        const validUsers = users.filter((user: any) => user !== null)
+        const alreadyAddedUsers = channel.permissionOverwrites.cache.filter((overwrite) => overwrite.type === OverwriteType.Member).map((overwrite) => overwrite.id)
+        const validUsers = users.filter((user: any) => user !== null && !alreadyAddedUsers.includes(user.id)) as User[]
 
         // Update channel permissions based on the users
         const permissionOverwrites = channel.permissionOverwrites as PermissionOverwriteManager
