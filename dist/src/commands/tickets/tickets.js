@@ -25,7 +25,7 @@ async function create(message) {
         .setStyle(ButtonStyle.Secondary);
     // 'Close ticket' button
     const close = new ButtonBuilder()
-        .setCustomId('close_ticket')
+        .setCustomId('close_ticket2')
         .setLabel('Close Ticket')
         .setStyle(ButtonStyle.Secondary);
     // 'Reopen ticket' button

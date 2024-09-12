@@ -1,13 +1,13 @@
 import { ActionRowBuilder, CategoryChannel, StringSelectMenuBuilder, TextChannel } from "discord.js";
 import { getTickets } from "./ticket.js";
 import formatChannelName from "./format.js";
+import { ticketIdPattern } from "../../../constants.js";
 export async function handleCloseTicket(interaction) {
     const guild = interaction.guild;
     if (guild === null) {
         return;
     }
     const currentChannel = interaction.channel;
-    const ticketIdPattern = /^ticket\d+$/;
     // Checks if the current channel name fits the ticket ID scheme
     if (ticketIdPattern.test(currentChannel.name)) {
         try {
@@ -25,27 +25,27 @@ export async function handleCloseTicket(interaction) {
             await currentChannel.permissionOverwrites.edit(interaction.user.id, {
                 ViewChannel: false,
             });
-            // Removes all roles from the channel except the bots role.
-            const botMember = currentChannel.guild.members.me;
-            const roles = currentChannel.guild.roles.cache.filter(role => role.id !== currentChannel.guild.id);
+            // Removes all roles from the channel except the bot's role.
+            const bot = currentChannel.guild.members.me;
+            const roles = currentChannel.guild.roles.cache;
             roles.forEach(async (role) => {
-                // Skip removing if the bot has the role
-                if (botMember?.roles.cache.has(role.id))
+                if (bot?.roles.cache.has(role.id))
                     return;
-                // Check if the role already has permission overwrites in the channel
                 const permissionOverwrites = currentChannel.permissionOverwrites.cache.get(role.id);
                 if (permissionOverwrites) {
-                    // Remove the permission overwrite for the role
+                    // Remove the permission overwrite for the role only if it exists
                     await currentChannel.permissionOverwrites.delete(role.id);
                 }
             });
-            // Removes all members from the channel (except the user)
-            const members = currentChannel.guild.members.cache.filter(member => member.id !== interaction.user.id);
+            // Removes all members from the channel (except the bot and the user)
+            const members = currentChannel.guild.members.cache;
             members.forEach(async (member) => {
-                // Check if the member already has permission overwrites in the channel
+                // Skip removing if it's the bot or the user
+                if (member.id === bot?.id || member.id === interaction.user.id)
+                    return;
                 const permissionOverwrites = currentChannel.permissionOverwrites.cache.get(member.id);
                 if (permissionOverwrites) {
-                    // Remove the permission overwrite for the member
+                    // Remove the permission overwrite for the member only if it exists
                     await currentChannel.permissionOverwrites.delete(member.id);
                 }
             });
@@ -67,7 +67,7 @@ export async function handleCloseTicket(interaction) {
         // Create a channel select menu for choosing a channel
         const selectChannel = new StringSelectMenuBuilder()
             .setCustomId('close_ticket_selected')
-            .setPlaceholder('Select a ticket to close')
+            .setPlaceholder('Select a ticket to close2')
             .addOptions(options);
         // Create an action row that holds the select menu
         const actionRow = new ActionRowBuilder().addComponents(selectChannel);

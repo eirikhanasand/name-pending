@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, Comp
 import getCommand from '../../utils/help.js';
 import pages from '../../utils/commands.js';
 export const data = new SlashCommandBuilder()
-    .setName('help2')
+    .setName('help')
     .setDescription('Help for the bots messages')
     .addStringOption((option) => option
     .setName('command')

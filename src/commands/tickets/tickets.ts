@@ -44,7 +44,7 @@ async function create(message: ChatInputCommandInteraction) {
 
     // 'Close ticket' button
     const close = new ButtonBuilder()
-        .setCustomId('close_ticket')
+        .setCustomId('close_ticket2')
         .setLabel('Close Ticket')
         .setStyle(ButtonStyle.Secondary)
     

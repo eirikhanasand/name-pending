@@ -63,6 +63,4 @@ export async function execute(message: ChatInputCommandInteraction) {
     } catch (error) {
         return await message.editReply(`Failed to send notification ${title} to ${topic}. Error: ${error}.`)
     }
-
-
 }

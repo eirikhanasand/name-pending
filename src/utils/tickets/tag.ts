@@ -47,7 +47,7 @@ export async function tagTicket(interaction: ButtonInteraction) {
         // @ts-expect-error
         const alreadyTagged = interaction.values
             .map((tag: string) => `🏷️ ${tag}`)
-            .length;
+            .length
 
         // If there are new tags, append them to the current topic
         if (newTags) {
