@@ -85,7 +85,7 @@ export async function handleCloseTicket(interaction: ButtonInteraction) {
         // Create a channel select menu for choosing a channel
         const selectChannel = new StringSelectMenuBuilder()
             .setCustomId('close_ticket_selected')
-            .setPlaceholder('Select a ticket to close2')
+            .setPlaceholder('Select a ticket to close')
             .addOptions(options)
 
         // Create an action row that holds the select menu

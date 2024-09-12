@@ -83,7 +83,7 @@ export default async function handleCreateTicket(interaction) {
             .setMinValues(1)
             .setMaxValues(10);
         const selectClose = new ButtonBuilder()
-            .setCustomId('close_ticket2')
+            .setCustomId('close_ticket')
             .setLabel('Close ticket')
             .setStyle(ButtonStyle.Danger);
         // Creates the rows that are displayed to the users

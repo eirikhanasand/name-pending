@@ -24,7 +24,7 @@ export default async function handleComponents(interaction: ButtonInteraction | 
         case 'tag_ticket':
             await handleTagTicket(buttonInteraction)
             break
-        case 'close_ticket2':
+        case 'close_ticket':
             await handleCloseTicket(buttonInteraction)
             break
         case 'reopen_ticket':

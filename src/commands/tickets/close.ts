@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js"
 
 export const data = new SlashCommandBuilder()
-    .setName('close2')
+    .setName('close')
     .setDescription('Closes a ticket.')
 
 export async function execute() {
