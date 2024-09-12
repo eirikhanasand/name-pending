@@ -1,4 +1,4 @@
-import { TextChannel, PermissionsBitField, CategoryChannel, StringSelectMenuBuilder, RoleSelectMenuBuilder, ActionRowBuilder, UserSelectMenuBuilder, ChannelType, ModalBuilder, TextInputBuilder, TextInputStyle } from "discord.js";
+import { TextChannel, PermissionsBitField, CategoryChannel, StringSelectMenuBuilder, RoleSelectMenuBuilder, ActionRowBuilder, UserSelectMenuBuilder, ChannelType, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from "discord.js";
 import topics from "./topics.js";
 export default async function handleCreateTicket(interaction) {
     const guild = interaction.guild;
@@ -82,14 +82,19 @@ export default async function handleCreateTicket(interaction) {
             .setPlaceholder('Add users')
             .setMinValues(1)
             .setMaxValues(10);
+        const selectClose = new ButtonBuilder()
+            .setCustomId('close_ticket')
+            .setLabel('Close ticket')
+            .setStyle(ButtonStyle.Danger);
         // Creates the rows that are displayed to the users
         const tags = new ActionRowBuilder().addComponents(selectTags);
         const roles = new ActionRowBuilder().addComponents(selectRoles);
         const users = new ActionRowBuilder().addComponents(selectUsers);
+        const close = new ActionRowBuilder().addComponents(selectClose);
         // Post a message in the new ticket channel, pinging the user
         await newChannel.send({
             content: `${interaction.user}, your ticket "${title}" has been created!\nPlease select the tags, roles, and users you want to add to this ticket.\nNote that tags can only be set once per 5 minutes.`,
-            components: [tags, roles, users],
+            components: [tags, roles, users, close],
         });
         // Acknowledge modal submission
         await submittedModal.reply({ content: `Your ticket <#${newChannel.id}> has been created!`, ephemeral: true });

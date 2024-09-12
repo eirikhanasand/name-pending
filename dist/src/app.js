@@ -8,7 +8,7 @@ import addRole, { removeRole } from './utils/roles.js';
 import autoCreateMeetings from './utils/autoCreateMeetings.js';
 import handleComponents from './utils/handleComponents.js';
 import getID from './utils/tickets/getID.js';
-import validCommands from './utils/valid.js';
+import validCommands, { exceptions } from './utils/valid.js';
 const token = config.token;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -109,7 +109,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     else {
         // @ts-expect-error
         const customId = interaction.customId;
-        if (customId && customId !== 'ticket_modal') {
+        if (customId && !exceptions.includes(customId)) {
             // @ts-expect-error
             console.error(`${interaction.commandName || interaction.customId} is not a valid command in app.ts`);
         }

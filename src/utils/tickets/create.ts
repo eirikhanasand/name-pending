@@ -12,7 +12,9 @@ import {
     ModalBuilder,
     TextInputBuilder,
     TextInputStyle,
-    ModalSubmitInteraction
+    ModalSubmitInteraction,
+    ButtonBuilder,
+    ButtonStyle
 } from "discord.js"
 import topics from "./topics.js"
 
@@ -114,15 +116,21 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
             .setMinValues(1)
             .setMaxValues(10)
 
+        const selectClose = new ButtonBuilder()
+            .setCustomId('close_ticket')
+            .setLabel('Close ticket')
+            .setStyle(ButtonStyle.Danger)
+
         // Creates the rows that are displayed to the users
         const tags = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectTags)
         const roles = new ActionRowBuilder<RoleSelectMenuBuilder>().addComponents(selectRoles)
         const users = new ActionRowBuilder<UserSelectMenuBuilder>().addComponents(selectUsers)
+        const close = new ActionRowBuilder<ButtonBuilder>().addComponents(selectClose)
 
         // Post a message in the new ticket channel, pinging the user
         await newChannel.send({
             content: `${interaction.user}, your ticket "${title}" has been created!\nPlease select the tags, roles, and users you want to add to this ticket.\nNote that tags can only be set once per 5 minutes.`,
-            components: [tags, roles, users],
+            components: [tags, roles, users, close],
         })
 
         // Acknowledge modal submission
