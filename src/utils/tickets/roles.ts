@@ -36,7 +36,7 @@ export default async function manageRoles(interaction: ButtonInteraction, ping?:
         const validRoles = possibleRoles.filter((role: Role | null) => (role !== null && role.members.size <= 25 && !alreadyAddedRoles.includes(role.id))) as Role[]
         const totalMembers = validRoles.reduce((acc: number, role: Role) => acc + role.members.size, 0)
 
-        if (!validRoles.length || totalMembers >= 25) {
+        if ((!validRoles.length || totalMembers >= 25) && remove !== true) {
             if (ping === false) {
                 // @ts-expect-error
                 return interaction.channel?.send({

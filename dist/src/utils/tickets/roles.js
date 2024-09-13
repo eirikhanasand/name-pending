@@ -22,7 +22,7 @@ export default async function manageRoles(interaction, ping, remove) {
         const alreadyAddedRoles = channel.permissionOverwrites.cache.filter((overwrite) => overwrite.type === OverwriteType.Role).map((overwrite) => overwrite.id);
         const validRoles = possibleRoles.filter((role) => (role !== null && role.members.size <= 25 && !alreadyAddedRoles.includes(role.id)));
         const totalMembers = validRoles.reduce((acc, role) => acc + role.members.size, 0);
-        if (!validRoles.length || totalMembers >= 25) {
+        if ((!validRoles.length || totalMembers >= 25) && remove !== true) {
             if (ping === false) {
                 // @ts-expect-error
                 return interaction.channel?.send({

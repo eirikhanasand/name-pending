@@ -35,6 +35,13 @@ export default async function manageUsers(interaction: ButtonInteraction, ping?:
         const alreadyAddedUsers = channel.permissionOverwrites.cache.filter((overwrite) => overwrite.type === OverwriteType.Member).map((overwrite) => overwrite.id)
         const validUsers = users.filter((user: any) => user !== null && !alreadyAddedUsers.includes(user.id)) as User[]
 
+        if (validUsers.length >= 25 && remove !== true) {
+            // @ts-expect-error
+            await interaction.channel?.send({
+                content: `<@${interaction.user.id}> you can max add 25 users to a ticket at once.`,
+            })
+        }
+
         // Update channel permissions based on the users
         const permissionOverwrites = channel.permissionOverwrites as PermissionOverwriteManager
 
