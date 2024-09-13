@@ -20,7 +20,11 @@ export default async function manageRoles(interaction, ping, remove) {
         }
         const possibleRoles = await Promise.all(selectedRoles.map((roleId) => guild.roles.fetch(roleId).catch(() => null)));
         const alreadyAddedRoles = channel.permissionOverwrites.cache.filter((overwrite) => overwrite.type === OverwriteType.Role).map((overwrite) => overwrite.id);
-        const validRoles = possibleRoles.filter((role) => (role !== null && role.members.size <= 25 && !alreadyAddedRoles.includes(role.id)));
+        const validRoles = possibleRoles.filter((role) => (role !== null
+            && role.members.size <= 25
+            && (remove
+                ? alreadyAddedRoles.includes(role.id)
+                : !alreadyAddedRoles.includes(role.id))));
         const totalMembers = validRoles.reduce((acc, role) => acc + role.members.size, 0);
         if ((!validRoles.length || totalMembers >= 25) && remove !== true) {
             if (ping === false) {
@@ -34,25 +38,24 @@ export default async function manageRoles(interaction, ping, remove) {
                 return interaction.channel?.send(`<@${interaction.user.id}> the role${possibleRoles.length > 1 ? 's you selected have' : ' you selected has'} too many members to be pinged. Try \`/addviewer\` instead to add without pinging.`);
             }
         }
-        // Update channel permissions based on the roles
-        const permissionOverwrites = channel.permissionOverwrites;
-        const permission = remove ? false : true;
-        for (const role of validRoles) {
-            await permissionOverwrites.edit(role, {
-                ViewChannel: permission,
-                SendMessages: permission,
-                AddReactions: permission,
-                UseExternalEmojis: permission,
-                ReadMessageHistory: permission,
-            });
-        }
+        // Removes all roles from the channel except the bot's role.
+        const bot = guild.members.me;
+        validRoles.forEach(async (role) => {
+            if (bot?.roles.cache.has(role.id))
+                return;
+            const permissionOverwrites = channel.permissionOverwrites.cache.get(role.id);
+            if (permissionOverwrites) {
+                // Remove the permission overwrite for the role only if it exists
+                await channel.permissionOverwrites.delete(role.id);
+            }
+        });
         // Get the category of the channel and update its permissions
         const category = channel.parent;
         if (category) {
             const categoryOverwrites = category.permissionOverwrites;
             for (const role of validRoles) {
                 await categoryOverwrites.edit(role, {
-                    ViewChannel: true,
+                    ViewChannel: remove ? false : true,
                 });
             }
         }

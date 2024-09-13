@@ -1,6 +1,6 @@
 {
     "name": "tekkom-bot",
-    "version": "1.5.7",
+    "version": "1.5.8",
     "description": "TekKom Bot",
     "main": "src/app.js",
     "type": "module",
