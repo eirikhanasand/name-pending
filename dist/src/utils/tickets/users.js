@@ -21,6 +21,12 @@ export default async function manageUsers(interaction, ping, remove) {
         const users = await Promise.all(selectedUsers.map((userId) => guild.members.fetch(userId).catch(() => null)));
         const alreadyAddedUsers = channel.permissionOverwrites.cache.filter((overwrite) => overwrite.type === OverwriteType.Member).map((overwrite) => overwrite.id);
         const validUsers = users.filter((user) => user !== null && !alreadyAddedUsers.includes(user.id));
+        if (validUsers.length >= 25 && remove !== true) {
+            // @ts-expect-error
+            await interaction.channel?.send({
+                content: `<@${interaction.user.id}> you can max add 25 users to a ticket at once.`,
+            });
+        }
         // Update channel permissions based on the users
         const permissionOverwrites = channel.permissionOverwrites;
         const permission = remove ? false : true;
