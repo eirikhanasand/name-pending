@@ -93,7 +93,7 @@ export default async function handleCreateTicket(interaction) {
         const close = new ActionRowBuilder().addComponents(selectClose);
         // Post a message in the new ticket channel, pinging the user
         await newChannel.send({
-            content: `${interaction.user}, your ticket "${title}" has been created!\nPlease select the tags, roles, and users you want to add to this ticket.\nNote that tags can only be set once per 5 minutes.`,
+            content: `# ${title}\n${interaction.user}, your ticket has been created!\nPlease select the tags, roles, and users you want to add to this ticket.\nNote that tags can only be set once per 5 minutes.`,
             components: [tags, roles, users, close],
         });
         // Acknowledge modal submission
