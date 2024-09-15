@@ -65,7 +65,8 @@ export async function joinTicket(interaction) {
         ReadMessageHistory: true,
     });
     await interaction.reply({
-        content: `Joined <#${channel.id}>`
+        content: `Joined <#${channel.id}>`,
+        ephemeral: true
     });
     // Lets the people in the channel know that someone joined.
     channel.send(`${interaction.user.username} joined the ticket.`);

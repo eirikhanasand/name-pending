@@ -90,7 +90,8 @@ export async function joinTicket(interaction: ButtonInteraction) {
     })
 
     await interaction.reply({
-        content: `Joined <#${channel.id}>`
+        content: `Joined <#${channel.id}>`,
+        ephemeral: true
     })
 
     // Lets the people in the channel know that someone joined.
