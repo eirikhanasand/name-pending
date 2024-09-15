@@ -8,6 +8,8 @@ import manageUser from "./tickets/users.js";
 import handleAddToTicket, { handleAddViewerToTicket } from "./tickets/add.js";
 import manageRoles from "./tickets/roles.js";
 import handleRemoveFromTicket from "./tickets/remove.js";
+import { nextPage, previousPage } from "./help.js";
+import { inviteToTicket, joinTicket } from "./tickets/invite.js";
 export default async function handleComponents(interaction, id) {
     const buttonInteraction = interaction;
     // id is present if interaction is ChatInputCommandInteraction
@@ -68,6 +70,18 @@ export default async function handleComponents(interaction, id) {
             break;
         case 'reopen_channel':
             await reopenTicket(buttonInteraction);
+            break;
+        case 'next_page_help':
+            await nextPage(buttonInteraction);
+            break;
+        case 'previous_page_help':
+            await previousPage(buttonInteraction);
+            break;
+        case 'invite_to_ticket':
+            await inviteToTicket(buttonInteraction);
+            break;
+        case 'join_ticket':
+            await joinTicket(buttonInteraction);
             break;
         default:
             console.error(`${buttonInteraction.customId || id} is unhandled in handleComponents.`);

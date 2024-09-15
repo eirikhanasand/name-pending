@@ -11,16 +11,18 @@ import { ticketIdPattern } from "../../../constants.js"
 import formatChannelName from "./format.js"
 
 export default async function handleViewTicket(interaction: ButtonInteraction) {
-    // Fetch all text channels that the user has access to
+    // Fetches all text channels that the user has access to
     const guild = interaction.guild as Guild
     const channels = guild.channels.cache
         .filter(channel => 
-            channel instanceof TextChannel &&  // Only consider text channels
-            ticketIdPattern.test(channel.name) &&  // Match ticket ID scheme
+            // Only considers text channels
+            channel instanceof TextChannel &&
+            // Matches ticket ID scheme
+            ticketIdPattern.test(channel.name) &&
             channel.permissionsFor(interaction.user)?.has(PermissionsBitField.Flags.ViewChannel)
         ) as any
 
-    // Map the filtered channels to select menu options
+    // Maps the filtered channels to select menu options
     const options = channels.map((channel: BaseGuildTextChannel) => ({
         label: channel.name,
         value: `${formatChannelName(channel.id)} - ${channel.topic}`,

@@ -12,6 +12,7 @@ export default function getID(command: string): string | undefined {
         case 'add':         return 'add'
         case 'addviewer':   return 'addviewer'
         case 'remove':      return 'remove'
+        case 'invite':      return 'invite'
     }
 
     console.error(`Command ${command} is unmapped in getID.`)

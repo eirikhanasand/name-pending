@@ -10,9 +10,11 @@ const page1 = [
     "help                                    Help for the help command",
     "history                               History of the Discord bot",
     "info                                     Info about the bot",
-    "log                                      Logs whitelist commands in the current channel",
+    "invite                                  Invites someone to one of your open tickets",
 ];
 const page2 = [
+    "leave                                  Leaves the ticket (can only be used in ticket channels)",
+    "log                                      Logs whitelist commands in the current channel",
     "notify                                 Sends a notification to the Login app",
     "ping                                    Pings the bot",
     "registry                              Help for how to use the registry",
@@ -21,10 +23,10 @@ const page2 = [
     "roles                                   Creates a role builder message",
     "setup                                 Sets up the specified service",
     "tag                                      Info on how to tag a git commit",
-    "tagticket                           Adds tags to the current ticket",
-    "ticket                                 Displays the create ticket message",
 ];
 const page3 = [
+    "tagticket                           Adds tags to the current ticket",
+    "ticket                                 Displays the create ticket message",
     "updaterolemessage       Updates a role builder message",
     "version                               Displays the bots version number",
     "view                                    Select the ticket you want to view",

@@ -1,4 +1,12 @@
-import { EmbedBuilder, EmbedField } from "discord.js"
+import { 
+    ActionRowBuilder, 
+    ButtonBuilder, 
+    ButtonInteraction, 
+    ButtonStyle, 
+    Embed, 
+    EmbedBuilder, 
+    EmbedField 
+} from "discord.js"
 import pages from "./commands.js"
 
 const commands = {
@@ -35,9 +43,11 @@ const commands = {
     whitelist: "Whitelists the user specified. Use the command by typing the following: `/whitelist user:name`",
     whitelist_remove: "Removes the specified user from the whitelist. Use the command by typing the following: `/whitelist_remove user:name`",
     name: "'name' is a placeholder, please replace it with the command you want help for. For example for help on the ping command, write `/help command:ping`",
+    invite: "Creates an invite to a ticket that you have access to. Use the command by typing `/invite`. This lets people decide on their own if they want to participate. Will prompt you for the channel to invite to when you run the command.",
+    leave: "Leaves a ticket. Can only be used in ticket channels. Use the command by typing `/leave`. Useful if you temporarily want to assist with something, but the ticket is otherwise unrelevant to you. Sends a message to the channel that you left the ticket."
 } as {[key: string]: string | {name: string, value: string}[]}
 
-export default function getCommand(command: string | undefined, page: number = 0) {
+export default function getEmbed(command: string | undefined, page: number = 0) {
     if (command === 'name') {
         return createEmbed("Help", "Displays how to use the command specified", [{name: `Showing page ${page + 1} / 3`, value: commands["name"] as string, inline: false}])
     }
@@ -77,4 +87,68 @@ function createEmbed(title: string, description: string, fields: EmbedField[]) {
 
 function getPage(page: number) {
     return pages[page]
+}
+
+export function getButtons(page: number) {
+    const previous = new ButtonBuilder()
+        .setCustomId('previous_page_help')
+        .setLabel('Previous')
+        .setStyle(ButtonStyle.Secondary)
+
+    const next = new ButtonBuilder()
+        .setCustomId('next_page_help')
+        .setLabel('Next')
+        .setStyle(ButtonStyle.Secondary)
+
+    const buttons = new ActionRowBuilder<ButtonBuilder>()
+
+    if (page > 0 && page < pages.length - 1) {
+        buttons.addComponents(previous, next)
+    } else if (page > 0) {
+        buttons.addComponents(previous)
+    } else if (page < pages.length) {
+        buttons.addComponents(next)
+    }
+
+    return [buttons]
+}
+
+export async function nextPage(interaction: ButtonInteraction) {
+    // Fetches the current page from the message
+    const page = extractPageNumberFromEmbed(interaction.message.embeds[0])
+    const previousPage = page + 1
+
+    // Fetches new content
+    const newEmbed = getEmbed(undefined, previousPage)
+    const newButtons = getButtons(previousPage)
+
+    // Updates the message
+    await interaction.update({ embeds: [newEmbed], components: newButtons })
+}
+
+export async function previousPage(interaction: ButtonInteraction) {
+    // Fetches the current page from the message
+    const page = extractPageNumberFromEmbed(interaction.message.embeds[0])
+    const previousPage = page - 1
+
+    // Fetches new content
+    const newEmbed = getEmbed(undefined, previousPage)
+    const newButtons = getButtons(previousPage)
+
+    // Updates the message
+    await interaction.update({ embeds: [newEmbed], components: newButtons })
+}
+
+function extractPageNumberFromEmbed(embed: Embed): number {
+    const pageField = embed.data.fields?.find(field => field.name.startsWith('Showing page'));
+    if (pageField) {
+        const match = pageField.name.match(/Showing page (\d+) \/ \d+/);
+        if (match && match[1]) {
+            // Converts 1-based page to 0-based and returns it
+            return parseInt(match[1], 10) - 1
+        }
+    }
+
+    // Defaults to the first page if no match is found
+    return 0
 }

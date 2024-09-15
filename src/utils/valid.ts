@@ -30,12 +30,14 @@ const validCommands = [
     'addviewer',
     'add_role_viewer_to_ticket',
     'add_user_viewer_to_ticket',
+    'next_page_help',
+    'previous_page_help',
+    'invite_to_ticket',
+    'join_ticket'
 ]
 
 const exceptions = [
     'ticket_modal',
-    'previous_page_help',
-    'next_page_help'
 ]
 
 export default validCommands

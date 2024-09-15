@@ -21,7 +21,7 @@ async function create(message) {
     // 'View tickets' button
     const view = new ButtonBuilder()
         .setCustomId('view_ticket')
-        .setLabel('View tickets')
+        .setLabel('View Tickets')
         .setStyle(ButtonStyle.Secondary);
     // 'Close ticket' button
     const close = new ButtonBuilder()
