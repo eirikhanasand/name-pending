@@ -93,7 +93,7 @@ export async function reopenTicket(interaction: ButtonInteraction, view?: boolea
         await channel.send({ content, components })
 
         await interaction.reply({ 
-            content: `${formatChannelName(channel.id)} ${view ? 'viewed' : 'reopened'}.`,
+            content: `${formatChannelName(channel.name)} ${view ? 'viewed' : 'reopened'}.`,
             ephemeral: true,
          })
     } catch (error) {

@@ -13,7 +13,7 @@ export default async function handleViewTicket(interaction) {
         channel.permissionsFor(interaction.user)?.has(PermissionsBitField.Flags.ViewChannel));
     // Maps the filtered channels to select menu options
     const options = channels.map((channel) => ({
-        label: `${formatChannelName(channel.id)} - ${channel.topic}`,
+        label: `${formatChannelName(channel.name)} - ${channel.topic}`,
         value: channel.id,
     }));
     if (options.length === 0) {
