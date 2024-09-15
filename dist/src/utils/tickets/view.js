@@ -11,7 +11,7 @@ export default async function handleViewTicket(interaction) {
     // Map the filtered channels to select menu options
     const options = channels.map((channel) => ({
         label: channel.name,
-        value: formatChannelName(channel.id),
+        value: `${formatChannelName(channel.id)} - ${channel.topic}`,
     }));
     if (options.length === 0) {
         // If no channels are available, send a message saying so
