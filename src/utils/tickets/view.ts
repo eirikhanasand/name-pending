@@ -24,8 +24,8 @@ export default async function handleViewTicket(interaction: ButtonInteraction) {
 
     // Maps the filtered channels to select menu options
     const options = channels.map((channel: BaseGuildTextChannel) => ({
-        label: channel.name,
-        value: `${formatChannelName(channel.id)} - ${channel.topic}`,
+        label: `${formatChannelName(channel.id)} - ${channel.topic}`,
+        value: channel.id,
     }))
 
     if (options.length === 0) {
