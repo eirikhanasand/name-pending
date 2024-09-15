@@ -68,7 +68,7 @@ export async function reopenTicket(interaction, view) {
         const components = view ? undefined : [tags, roles, users];
         await channel.send({ content, components });
         await interaction.reply({
-            content: `${formatChannelName(channel.name)} ${view ? 'viewed' : 'reopened'}.`,
+            content: `${formatChannelName(channel.id)} ${view ? 'viewed' : 'reopened'}.`,
             ephemeral: true,
         });
     }
