@@ -25,8 +25,8 @@ export async function getTickets(interaction) {
         !(channel.parent && channel.parent.name.toLowerCase().includes('archive')));
     // Map the filtered channels to select menu options
     const options = channels.map((channel) => ({
-        label: channel.name,
-        value: formatChannelName(channel.id),
+        label: `${formatChannelName(channel.name)} - ${channel.topic}`,
+        value: channel.id,
     }));
     if (options.length === 0) {
         // If no channels are available, send a message saying so
@@ -46,8 +46,8 @@ export async function getArchivedTickets(interaction) {
         (channel.parent && channel.parent.name.toLowerCase().includes('archive')));
     // Map the filtered channels to select menu options
     const options = channels.map((channel) => ({
-        label: channel.name,
-        value: `${formatChannelName(channel.id)} - ${channel.topic}`,
+        label: `${formatChannelName(channel.name)} - ${channel.topic}`,
+        value: channel.id,
     }));
     if (options.length === 0) {
         // If no channels are available, send a message saying so

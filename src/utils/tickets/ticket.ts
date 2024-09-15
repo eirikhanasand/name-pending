@@ -38,8 +38,8 @@ export async function getTickets(interaction: ButtonInteraction) {
 
         // Map the filtered channels to select menu options
         const options = channels.map((channel: BaseGuildTextChannel) => ({
-            label: channel.name,
-            value: formatChannelName(channel.id),
+            label: `${formatChannelName(channel.name)} - ${channel.topic}`,
+            value: channel.id,
         }))
 
         if (options.length === 0) {
@@ -65,8 +65,8 @@ export async function getArchivedTickets(interaction: ButtonInteraction) {
 
         // Map the filtered channels to select menu options
         const options = channels.map((channel: BaseGuildTextChannel) => ({
-            label: channel.name,
-            value: `${formatChannelName(channel.id)} - ${channel.topic}`,
+            label: `${formatChannelName(channel.name)} - ${channel.topic}`,
+            value: channel.id,
         }))
 
         if (options.length === 0) {
