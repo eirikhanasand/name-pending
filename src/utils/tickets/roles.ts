@@ -56,27 +56,28 @@ export default async function manageRoles(interaction: ButtonInteraction, ping?:
             }
         }
 
-        // Removes all roles from the channel except the bot's role.
-        const bot = guild.members.me
-
-        validRoles.forEach(async (role) => {
-            if (bot?.roles.cache.has(role.id)) return
-            
-            const permissionOverwrites = channel.permissionOverwrites.cache.get(role.id)
-            if (permissionOverwrites) {
-                // Remove the permission overwrite for the role only if it exists
-                await channel.permissionOverwrites.delete(role.id)
-            }
-        })
         // Get the category of the channel and update its permissions
         const category = channel.parent as CategoryChannel
         if (category) {
             const categoryOverwrites = category.permissionOverwrites as PermissionOverwriteManager
 
             for (const role of validRoles) {
-                await categoryOverwrites.edit(role, {
-                    ViewChannel: remove ? false : true,
-                })
+                if (remove !== true) {
+                    await categoryOverwrites.edit(role, {
+                        ViewChannel: true
+                    })
+                } else {
+                    // Fetche the bot to avoid removing the bot
+                    const bot = guild.members.me
+
+                    if (bot?.roles.cache.has(role.id)) return
+            
+                    const permissionOverwrites = channel.permissionOverwrites.cache.get(role.id)
+                    if (permissionOverwrites) {
+                        // Remove the permission overwrite for the role only if it exists
+                        await channel.permissionOverwrites.delete(role.id)
+                    }
+                }
             }
         }
 
