@@ -44,8 +44,17 @@ export default async function manageRoles(interaction, ping, remove) {
             const categoryOverwrites = category.permissionOverwrites;
             for (const role of validRoles) {
                 if (remove !== true) {
+                    // Adds the role to the category
                     await categoryOverwrites.edit(role, {
                         ViewChannel: true
+                    });
+                    // Adds the role to the channel
+                    await channel.permissionOverwrites.edit(role, {
+                        ViewChannel: true,
+                        SendMessages: true,
+                        AddReactions: true,
+                        UseExternalEmojis: true,
+                        ReadMessageHistory: true,
                     });
                 }
                 else {
