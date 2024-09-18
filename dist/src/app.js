@@ -125,6 +125,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
 client.on(Events.ThreadCreate, async (thread) => {
     // if thread is in #pr-kontakt
     if (thread.parent?.name === 'pr-kontakt') {
+        const lastMessage = (await thread.messages.fetch({ limit: 1 })).first();
+        // Checks if the bot has already sent this message
+        if (lastMessage?.author.id === client.author.id) {
+            return;
+        }
         return thread.send({
             content: "Husk å ha med:\n```\nTittel: Thread tittel skal være arrangement / grunn for kontakt\nSted (Hvor skjer det?):\nDato og klokkeslett (Når skjer det?):\nBeskrivelse/promotekst (Hva er det?):\nRelease dato (Når er det ønsket at promo postes?):\n```"
         });
