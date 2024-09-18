@@ -121,18 +121,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
     catch (_) { }
 });
-// Trigger for thread created in #pr-kontakt to remind them of template
+// Sends a reminder in #pr-kontakt threads reminding them of the template.
 client.on(Events.ThreadCreate, async (thread) => {
+    // Checks if the channel is #pr-kontakt
     if (thread.parent?.name === 'pr-kontakt') {
-        // Random delay between 100ms to 500ms
-        const delay = Math.floor(Math.random() * 400) + 100;
-        await new Promise(resolve => setTimeout(resolve, delay));
-        const lastMessage = (await thread.messages.fetch({ limit: 1 })).first();
-        // Checks if the bot has already sent this message
-        if (lastMessage && lastMessage?.author.id === thread.guild.members.me?.id) {
-            return;
-        }
-        return thread.send({
+        // Sends the reminder message
+        return await thread.send({
             content: "Husk å ha med:\n```\nTittel: Thread tittel skal være arrangement / grunn for kontakt\nSted (Hvor skjer det?):\nDato og klokkeslett (Når skjer det?):\nBeskrivelse/promotekst (Hva er det?):\nRelease dato (Når er det ønsket at promo postes?):\n```"
         });
     }
