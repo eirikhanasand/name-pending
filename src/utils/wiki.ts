@@ -317,6 +317,10 @@ export default async function autoCreate({channel, isStyret}: AutoCreateProps) {
         title: path.nextPath
     })
 
+    // Random delay between 100ms to 500ms
+    const delay = Math.floor(Math.random() * 400) + 100;
+    await new Promise(resolve => setTimeout(resolve, delay));
+    
     const lastMessage = (await channel.messages.fetch({ limit: 1 })).first()
 
     const bot = channel.guild.members.me

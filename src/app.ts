@@ -151,13 +151,16 @@ client.on(Events.InteractionCreate, async (interaction: ChatInputCommandInteract
 
 // Trigger for thread created in #pr-kontakt to remind them of template
 client.on(Events.ThreadCreate, async (thread: ThreadChannel) => {
-    // if thread is in #pr-kontakt
     if (thread.parent?.name === 'pr-kontakt') {
+        // Random delay between 100ms to 500ms
+        const delay = Math.floor(Math.random() * 400) + 100;
+        await new Promise(resolve => setTimeout(resolve, delay));
+
         const lastMessage = (await thread.messages.fetch({ limit: 1 })).first();
 
         // Checks if the bot has already sent this message
         if (lastMessage && lastMessage?.author.id === thread.guild.members.me?.id) {
-            return
+            return;
         }
 
         return thread.send({
