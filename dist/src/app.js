@@ -127,7 +127,7 @@ client.on(Events.ThreadCreate, async (thread) => {
     if (thread.parent?.name === 'pr-kontakt') {
         const lastMessage = (await thread.messages.fetch({ limit: 1 })).first();
         // Checks if the bot has already sent this message
-        if (lastMessage?.author.id === client.author.id) {
+        if (lastMessage && lastMessage?.author.id === thread.guild.members.me?.id) {
             return;
         }
         return thread.send({

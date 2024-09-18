@@ -156,7 +156,7 @@ client.on(Events.ThreadCreate, async (thread: ThreadChannel) => {
         const lastMessage = (await thread.messages.fetch({ limit: 1 })).first();
 
         // Checks if the bot has already sent this message
-        if (lastMessage?.author.id === client.author.id) {
+        if (lastMessage && lastMessage?.author.id === thread.guild.members.me?.id) {
             return
         }
 
