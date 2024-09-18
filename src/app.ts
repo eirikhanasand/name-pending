@@ -11,6 +11,7 @@ import {
     GatewayIntentBits, 
     Partials, 
     Reaction, 
+    ThreadChannel, 
     User 
 } from 'discord.js'
 import addRole, { removeRole } from './utils/roles.js'
@@ -31,13 +32,13 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.GuildModeration,
         GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildPresences
+        GatewayIntentBits.GuildPresences,
     ],
     partials: [
         Partials.Message, 
         Partials.Channel, 
         Partials.Reaction, 
-        Partials.User
+        Partials.User,
     ],
 }) as any
 
@@ -146,6 +147,16 @@ client.on(Events.InteractionCreate, async (interaction: ChatInputCommandInteract
 		await command.execute(interaction)
     // Catched elsewhere
 	} catch (_) {}
+})
+
+client.on(Events.ThreadCreate, async (thread: ThreadChannel) => {
+    // if thread is in #pr-kontakt
+    if (thread.parent?.name === 'pr-kontakt') {
+
+        return thread.send({
+            content: "Husk å ha med:\n```\nTittel: Thread tittel skal være arrangement / grunn for kontakt\nSted (Hvor skjer det?):\nDato og klokkeslett (Når skjer det?):\nBeskrivelse/promotekst (Hva er det?):\nRelease dato (Når er det ønsket at promo postes?):\n```"
+        })
+    }
 })
 
 client.on(Events.MessageReactionRemove, async (reaction: any, user: any) => {

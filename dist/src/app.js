@@ -20,13 +20,13 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.GuildModeration,
         GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildPresences
+        GatewayIntentBits.GuildPresences,
     ],
     partials: [
         Partials.Message,
         Partials.Channel,
         Partials.Reaction,
-        Partials.User
+        Partials.User,
     ],
 });
 client.commands = new Collection();
@@ -120,6 +120,14 @@ client.on(Events.InteractionCreate, async (interaction) => {
         // Catched elsewhere
     }
     catch (_) { }
+});
+client.on(Events.ThreadCreate, async (thread) => {
+    // if thread is in #pr-kontakt
+    if (thread.parent?.name === 'pr-kontakt') {
+        return thread.send({
+            content: "Husk å ha med:\n```\nTittel: Thread tittel skal være arrangement / grunn for kontakt\nSted (Hvor skjer det?):\nDato og klokkeslett (Når skjer det?):\nBeskrivelse/promotekst (Hva er det?):\nRelease dato (Når er det ønsket at promo postes?):\n```"
+        });
+    }
 });
 client.on(Events.MessageReactionRemove, async (reaction, user) => {
     // When a reaction is received, check if the structure is partial
