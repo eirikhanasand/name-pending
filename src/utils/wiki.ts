@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Channel } from 'discord.js'
+import { Channel, TextChannel } from 'discord.js'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -60,7 +60,7 @@ type RequestWithRetriesProps = {
 }
 
 type AutoCreateProps = {
-    channel: Channel
+    channel: TextChannel
     isStyret: boolean
 }
 
@@ -316,6 +316,14 @@ export default async function autoCreate({channel, isStyret}: AutoCreateProps) {
         path: fullPath, 
         title: path.nextPath
     })
+
+    const lastMessage = (await channel.messages.fetch({ limit: 1 })).first()
+
+    const bot = channel.guild.members.me
+
+    if (lastMessage?.author.id === bot?.id) {
+        return
+    }
 
     // @ts-ignore (hardcoded channel, expected to be of correct type)
     channel.send(`<@&${DISCORD_TEKKOM_ROLE_ID}> Minner om TekKom møte på onsdag kl 16 på LL. [Agenda](https://wiki.login.no/tekkom/meetings/${path.nextPath})`, createResponse)

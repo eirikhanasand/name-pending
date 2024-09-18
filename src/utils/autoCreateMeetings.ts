@@ -1,4 +1,4 @@
-import { Client } from "discord.js"
+import { Client, TextChannel } from "discord.js"
 import { schedule } from "node-cron"
 import autoCreate from "./wiki.js"
 import dotenv from 'dotenv'
@@ -13,7 +13,7 @@ if (!DISCORD_TEKKOM_VERV_CHANNEL_ID) {
 }
 
 export default async function autoCreateMeetings(client: Client) {
-    const channel = await client.channels.fetch(DISCORD_TEKKOM_VERV_CHANNEL_ID as string)
+    const channel = await client.channels.fetch(DISCORD_TEKKOM_VERV_CHANNEL_ID as string) as TextChannel
 
     if (!channel) {
         throw new Error(`Channel with ID ${DISCORD_TEKKOM_VERV_CHANNEL_ID} not found in autoCreateMeetings.ts`)
