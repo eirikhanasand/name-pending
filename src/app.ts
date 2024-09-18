@@ -149,6 +149,7 @@ client.on(Events.InteractionCreate, async (interaction: ChatInputCommandInteract
 	} catch (_) {}
 })
 
+// Trigger for thread created in #pr-kontakt to remind them of template
 client.on(Events.ThreadCreate, async (thread: ThreadChannel) => {
     // if thread is in #pr-kontakt
     if (thread.parent?.name === 'pr-kontakt') {
