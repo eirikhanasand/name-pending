@@ -141,12 +141,13 @@ client.on(Events.InteractionCreate, async (interaction: ChatInputCommandInteract
         }
 
     }
-1
 
-	try {
-		await command.execute(interaction)
-    // Catched elsewhere
-	} catch (_) {}
+    await command.execute(interaction)
+	// try {
+	// 	await command.execute(interaction)
+	// } catch (err) {
+    //     console.log(err)
+    // }
 })
 
 // Sends a reminder in #pr-kontakt threads reminding them of the template.
@@ -177,5 +178,15 @@ client.on(Events.MessageReactionRemove, async (reaction: any, user: any) => {
 })
 
 client.login(token)
+
+process.on("unhandledRejection", async (err) => {
+    console.error("Unhandled Promise Rejection:\n", err);
+});
+process.on("uncaughtException", async (err) => {
+    console.error("Uncaught Promise Exception:\n", err);
+});
+process.on("uncaughtExceptionMonitor", async (err) => {
+    console.error("Uncaught Promise Exception (Monitor):\n", err);
+});
 
 export default client

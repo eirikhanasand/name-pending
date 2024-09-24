@@ -114,12 +114,12 @@ client.on(Events.InteractionCreate, async (interaction) => {
             console.error(`${interaction.commandName || interaction.customId} is not a valid command in app.ts`);
         }
     }
-    1;
-    try {
-        await command.execute(interaction);
-        // Catched elsewhere
-    }
-    catch (_) { }
+    await command.execute(interaction);
+    // try {
+    // 	await command.execute(interaction)
+    // } catch (err) {
+    //     console.log(err)
+    // }
 });
 // Sends a reminder in #pr-kontakt threads reminding them of the template.
 client.on(Events.ThreadCreate, async (thread) => {
@@ -146,4 +146,13 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
     removeRole({ reaction, user });
 });
 client.login(token);
+process.on("unhandledRejection", async (err) => {
+    console.error("Unhandled Promise Rejection:\n", err);
+});
+process.on("uncaughtException", async (err) => {
+    console.error("Uncaught Promise Exception:\n", err);
+});
+process.on("uncaughtExceptionMonitor", async (err) => {
+    console.error("Uncaught Promise Exception (Monitor):\n", err);
+});
 export default client;
