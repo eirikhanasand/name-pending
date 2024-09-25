@@ -22,17 +22,35 @@ export default async function handleCreateTicket(interaction) {
         }
     }
     const newChannelName = `ticket${newTicketId}`;
-    // Create a modal for text input
+    // Creates modal
     const modal = new ModalBuilder()
         .setCustomId('ticket_modal')
         .setTitle('Ticket');
-    // Add a text input field to the modal
-    const textInput = new TextInputBuilder()
+    // Title
+    const title = new TextInputBuilder()
         .setCustomId('ticket_title')
         .setLabel('Ticket Title')
         .setStyle(TextInputStyle.Short);
-    const textActionRow = new ActionRowBuilder().addComponents(textInput);
-    modal.addComponents(textActionRow);
+    // Mail
+    const mail = new TextInputBuilder()
+        .setCustomId('ticket_mail')
+        .setLabel('Your NTNU email')
+        .setStyle(TextInputStyle.Short);
+    // First Name
+    const firstName = new TextInputBuilder()
+        .setCustomId('ticket_firstname')
+        .setLabel('First Name')
+        .setStyle(TextInputStyle.Short);
+    // Last name
+    const lastName = new TextInputBuilder()
+        .setCustomId('ticket_lastname')
+        .setLabel('Last Name')
+        .setStyle(TextInputStyle.Short);
+    const titleRow = new ActionRowBuilder().addComponents(title);
+    const mailRow = new ActionRowBuilder().addComponents(mail);
+    const firstNameRow = new ActionRowBuilder().addComponents(firstName);
+    const lastNameRow = new ActionRowBuilder().addComponents(lastName);
+    modal.addComponents([titleRow, mailRow, firstNameRow, lastNameRow]);
     // Show modal for text input
     await interaction.showModal(modal);
     try {
@@ -91,11 +109,37 @@ export default async function handleCreateTicket(interaction) {
         const roles = new ActionRowBuilder().addComponents(selectRoles);
         const users = new ActionRowBuilder().addComponents(selectUsers);
         const close = new ActionRowBuilder().addComponents(selectClose);
-        // Post a message in the new ticket channel, pinging the user
-        await newChannel.send({
-            content: `# ${title}\n${interaction.user}, your ticket has been created!\nPlease select the tags, roles, and users you want to add to this ticket.\nNote that tags can only be set once per 5 minutes.`,
-            components: [tags, roles, users, close],
+        const channelId = newChannel.id;
+        const guildId = interaction.guild?.id;
+        const ticket = await fetch('http://localhost:8080/api/ticket', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title,
+                "group_id": 37,
+                "customer_id": 1,
+                "article": {
+                    "subject": title,
+                    "body": `Synced with https://discord.com/channels/${guildId}/${channelId}.`,
+                    "type": "email",
+                    "internal": false
+                },
+                "priority_id": 2,
+                "state_id": 1,
+                "due_at": "2024-09-30T12:00:00Z"
+            })
         });
+        if (ticket.ok) {
+            const id = await ticket.json();
+            const text = ticket.status >= 200 && ticket.status <= 300 ? `[ticket](https://zammad.login.no/#ticket/zoom/${id})` : 'ticket';
+            // Post a message in the new ticket channel, pinging the user
+            await newChannel.send({
+                content: `# ${title}\n${interaction.user}, your ${text} has been created!\nPlease select the tags, roles, and users you want to add to this ticket.\nNote that tags can only be set once per 5 minutes.`,
+                components: [tags, roles, users, close],
+            });
+        }
         // Acknowledge modal submission
         await submittedModal.reply({ content: `Your ticket <#${newChannel.id}> has been created!`, ephemeral: true });
     }

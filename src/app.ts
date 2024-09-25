@@ -9,8 +9,10 @@ import {
     Collection, 
     Events, 
     GatewayIntentBits, 
+    Message, 
     Partials, 
     Reaction, 
+    TextChannel, 
     ThreadChannel, 
     User 
 } from 'discord.js'
@@ -176,6 +178,16 @@ client.on(Events.MessageReactionRemove, async (reaction: any, user: any) => {
 
     removeRole({ reaction, user })
 })
+
+client.on(Events.MessageCreate, async (message: Message) => {
+    const regex = /^\d{5,6}(?!\w)/;
+    const matches = message.content.match(regex)
+    if (matches && matches.length) {
+        const channel = message.channel as TextChannel
+        channel.send(`[${matches[0]}](https://zammad.login.no/#ticket/zoom/${matches[0]})`)
+    }
+})
+
 
 client.login(token)
 

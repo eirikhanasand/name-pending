@@ -145,6 +145,14 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
     }
     removeRole({ reaction, user });
 });
+client.on(Events.MessageCreate, async (message) => {
+    const regex = /^\d{5,6}(?!\w)/;
+    const matches = message.content.match(regex);
+    if (matches && matches.length) {
+        const channel = message.channel;
+        channel.send(`[${matches[0]}](https://zammad.login.no/#ticket/zoom/${matches[0]})`);
+    }
+});
 client.login(token);
 process.on("unhandledRejection", async (err) => {
     console.error("Unhandled Promise Rejection:\n", err);
