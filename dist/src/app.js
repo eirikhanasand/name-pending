@@ -9,6 +9,8 @@ import autoCreateMeetings from './utils/autoCreateMeetings.js';
 import handleComponents from './utils/handleComponents.js';
 import getID from './utils/tickets/getID.js';
 import validCommands, { exceptions } from './utils/valid.js';
+import handleTickets from './utils/tickets/handler.js';
+import autoSyncZammad from './utils/autoSyncZammad.js';
 const token = config.token;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -90,7 +92,10 @@ client.once(Events.ClientReady, async () => {
             console.error("Error processing roles:", error);
         }
     }
+    // Creates TekKom meeting agendas
     autoCreateMeetings(client);
+    // Automatically syncronizes messages from Zammad to Discord
+    autoSyncZammad(client);
     console.log("Ready!");
 });
 client.on(Events.InteractionCreate, async (interaction) => {
@@ -115,11 +120,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
         }
     }
     await command.execute(interaction);
-    // try {
-    // 	await command.execute(interaction)
-    // } catch (err) {
-    //     console.log(err)
-    // }
 });
 // Sends a reminder in #pr-kontakt threads reminding them of the template.
 client.on(Events.ThreadCreate, async (thread) => {
@@ -148,10 +148,8 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
 client.on(Events.MessageCreate, async (message) => {
     const regex = /^\d{5,6}(?!\w)/;
     const matches = message.content.match(regex);
-    if (matches && matches.length) {
-        const channel = message.channel;
-        channel.send(`[${matches[0]}](https://zammad.login.no/#ticket/zoom/${matches[0]})`);
-    }
+    // Ticket handling
+    handleTickets({ matches, message });
 });
 client.login(token);
 process.on("unhandledRejection", async (err) => {

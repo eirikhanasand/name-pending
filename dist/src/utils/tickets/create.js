@@ -1,5 +1,6 @@
 import { TextChannel, PermissionsBitField, CategoryChannel, StringSelectMenuBuilder, RoleSelectMenuBuilder, ActionRowBuilder, UserSelectMenuBuilder, ChannelType, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from "discord.js";
 import topics from "./topics.js";
+import { API } from "../../../constants.js";
 export default async function handleCreateTicket(interaction) {
     const guild = interaction.guild;
     if (!guild) {
@@ -60,6 +61,7 @@ export default async function handleCreateTicket(interaction) {
         const submittedModal = await interaction.awaitModalSubmit({ filter, time: 300000 });
         // Retrieve the submitted title
         const title = submittedModal.fields.getTextInputValue('ticket_title');
+        const mail = submittedModal.fields.getTextInputValue('ticket_mail');
         // Create the new channel in a category (if you have a category for tickets)
         const category = guild.channels.cache.find(c => c instanceof CategoryChannel && c.name === "tickets");
         const newChannel = await guild.channels.create({
@@ -111,7 +113,7 @@ export default async function handleCreateTicket(interaction) {
         const close = new ActionRowBuilder().addComponents(selectClose);
         const channelId = newChannel.id;
         const guildId = interaction.guild?.id;
-        const ticket = await fetch('http://localhost:8080/api/ticket', {
+        const ticket = await fetch(`${API}/api/ticket`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -119,12 +121,17 @@ export default async function handleCreateTicket(interaction) {
             body: JSON.stringify({
                 title,
                 "group_id": 37,
-                "customer_id": 1,
+                "customer_id": 3116,
                 "article": {
                     "subject": title,
                     "body": `Synced with https://discord.com/channels/${guildId}/${channelId}.`,
                     "type": "email",
-                    "internal": false
+                    "internal": false,
+                    "from": "Support",
+                    "to": mail,
+                    "type_id": 1,
+                    "sender_id": 1,
+                    "content_type": "text/html"
                 },
                 "priority_id": 2,
                 "state_id": 1,
@@ -135,13 +142,14 @@ export default async function handleCreateTicket(interaction) {
             const id = await ticket.json();
             const text = ticket.status >= 200 && ticket.status <= 300 ? `[ticket](https://zammad.login.no/#ticket/zoom/${id})` : 'ticket';
             // Post a message in the new ticket channel, pinging the user
+            newChannel.setName(id);
             await newChannel.send({
                 content: `# ${title}\n${interaction.user}, your ${text} has been created!\nPlease select the tags, roles, and users you want to add to this ticket.\nNote that tags can only be set once per 5 minutes.`,
                 components: [tags, roles, users, close],
             });
+            // Acknowledge modal submission
+            await submittedModal.reply({ content: `Your ticket <#${newChannel.id}> has been created!`, ephemeral: true });
         }
-        // Acknowledge modal submission
-        await submittedModal.reply({ content: `Your ticket <#${newChannel.id}> has been created!`, ephemeral: true });
     }
     catch (error) {
         console.error("Error creating ticket channel:", error);
