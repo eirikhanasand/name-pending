@@ -1,17 +1,16 @@
 import { Message } from "discord.js"
-import { ZAMMAD_API, ZAMMAD_TOKEN } from "../../../constants.js"
-import fetchTicket from "../fetchTicket.js"
+import { API } from "../../../constants.js"
+import fetchTicket from "../ticket.js"
 
 export default async function postMessage(ticketID: number, message: Message, body: string | undefined = undefined) {
     const recipient = await fetchTicket(ticketID, true)
 
     if (recipient) {
         try {
-            const response = await fetch(`${ZAMMAD_API}/tickets/${ticketID}`, {
+            const response = await fetch(`${API}/ticket/${ticketID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Token token=${ZAMMAD_TOKEN}`
                 },
                 body: JSON.stringify({
                     "group_id": 37,
@@ -21,9 +20,7 @@ export default async function postMessage(ticketID: number, message: Message, bo
                         "type": "email",
                         "internal": false,
                         "to": recipient
-                    },
-                    "priority_id": 2,
-                    "due_at": "2024-09-30T12:00:00Z"
+                    }
                 })
             })
         

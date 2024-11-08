@@ -1,7 +1,7 @@
 import { Message, TextChannel } from "discord.js"
 import { ticketIdPattern } from "../../../constants.js"
 import postMessage from "./postMessage.js"
-import fetchTicket from "../fetchTicket.js"
+import fetchTicket from "../ticket.js"
 
 type HandleTicketProps = {
     matches: RegExpMatchArray | null

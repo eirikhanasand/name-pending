@@ -1,13 +1,10 @@
 import { ChannelType } from "discord.js";
 import dotenv from 'dotenv';
-import { ticketIdPattern, ZAMMAD_API } from "../../constants.js";
+import { ticketIdPattern } from "../../constants.js";
 import postMessage from "./tickets/postMessage.js";
-import fetchTicket from "./fetchTicket.js";
+import fetchTicket from "./ticket.js";
 dotenv.config();
 const { DISCORD_GUILD_ID } = process.env;
-if (!ZAMMAD_API) {
-    throw new Error('Missing ZAMMAD_API constant from constants.ts in autoSyncZammad.ts');
-}
 export default async function autoSyncZammad(client) {
     setInterval(() => {
         sync(client);

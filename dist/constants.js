@@ -1,7 +1,5 @@
-import dotenv from 'dotenv';
-dotenv.config();
-const { ZAMMAD_TOKEN: zammad_token } = process.env;
 export const ticketIdPattern = /^ticket\d+$|^\d{5,}$/;
-export const API = 'http://localhost:8080';
-export const ZAMMAD_API = 'https://zammad.login.no/api/v1';
-export const ZAMMAD_TOKEN = zammad_token;
+export const API = 'https://dev-dizambee-api.login.no/api';
+// export const API = "http://localhost:8080/api"
+export const ZAMMAD_URL = 'https://zammad.login.no/#ticket/zoom';
+export const DISCORD_URL = 'https://discord.com/channels';

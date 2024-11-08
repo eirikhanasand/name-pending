@@ -17,7 +17,7 @@ import {
     ButtonStyle
 } from "discord.js"
 import topics from "./topics.js"
-import { API } from "../../../constants.js"
+import { API, DISCORD_URL, ZAMMAD_URL } from "../../../constants.js"
 
 export default async function handleCreateTicket(interaction: ButtonInteraction) {
     const guild = interaction.guild as Guild
@@ -80,13 +80,14 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
     const firstNameRow = new ActionRowBuilder<TextInputBuilder>().addComponents(firstName)
     const lastNameRow = new ActionRowBuilder<TextInputBuilder>().addComponents(lastName)
     modal.addComponents([titleRow, mailRow, firstNameRow, lastNameRow])
-
-    // Show modal for text input
+    
+    // Shows modal for text input
     await interaction.showModal(modal)
 
     try {
         // Wait for modal submission
         const filter = (i: ModalSubmitInteraction) => i.customId === 'ticket_modal' && i.user.id === interaction.user.id
+
         // 5 minutes to submit
         const submittedModal = await interaction.awaitModalSubmit({ filter, time: 300000 })
 
@@ -140,7 +141,7 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
             .setMaxValues(10)
 
         const selectClose = new ButtonBuilder()
-            .setCustomId('close_ticket')
+            .setCustomId('close_ticket2')
             .setLabel('Close ticket')
             .setStyle(ButtonStyle.Danger)
 
@@ -152,7 +153,7 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
         const channelId = newChannel.id
         const guildId = interaction.guild?.id
 
-        const ticket = await fetch (`${API}/api/ticket`, {
+        const ticket = await fetch (`${API}/ticket`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -163,7 +164,7 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
                 "customer_id": 3116,
                 "article": {
                     "subject": title,
-                    "body": `Synced with https://discord.com/channels/${guildId}/${channelId}.`,
+                    "body": `Synced with ${DISCORD_URL}/${guildId}/${channelId}.`,
                     "type": "email",
                     "internal": false,
                     "from": "Support",
@@ -180,7 +181,7 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
 
         if (ticket.ok) {
             const id = await ticket.json()
-            const text = ticket.status >= 200 && ticket.status <= 300 ? `[ticket](https://zammad.login.no/#ticket/zoom/${id})` : 'ticket'
+            const text = ticket.status >= 200 && ticket.status <= 300 ? `[ticket](${ZAMMAD_URL}/${id})` : 'ticket'
             // Post a message in the new ticket channel, pinging the user
             newChannel.setName(id)
 
@@ -190,11 +191,11 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
             })
             
             // Acknowledge modal submission
-            await submittedModal.reply({ content: `Your ticket <#${newChannel.id}> has been created!`, ephemeral: true })
+            await submittedModal.reply({ content: `Your ticket <#${newChannel.id}> has been created!` })
         }
 
     } catch (error) {
         console.error("Error creating ticket channel:", error)
-        await interaction.reply({ content: "There was an error creating the ticket. Please try again.", ephemeral: true })
+        await interaction.reply({ content: "There was an error creating the ticket. Please try again." })
     }
 }

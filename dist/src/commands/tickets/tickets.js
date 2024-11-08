@@ -15,7 +15,7 @@ async function create(message) {
         .addFields({ name: "Create", value: "Creates a new ticket" }, { name: "View", value: "Views existing ticket, pings you in the channel if already open, or adds you to the channel if not" }, { name: "Tag", value: "Tags a ticket with a topic" }, { name: "Close", value: "Closes a ticket" }, { name: "Reopen", value: "Reopens a ticket" });
     // 'Create ticket' button
     const create = new ButtonBuilder()
-        .setCustomId('create_ticket')
+        .setCustomId('create_ticket2')
         .setLabel('Create Ticket')
         .setStyle(ButtonStyle.Primary);
     // 'View tickets' button
@@ -25,7 +25,7 @@ async function create(message) {
         .setStyle(ButtonStyle.Secondary);
     // 'Close ticket' button
     const close = new ButtonBuilder()
-        .setCustomId('close_ticket')
+        .setCustomId('close_ticket2')
         .setLabel('Close Ticket')
         .setStyle(ButtonStyle.Secondary);
     // 'Reopen ticket' button
