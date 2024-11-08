@@ -33,7 +33,7 @@ async function create(message: ChatInputCommandInteraction) {
 
     // 'Create ticket' button
     const create = new ButtonBuilder()
-        .setCustomId('create_ticket2')
+        .setCustomId('create_ticket')
         .setLabel('Create Ticket')
         .setStyle(ButtonStyle.Primary)
 
@@ -45,7 +45,7 @@ async function create(message: ChatInputCommandInteraction) {
 
     // 'Close ticket' button
     const close = new ButtonBuilder()
-        .setCustomId('close_ticket2')
+        .setCustomId('close_ticket')
         .setLabel('Close Ticket')
         .setStyle(ButtonStyle.Secondary)
     

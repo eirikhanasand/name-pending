@@ -14,7 +14,7 @@ export default async function handleComponents(interaction, id) {
     const buttonInteraction = interaction;
     // id is present if interaction is ChatInputCommandInteraction
     switch (id || buttonInteraction.customId) {
-        case 'create_ticket2':
+        case 'create_ticket':
             await handleCreateTicket(buttonInteraction);
             break;
         case 'view_ticket':
@@ -23,7 +23,7 @@ export default async function handleComponents(interaction, id) {
         case 'tag_ticket':
             await handleTagTicket(buttonInteraction);
             break;
-        case 'close_ticket2':
+        case 'close_ticket':
             await handleCloseTicket(buttonInteraction);
             break;
         case 'reopen_ticket':

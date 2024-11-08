@@ -2,12 +2,12 @@ export default function getID(command: string): string | undefined {
     if (!command) return undefined
 
     switch (command) {
-        case 'create_ticket2':
-        case 'create2':
-        case 'ticket2':      return 'create_ticket2'
+        case 'create_ticket':
+        case 'create':
+        case 'ticket':      return 'create_ticket'
         case 'view':        return 'view_ticket'
         case 'tagticket':   return 'tag_ticket'
-        case 'close2':       return 'close_ticket2'
+        case 'close':       return 'close_ticket'
         case 'reopen':      return 'reopen_ticket'
         case 'add':         return 'add'
         case 'addviewer':   return 'addviewer'
