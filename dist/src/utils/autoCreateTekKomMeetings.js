@@ -1,7 +1,7 @@
 import { schedule } from "node-cron";
 import autoCreate from "./wiki.js";
 import dotenv from 'dotenv';
-import { getNextWeekYearAndWeek } from "./wiki.js";
+import getNextPathYearAndWeek from "./meetings/getNextPathYearAndWeek.js";
 dotenv.config();
 const { DISCORD_TEKKOM_VERV_CHANNEL_ID } = process.env;
 if (!DISCORD_TEKKOM_VERV_CHANNEL_ID) {
@@ -13,7 +13,7 @@ export default async function autoCreateTekKomMeetings(client) {
         throw new Error(`Channel with ID ${DISCORD_TEKKOM_VERV_CHANNEL_ID} not found in autoCreateTekKomMeetings.ts`);
     }
     schedule('0 16 * * 4', () => {
-        const weekNumber = getNextWeekYearAndWeek(false).currentWeek;
+        const weekNumber = getNextPathYearAndWeek(false).currentWeek;
         if (weekNumber % 2 !== 0) {
             autoCreate({ channel, isStyret: false });
         }

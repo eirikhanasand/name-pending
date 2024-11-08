@@ -2,7 +2,7 @@ import { Client, TextChannel } from "discord.js"
 import { schedule } from "node-cron"
 import autoCreate from "./wiki.js"
 import dotenv from 'dotenv'
-import { getNextWeekYearAndWeek } from "./wiki.js"
+import getNextPathYearAndWeek from "./meetings/getNextPathYearAndWeek.js"
 
 dotenv.config()
 
@@ -20,7 +20,7 @@ export default async function autoCreateTekKomMeetings(client: Client) {
     }
 
     schedule('0 16 * * 4', () => {
-        const weekNumber = getNextWeekYearAndWeek(false).currentWeek
+        const weekNumber = getNextPathYearAndWeek(false).currentWeek
         if (weekNumber % 2 !== 0) {
             autoCreate({ channel, isStyret: false })
         }
