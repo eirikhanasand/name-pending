@@ -5,12 +5,13 @@ import config from './utils/config.js';
 import roles from './managed/roles.js';
 import { Client, Collection, Events, GatewayIntentBits, Partials } from 'discord.js';
 import addRole, { removeRole } from './utils/roles.js';
-import autoCreateMeetings from './utils/autoCreateMeetings.js';
+import autoCreateTekKomMeetings from './utils/autoCreateTekKomMeetings.js';
 import handleComponents from './utils/handleComponents.js';
 import getID from './utils/tickets/getID.js';
 import validCommands, { exceptions } from './utils/valid.js';
 import handleTickets from './utils/tickets/handler.js';
 import autoSyncZammad from './utils/autoSyncZammad.js';
+import autoCreateStyretMeetings from './utils/autoCreateStyretMeetings.js';
 const token = config.token;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -93,7 +94,9 @@ client.once(Events.ClientReady, async () => {
         }
     }
     // Creates TekKom meeting agendas
-    autoCreateMeetings(client);
+    autoCreateTekKomMeetings(client);
+    // Creates Styret meeting agendas
+    autoCreateStyretMeetings(client);
     // Automatically syncronizes messages from Zammad to Discord
     autoSyncZammad(client);
     console.log("Ready!");
@@ -131,10 +134,19 @@ client.on(Events.ThreadCreate, async (thread) => {
         });
     }
 });
+// Sends a reminder in #saker-til-styremøter threads reminding them of the template.
+client.on(Events.ThreadCreate, async (thread) => {
+    // Checks if the channel is #pr-kontakt
+    if (thread.parent?.name === 'saker-til-styremøter') {
+        // Sends the reminder message
+        return await thread.send({
+            content: "Husk å ha med:\n```\nType sak: O / D / V - \nBeskrivelse av saken.\n\nEksempel:\nD - Nytt format av saker\nDenne linjen og resten av meldingen er innholdet i saken.```\nDersom du ønsker å redigere en sak må du redigere samme melding. Flere meldinger for samme sak vil ikke komme med. Meldinger uten type vil heller ikke komme med. Slike meldinger antas å være urelevant diskusjon.\n"
+        });
+    }
+});
 client.on(Events.MessageReactionRemove, async (reaction, user) => {
-    // When a reaction is received, check if the structure is partial
+    // Checks if a reaction is partial, and if so fetches the entire structure
     if (reaction.partial) {
-        // If the message this reaction belongs to was removed, the fetching might result in an API error which should be handled
         try {
             await reaction.fetch();
         }

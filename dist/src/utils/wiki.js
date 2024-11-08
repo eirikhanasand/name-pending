@@ -1,59 +1,51 @@
-import axios from 'axios';
 import dotenv from 'dotenv';
+import updateStyretTemplate from './meetings/updateStyretTemplate.js';
+import getQuery from './meetings/getQuery.js';
+import requestWithRetries from './meetings/requestWithEntries.js';
 dotenv.config();
-const { TEKKOM_MEETINGS_URL, STYRET_MEETINGS_URL, DISCORD_TEKKOM_ROLE_ID, GRAPHQL_URL, WIKIJS_TOKEN } = process.env;
+const { TEKKOM_MEETINGS_URL, STYRET_MEETINGS_URL, DISCORD_TEKKOM_ROLE_ID, DISCORD_STYRET_ROLE_ID, GRAPHQL_URL, WIKIJS_TOKEN, WIKI_URL } = process.env;
 if (!TEKKOM_MEETINGS_URL
     || !DISCORD_TEKKOM_ROLE_ID
+    || !DISCORD_STYRET_ROLE_ID
     || !STYRET_MEETINGS_URL
     || !GRAPHQL_URL
-    || !WIKIJS_TOKEN) {
+    || !WIKIJS_TOKEN
+    || !WIKI_URL) {
     throw new Error('Missing essential environment variables in wiki.ts');
 }
-function getQuery(id) {
-    return `
-    query {
-        pages {
-            single(id: ${id}) {
-                path
-                title
-                content
-                description
-            }
-        }
-    }
-    `;
-}
-// Define the mutation to update the page content
-const updateMutation = ({ id, content, description, title }) => `
-    mutation Page {
-        pages {
-            update (
-                id: ${id}, 
-                content: """${content}""", 
-                description: "${description}", 
-                title: "${title}", 
-                editor: "code", 
-                isPublished: true, 
-                isPrivate: false, 
-                locale: "en", 
-                tags: ""
-            ) {
-                responseResult {
-                    succeeded,
-                    errorCode,
-                    slug,
-                    message
-                },
-                page {
-                    id,
-                    content,
-                    description,
-                    title
+// Mutation to update the page content
+function updateMutation({ id, content, description, title }) {
+    return (`
+            mutation Page {
+                pages {
+                    update (
+                        id: ${id}, 
+                        content: """${content}""", 
+                        description: "${description}", 
+                        title: "${title}", 
+                        editor: "code", 
+                        isPublished: true, 
+                        isPrivate: false, 
+                        locale: "en", 
+                        tags: ""
+                    ) {
+                        responseResult {
+                            succeeded,
+                            errorCode,
+                            slug,
+                            message
+                        },
+                        page {
+                            id,
+                            content,
+                            description,
+                            title
+                        }
+                    }
                 }
             }
-        }
-    }
-`;
+        `);
+}
 // Function to update the page content
 function modifyPage({ existingHTML, path, isStyret }) {
     const paths = [TEKKOM_MEETINGS_URL, STYRET_MEETINGS_URL];
@@ -67,25 +59,25 @@ function modifyPage({ existingHTML, path, isStyret }) {
     if (existingHTML.includes(newEntry)) {
         return existingHTML;
     }
-    // Find the first match to insert the new entry before it
+    // Finds the first match to insert the new entry before it
     const firstMatch = existingHTML.match(regex);
     if (firstMatch) {
         const insertIndex = firstMatch.index;
         const updatedHTML = existingHTML.slice(0, insertIndex) + newEntry + "\n" + existingHTML.slice(insertIndex);
         return updatedHTML;
     }
-    // Determine the section header to insert into
+    // Determines the section header to insert into
     const styretString = '### Styremøter';
     const tekkomString = '### Minutes';
     const insertionPoint = existingHTML.indexOf(isStyret ? styretString : tekkomString);
-    // Calculate the index to insert the new entry
+    // Calculates the index to insert the new entry
     const index = insertionPoint + (isStyret ? styretString.length : tekkomString.length);
-    // If no match is found, insert at the start of the correct section
+    // If no match is found, inserts at the start of the correct section
     const updatedHTML = existingHTML.slice(0, index) + "\n" + newEntry + "\n" + existingHTML.slice(index);
     return updatedHTML;
 }
 // Fetches the page, adds the new document, and writes it back
-async function updateIndex({ path, query }) {
+async function updateIndex({ path, query, isStyret }) {
     try {
         const fetchResponse = await requestWithRetries({ query });
         console.log('Fetch success', fetchResponse);
@@ -94,7 +86,7 @@ async function updateIndex({ path, query }) {
         const TekKomTitle = 'Meetings';
         const TekKomDescription = 'TekKom meeting agendas and minutes. This page is automatically managed. Please edit with care. Report errors to TekKom.';
         const updateResponse = await requestWithRetries({ query: updateMutation({
-                id: 37,
+                id: isStyret ? 7 : 37,
                 content: updatedContent,
                 description: TekKomDescription,
                 title: TekKomTitle
@@ -104,36 +96,6 @@ async function updateIndex({ path, query }) {
     catch (error) {
         // Logs full stack trace
         // logStack(error)
-    }
-}
-// Function to perform a GraphQL request with retries
-async function requestWithRetries({ query, retries = 10, delay = 1000 }) {
-    while (retries > 0) {
-        try {
-            const response = await axios.post(GRAPHQL_URL, { query }, {
-                headers: {
-                    'Authorization': `Bearer ${WIKIJS_TOKEN}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            return response.data;
-        }
-        catch (error) {
-            if (error.response && error.response.status === 401) {
-                // Retry on authentication errors
-                retries--;
-                if (retries === 0) {
-                    throw new Error('Exceeded maximum retries for authentication errors');
-                }
-            }
-            else {
-                // Logs full stack trace
-                // logStack(error)
-            }
-            await new Promise(resolve => setTimeout(resolve, delay));
-            // Exponential backoff
-            delay *= 2;
-        }
     }
 }
 async function createPage({ content, description, path, title }) {
@@ -210,33 +172,50 @@ export function getNextWeekYearAndWeek(isStyret) {
     // Format nextWednesdayDate to dd.mm.yy
     let day = String(nextWednesdayDate.getDate()).padStart(2, '0');
     let month = String(nextWednesdayDate.getMonth() + 1).padStart(2, '0');
-    let yearShort = String(nextWednesdayDate.getFullYear()).slice(-2);
-    let tekkomDate = `${day}.${month}.${yearShort}`;
+    let year = String(nextWednesdayDate.getFullYear());
+    const date = `${day}.${month}.${isStyret ? year : year.slice(-2)}`;
     return {
         currentPath: isStyret ? `${currentWeek.year}-${currentWeek.week}` : '2024-00',
         nextPath: `${nextWeek.year}-${nextWeek.week}`,
         currentWeek: currentWeek.week,
-        tekkomDate: tekkomDate
+        date
     };
 }
 export default async function autoCreate({ channel, isStyret }) {
     const path = getNextWeekYearAndWeek(isStyret);
-    const query = getQuery(isStyret ? 556 : 556);
+    // The number is the meeting list for styret / tekkom
+    const query = getQuery(isStyret ? 715 : 556);
     const fetchResponse = await requestWithRetries({ query });
     const content = fetchResponse.data.pages.single.content;
     const filledTemplate = content
         .replace(new RegExp(`${path.currentPath}`, 'g'), path.nextPath)
-        .replace('00.00.00', path.tekkomDate);
+        .replace('00.00.0000', path.date)
+        .replace('00.00.00', path.date);
     const fullPath = isStyret
         ? `${STYRET_MEETINGS_URL}${path.nextPath}`
         : `${TEKKOM_MEETINGS_URL}${path.nextPath}`;
+    const updatedTemplate = await updateStyretTemplate({
+        channel,
+        isStyret,
+        template: filledTemplate,
+        week: path.nextPath.slice(-2)
+    });
     const createResponse = await createPage({
-        content: filledTemplate,
-        description: '',
+        content: updatedTemplate,
+        description: isStyret
+            ? `Styremøte uke ${path.nextPath.slice(5)}`
+            : `TekKom Meeting Week ${path.nextPath}`,
         path: fullPath,
         title: path.nextPath
     });
-    // @ts-ignore (hardcoded channel, expected to be of correct type)
-    channel.send(`<@&${DISCORD_TEKKOM_ROLE_ID}> Minner om TekKom møte på onsdag kl 16 på LL. [Agenda](https://wiki.login.no/tekkom/meetings/${path.nextPath})`, createResponse);
-    updateIndex({ path, query: getQuery(isStyret ? 7 : 37) });
+    console.log(createResponse);
+    if (isStyret) {
+        // channel.send(`Minner om Styremøte på LL kl 18. [Agenda](${WIKI_URL}${STYRET_MEETINGS_URL}${path.nextPath}).`)
+        // channel.send(`<@&${DISCORD_TEKKOM_ROLE_ID}> Minner om Styremøte på LL kl 18. [Agenda](${WIKI_URL}${STYRET_MEETINGS_URL}${path.nextPath}).`)
+    }
+    else {
+        channel.send(`Minner om TekKom møte på onsdag kl 16 på LL. [Agenda](${WIKI_URL}${TEKKOM_MEETINGS_URL}${path.nextPath}).`);
+        // channel.send(`<@&${DISCORD_STYRET_ROLE_ID}> Minner om TekKom møte på onsdag kl 16 på LL. [Agenda](${WIKI_URL}${TEKKOM_MEETINGS_URL}${path.nextPath}).`)
+    }
+    updateIndex({ path, query: getQuery(isStyret ? 7 : 37), isStyret });
 }
