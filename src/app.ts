@@ -158,7 +158,7 @@ client.on(Events.InteractionCreate, async (interaction: ChatInputCommandInteract
 
 // Sends a reminder in #pr-kontakt threads reminding them of the template.
 client.on(Events.ThreadCreate, async (thread: ThreadChannel) => {
-    // Checks if the channel is #pr-kontakt
+    // Checks if the channel is '#pr-kontakt'
     if (thread.parent?.name === 'pr-kontakt') {
 
         // Sends the reminder message
@@ -166,11 +166,8 @@ client.on(Events.ThreadCreate, async (thread: ThreadChannel) => {
             content: "Husk å ha med:\n```\nTittel: Thread tittel skal være arrangement / grunn for kontakt\nSted (Hvor skjer det?):\nDato og klokkeslett (Når skjer det?):\nBeskrivelse/promotekst (Hva er det?):\nRelease dato (Når er det ønsket at promo postes?):\n```"
         })
     }
-})
 
-// Sends a reminder in #saker-til-styremøter threads reminding them of the template.
-client.on(Events.ThreadCreate, async (thread: ThreadChannel) => {
-    // Checks if the channel is #pr-kontakt
+    // Checks if the channel is '#saker-til-styremøter'
     if (thread.parent?.name === 'saker-til-styremøter') {
 
         // Sends the reminder message
@@ -195,7 +192,7 @@ client.on(Events.MessageReactionRemove, async (reaction: any, user: any) => {
 })
 
 client.on(Events.MessageCreate, async (message: Message) => {
-    const regex = /^\d{5,6}(?!\w)/;
+    const regex = /#\d{1,7}\b/g
     const matches = message.content.match(regex)
 
     // Ticket handling

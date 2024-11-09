@@ -133,9 +133,6 @@ client.on(Events.ThreadCreate, async (thread) => {
             content: "Husk å ha med:\n```\nTittel: Thread tittel skal være arrangement / grunn for kontakt\nSted (Hvor skjer det?):\nDato og klokkeslett (Når skjer det?):\nBeskrivelse/promotekst (Hva er det?):\nRelease dato (Når er det ønsket at promo postes?):\n```"
         });
     }
-});
-// Sends a reminder in #saker-til-styremøter threads reminding them of the template.
-client.on(Events.ThreadCreate, async (thread) => {
     // Checks if the channel is #pr-kontakt
     if (thread.parent?.name === 'saker-til-styremøter') {
         // Sends the reminder message
@@ -158,7 +155,7 @@ client.on(Events.MessageReactionRemove, async (reaction, user) => {
     removeRole({ reaction, user });
 });
 client.on(Events.MessageCreate, async (message) => {
-    const regex = /^\d{5,6}(?!\w)/;
+    const regex = /#\d{1,7}\b/g;
     const matches = message.content.match(regex);
     // Ticket handling
     handleTickets({ matches, message });
