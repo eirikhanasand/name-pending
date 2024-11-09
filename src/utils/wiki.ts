@@ -53,6 +53,10 @@ export default async function autoCreate({channel, isStyret, styremote}: AutoCre
         week: path.nextPath.slice(-2) 
     }) 
 
+    if (!updatedTemplate) {
+        return
+    }
+
     const createResponse = await createPage({
         content: updatedTemplate, 
         description: isStyret 
