@@ -30,9 +30,10 @@ if (
 type AutoCreateProps = {
     channel: TextChannel
     isStyret: boolean
+    styremote?: TextChannel
 }
 
-export default async function autoCreate({channel, isStyret}: AutoCreateProps) {
+export default async function autoCreate({channel, isStyret, styremote}: AutoCreateProps) {
     const path = getNextPathYearAndWeek(isStyret)
     // The number is the meeting list for styret / tekkom
     const query = getQuery(isStyret ? 715 : 556)
@@ -43,9 +44,7 @@ export default async function autoCreate({channel, isStyret}: AutoCreateProps) {
         .replace(new RegExp(`${path.currentPath}`, 'g'), path.nextPath)
         .replace('00.00.0000', path.date)
         .replace('00.00.00', path.date)
-    const fullPath = isStyret 
-        ? `${STYRET_MEETINGS_URL}${path.nextPath}` 
-        : `${TEKKOM_MEETINGS_URL}${path.nextPath}`
+    const fullPath = `${isStyret ? STYRET_MEETINGS_URL : TEKKOM_MEETINGS_URL}${path.nextPath}` 
 
     const updatedTemplate = await updateStyretTemplate({ 
         channel, 
@@ -58,7 +57,7 @@ export default async function autoCreate({channel, isStyret}: AutoCreateProps) {
         content: updatedTemplate, 
         description: isStyret 
             ? `Styremøte uke ${path.nextPath.slice(5)}` 
-            : `TekKom Meeting Week ${path.nextPath}`, 
+            : `TekKom Meeting Week ${path.nextPath.slice(5)}`, 
         path: fullPath, 
         title: path.nextPath
     })
@@ -66,11 +65,9 @@ export default async function autoCreate({channel, isStyret}: AutoCreateProps) {
     console.log(createResponse)
 
     if (isStyret) {
-        // channel.send(`Minner om Styremøte på LL kl 18. [Agenda](${WIKI_URL}${STYRET_MEETINGS_URL}${path.nextPath}).`)
-        // channel.send(`<@&${DISCORD_TEKKOM_ROLE_ID}> Minner om Styremøte på LL kl 18. [Agenda](${WIKI_URL}${STYRET_MEETINGS_URL}${path.nextPath}).`)
+        styremote?.send(`<@&${DISCORD_STYRET_ROLE_ID}> Minner om Styremøte på LL kl 18. [Agenda](${WIKI_URL}${STYRET_MEETINGS_URL}${path.nextPath}).`)
     } else {
-        channel.send(`Minner om TekKom møte på onsdag kl 16 på LL. [Agenda](${WIKI_URL}${TEKKOM_MEETINGS_URL}${path.nextPath}).`)
-        // channel.send(`<@&${DISCORD_STYRET_ROLE_ID}> Minner om TekKom møte på onsdag kl 16 på LL. [Agenda](${WIKI_URL}${TEKKOM_MEETINGS_URL}${path.nextPath}).`)
+        channel.send(`<@&${DISCORD_TEKKOM_ROLE_ID}> Minner om TekKom møte på onsdag kl 16 på LL. [Agenda](${WIKI_URL}${TEKKOM_MEETINGS_URL}${path.nextPath}).`)
     }
 
     updateIndex({ path, query: getQuery(isStyret ? 7 : 37), isStyret })
