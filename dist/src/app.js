@@ -103,12 +103,11 @@ client.once(Events.ClientReady, async () => {
 });
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand() && !('customId' in interaction)) {
-        console.error('NO CHAT LOL');
+        console.error('Input is not a command nor interaction.');
         return;
     }
     const command = client.commands.get(interaction.commandName);
     if (!command && !('customId' in interaction)) {
-        console.error('NO COMMAND LOL');
         return;
     }
     if (validCommands.includes(interaction.commandName) || ('customId' in interaction && validCommands.includes(interaction.customId))) {
@@ -122,18 +121,21 @@ client.on(Events.InteractionCreate, async (interaction) => {
             console.error(`${interaction.commandName || interaction.customId} is not a valid command in app.ts`);
         }
     }
+    if (!command) {
+        return;
+    }
     await command.execute(interaction);
 });
 // Sends a reminder in #pr-kontakt threads reminding them of the template.
 client.on(Events.ThreadCreate, async (thread) => {
-    // Checks if the channel is #pr-kontakt
+    // Checks if the channel is '#pr-kontakt'
     if (thread.parent?.name === 'pr-kontakt') {
         // Sends the reminder message
         return await thread.send({
             content: "Husk å ha med:\n```\nTittel: Thread tittel skal være arrangement / grunn for kontakt\nSted (Hvor skjer det?):\nDato og klokkeslett (Når skjer det?):\nBeskrivelse/promotekst (Hva er det?):\nRelease dato (Når er det ønsket at promo postes?):\n```"
         });
     }
-    // Checks if the channel is #pr-kontakt
+    // Checks if the channel is '#saker-til-styremøter'
     if (thread.parent?.name === 'saker-til-styremøter') {
         // Sends the reminder message
         return await thread.send({

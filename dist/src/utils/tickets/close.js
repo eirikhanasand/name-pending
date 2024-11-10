@@ -1,9 +1,9 @@
 import { ActionRowBuilder, CategoryChannel, StringSelectMenuBuilder, TextChannel } from "discord.js";
 import { getTickets } from "./ticket.js";
 import formatChannelName from "./format.js";
-import { ticketIdPattern } from "../../../constants.js";
+import { MAX_CHANNELS, ticketIdPattern } from "../../../constants.js";
 import { closeTicket } from "../ticket.js";
-const MAX_CHANNELS = 50;
+import closeChannel from "./closeChannel.js";
 export async function handleCloseTicket(interaction) {
     const guild = interaction.guild;
     if (guild === null) {
@@ -13,80 +13,8 @@ export async function handleCloseTicket(interaction) {
     // Checks if the current channel name fits the ticket ID scheme
     if (ticketIdPattern.test(currentChannel.name)) {
         try {
-            // Fetches "archived-tickets" category
-            const archive = guild?.channels.cache.find(c => c instanceof CategoryChannel && c.name === "archived-tickets");
-            if (!archive) {
-                return await interaction.reply({
-                    content: `Could not find "archived-tickets" category.`,
-                    ephemeral: true,
-                });
-            }
-            // Defers because it usually takes a few seconds to process everything
-            await interaction.deferReply({ ephemeral: true });
-            const children = archive.children.cache;
-            // Checks and handles max closed channels
-            if (children.size >= MAX_CHANNELS) {
-                const sortedChannels = [];
-                for (const [_, channel] of children) {
-                    try {
-                        const lastMessageId = channel.lastMessageId || '';
-                        const lastMessage = await channel.messages.fetch(lastMessageId);
-                        if (lastMessage) {
-                            const timestamp = lastMessage.createdTimestamp;
-                            sortedChannels.push({
-                                channel,
-                                timestamp,
-                            });
-                        }
-                    }
-                    catch (error) {
-                        // Assumes no activity if no messages can be found
-                        sortedChannels.push({
-                            channel,
-                            timestamp: 0,
-                        });
-                    }
-                }
-                sortedChannels.sort((a, b) => a.timestamp - b.timestamp);
-                // Deletes 10 oldest channels (20%, to avoid fetching all channels every time someone closes a ticket)
-                for (let i = 0; i < 10; i++) {
-                    const channelToDelete = sortedChannels[i]?.channel;
-                    if (channelToDelete) {
-                        await channelToDelete.delete('Archiving a new ticket, deleted the oldest one.');
-                        console.log(`Deleted channel: ${channelToDelete.name}`);
-                    }
-                }
-            }
-            // Moves the channel to the "archived-tickets" category
-            await currentChannel.setParent(archive.id, { lockPermissions: false });
-            // Removes the user from the channel
-            await currentChannel.permissionOverwrites.edit(interaction.user.id, {
-                ViewChannel: false,
-            });
-            // Removes all roles from the channel except the bot's role.
-            const bot = currentChannel.guild.members.me;
-            const roles = currentChannel.guild.roles.cache;
-            roles.forEach(async (role) => {
-                if (bot?.roles.cache.has(role.id))
-                    return;
-                const permissionOverwrites = currentChannel.permissionOverwrites.cache.get(role.id);
-                if (permissionOverwrites) {
-                    // Remove the permission overwrite for the role only if it exists
-                    await currentChannel.permissionOverwrites.delete(role.id);
-                }
-            });
-            // Removes all members from the channel (except the bot and the user)
-            const members = currentChannel.guild.members.cache;
-            members.forEach(async (member) => {
-                // Skip removing if it's the bot or the user
-                if (member.id === bot?.id || member.id === interaction.user.id)
-                    return;
-                const permissionOverwrites = currentChannel.permissionOverwrites.cache.get(member.id);
-                if (permissionOverwrites) {
-                    // Remove the permission overwrite for the member only if it exists
-                    await currentChannel.permissionOverwrites.delete(member.id);
-                }
-            });
+            // Closes the channel
+            await closeChannel({ guild, currentChannel });
             // Closes the ticket in Zammad
             closeTicket(Number(currentChannel.name), interaction.user.username);
             // Lets the user know that the ticket has been archived

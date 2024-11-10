@@ -136,3 +136,18 @@ type Ticket = {
     sender: string
     time_unit: any
 }
+
+type ReducedMessage = {
+    user: string
+    content: string
+    attachments: Attachment[]
+}
+
+type Attachment = {
+    name: string
+    url: string
+}
+
+type ErrorClosed = {
+    error: "closed"
+}

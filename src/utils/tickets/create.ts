@@ -191,7 +191,10 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
             })
             
             // Acknowledge modal submission
-            await submittedModal.reply({ content: `Your ticket <#${newChannel.id}> has been created!` })
+            await submittedModal.reply({ 
+                content: `Your ticket <#${newChannel.id}> has been created!`,
+                ephemeral: true
+            })
         }
 
     } catch (error) {

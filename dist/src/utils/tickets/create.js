@@ -148,7 +148,10 @@ export default async function handleCreateTicket(interaction) {
                 components: [tags, roles, users, close],
             });
             // Acknowledge modal submission
-            await submittedModal.reply({ content: `Your ticket <#${newChannel.id}> has been created!` });
+            await submittedModal.reply({
+                content: `Your ticket <#${newChannel.id}> has been created!`,
+                ephemeral: true
+            });
         }
     }
     catch (error) {

@@ -1,7 +1,7 @@
 import { API } from "../../constants.js"
 
 // Fetches all articles (messages) for a specific Zammad ticket
-export default async function fetchTicket(id: number, recipient: boolean = false) {
+export default async function fetchTicket(id: number, recipient: boolean = false): Promise<ErrorClosed | ReducedMessage[] | Error> {
     try {
         const response = await fetch(`${API}/ticket/${id}/${recipient}`, {
             headers: {
@@ -17,7 +17,7 @@ export default async function fetchTicket(id: number, recipient: boolean = false
         const data = await response.json()
         return data
     } catch (error) {
-        return error
+        return error as Error
     }
 }
 

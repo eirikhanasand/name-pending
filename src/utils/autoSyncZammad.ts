@@ -1,17 +1,21 @@
-import { ChannelType, Client, Guild, Message, TextChannel } from "discord.js"
 import dotenv from 'dotenv'
 import { ticketIdPattern } from "../../constants.js"
 import postMessage from "./tickets/postMessage.js"
 import fetchTicket from "./ticket.js"
+import closeChannel from './tickets/closeChannel.js'
+import getAttachment from './tickets/getAttachment.js'
+import { 
+    AttachmentBuilder, 
+    ChannelType, 
+    Client, 
+    Guild, 
+    Message, 
+    TextChannel 
+} from "discord.js"
 
 dotenv.config()
 
 const { DISCORD_GUILD_ID } = process.env
-
-type ReducedMessage = {
-    user: string
-    content: string
-}
 
 export default async function autoSyncZammad(client: Client) {
     setInterval(() => {
@@ -33,7 +37,7 @@ async function sync(client: Client) {
         return
     }
 
-    // Find all channels in the 'tickets' category
+    // Finds all channels in the 'tickets' category
     const ticketChannels = guild.channels.cache.filter(
         channel => channel.parentId === ticketsCategory.id
         && !channel.name.includes('ticket') 
@@ -43,22 +47,59 @@ async function sync(client: Client) {
     for (const ch of ticketChannels) {
         const channel = ch[1] as TextChannel
         const messages = await channel.messages.fetch()
-        const discordMessages = messages.map(message => ({ user: message.author.username, content: message.content }))
+        const discordMessages = messages.map(message => ({ 
+            user: message.author.username, 
+            content: message.content, 
+            attachments: message.attachments.map((attachment) => {
+                return {
+                    name: attachment.name,
+                    url: attachment.url
+                }
+            })
+        }))
         const zammadMessages = await fetchTicket(Number(channel.name))
+        
+        // Checks if any are closed in Zammad, and if so closes them on Discord
+        if ('error' in zammadMessages && zammadMessages.error === 'closed') {
+            // Closes the Discord channel
+            await closeChannel({ guild, currentChannel: channel })
+            continue
+        }
 
-        const { missingDiscord, missingZammad } = compare(discordMessages, zammadMessages)
+        const { missingDiscord, missingZammad } = compare(discordMessages, zammadMessages as ReducedMessage[])
 
         if (missingDiscord.length) {
             // Posts the missing message to Discord
             for (const message of missingDiscord) {
-                channel.send(`From ${message.user} via Zammad:\n\n${message.content}`)
+                const attachmentsToSend: AttachmentBuilder[] = []
+
+                for (const attachment of message.attachments) {
+                    const response = await getAttachment(attachment.url)
+
+                    if (!('attachment' in response)) {
+                        continue
+                    }
+                    
+                    const buffer = Buffer.from(response.attachment, 'base64')
+                    const discordAttachment = new AttachmentBuilder(buffer, { name: attachment.name })
+                    attachmentsToSend.push(discordAttachment)
+                }
+
+                channel.send({
+                    content: `From ${message.user} via Zammad:\n\n${message.content}`.slice(0, 2000),
+                    files: attachmentsToSend
+                })
             }
         }
-        
+
         if (missingZammad.length) {
             // Posts the missing message to Zammad
             for (const message of missingZammad) {
-                postMessage(Number(channel.name), undefined as unknown as Message, `From ${message.user} via Discord:\n\n${message.content}`)
+                postMessage(
+                    Number(channel.name), 
+                    undefined as unknown as Message, 
+                    `From ${message.user} via Discord:\n\n${message.content}`
+                )
             }
         }
 
@@ -92,7 +133,11 @@ function compare(discordMessages: ReducedMessage[], zammadMessages: ReducedMessa
             // Formats message for further checks and pushes it
             const fmt = zammadFormat(message.content)
             const via = message.user.indexOf('via Support') - 1
-            relevantZammad.push({ user: message.user.slice(0, via).trim(), content: fmt })
+            relevantZammad.push({ 
+                user: message.user.slice(0, via).trim(), 
+                content: fmt, 
+                attachments: message.attachments 
+            })
         }
     }
     

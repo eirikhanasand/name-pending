@@ -131,13 +131,12 @@ client.once(Events.ClientReady, async () => {
 
 client.on(Events.InteractionCreate, async (interaction: ChatInputCommandInteraction) => {
 	if (!interaction.isChatInputCommand() && !('customId' in interaction)) {
-        console.error('NO CHAT LOL')
+        console.error('Input is not a command nor interaction.')
         return
     }
 
     const command = client.commands.get(interaction.commandName)
     if (!command && !('customId' in interaction)) {
-        console.error('NO COMMAND LOL')
         return
     }
 
@@ -151,6 +150,10 @@ client.on(Events.InteractionCreate, async (interaction: ChatInputCommandInteract
             console.error(`${interaction.commandName || interaction.customId} is not a valid command in app.ts`)
         }
 
+    }
+
+    if (!command) {
+        return
     }
 
     await command.execute(interaction)
