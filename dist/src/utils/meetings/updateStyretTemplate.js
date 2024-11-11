@@ -25,27 +25,28 @@ export default async function updateStyretTemplate({ channel, isStyret, template
     let caseNumber = await getLatestCase(fetchResponse.data.pages.single) + 1;
     const messages = await meetingThread[1].messages.fetch({ limit: 100 });
     const reduced = { orientations: [], discussions: [], statutes: [] };
+    const year = new Date().getFullYear().toString().slice(2);
     for (const [_, message] of messages) {
         // Checks that the message is relevant (O / D / V)
         if (message.content.startsWith("O - ")) {
-            reduced.orientations.push(await getContent({ type: 'O', message, week }));
+            reduced.orientations.push(await getContent({ type: 'O', message, week, year }));
         }
         if (message.content.startsWith("D - ")) {
-            reduced.discussions.push(await getContent({ type: 'D', message, week }));
+            reduced.discussions.push(await getContent({ type: 'D', message, week, year }));
         }
         if (message.content.startsWith("V - ")) {
-            reduced.statutes.push(await getContent({ type: 'V', message, week }));
+            reduced.statutes.push(await getContent({ type: 'V', message, week, year }));
         }
     }
-    reduced.orientations = reduced.orientations.map((message) => message = message.replace(`### O - ${week} - Sak: 000`, `### O - ${week} - Sak: ${caseNumber++}`));
-    reduced.discussions = reduced.discussions.map((message) => message = message.replace(`### D - ${week} - Sak: 000`, `### D - ${week} - Sak: ${caseNumber++}`));
-    reduced.statutes = reduced.statutes.map((message) => message = message.replace(`### V - ${week} - Sak: 000`, `### V - ${week} - Sak: ${caseNumber++}`));
+    reduced.orientations = reduced.orientations.map((message) => message = message.replace(`### O - ${year} - Sak: 000`, `### O - ${year} - Sak: ${caseNumber++}`));
+    reduced.discussions = reduced.discussions.map((message) => message = message.replace(`### D - ${year} - Sak: 000`, `### D - ${year} - Sak: ${caseNumber++}`));
+    reduced.statutes = reduced.statutes.map((message) => message = message.replace(`### V - ${year} - Sak: 000`, `### V - ${year} - Sak: ${caseNumber++}`));
     const u1 = template.replace(/### O - 00 - Sak: 000 - Tittel - Saksansvarlig: Rolle/, reduced.orientations.length ? reduced.orientations.join('\n') : 'Ingen orienteringer.');
     const u2 = u1.replace(/### D - 00 - Sak: 000 - Tittel - Saksansvarlig: Rolle/, reduced.discussions.length ? reduced.discussions.join('\n') : 'Ingen diskusjonssaker.');
     const res = u2.replace(/### V - 00 - Sak: 000 - Tittel - Saksansvarlig: Rolle/, reduced.statutes.length ? reduced.statutes.join('\n') : 'Ingen vedteker.');
     return res;
 }
-async function getContent({ type, message, week }) {
+async function getContent({ type, message, week, year }) {
     const content = message.content.split('\n');
     const background = content[1]?.trim().length ? `Bakgrunn:\n${content[1]}` : '';
     const attachments = message.attachments.map((attachment) => attachment.url);
@@ -58,5 +59,5 @@ async function getContent({ type, message, week }) {
         }
     }
     const assets = uploadedAttachments.length > 0 ? `\nVedlegg:\n${uploadedAttachments.join('\n')}\n` : '';
-    return `### ${type} - ${week} - Sak: 000 - ${content[0].slice(3)} - Saksansvarlig: ${message.member?.displayName || message.author.username}\n${background}\n${assets}\n- ***Notater:***\n<br>`;
+    return `### ${type} - ${year} - Sak: 000 - ${content[0].slice(3)} - Saksansvarlig: ${message.member?.displayName || message.author.username}\n${background}\n${assets}\n- ***Notater:***\n${type === 'V' ? '- ***Vedtatt / Ikke vedtatt:***\n' : ''}<br>`;
 }
