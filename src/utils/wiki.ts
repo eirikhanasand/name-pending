@@ -35,6 +35,7 @@ type AutoCreateProps = {
 
 export default async function autoCreate({channel, isStyret, styremote}: AutoCreateProps) {
     const path = getNextPathYearAndWeek(isStyret)
+
     // The number is the meeting list for styret / tekkom
     const query = getQuery(isStyret ? 715 : 556)
     const fetchResponse = await requestWithRetries({ query })

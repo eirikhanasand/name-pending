@@ -19,12 +19,18 @@ export default function getNextPathYearAndWeek(isStyret) {
     let day = String(nextWednesdayDate.getDate()).padStart(2, '0');
     let month = String(nextWednesdayDate.getMonth() + 1).padStart(2, '0');
     let year = String(nextWednesdayDate.getFullYear());
-    const date = `${day}.${month}.${isStyret ? year : year.slice(-2)}`;
+    // Today
+    let todaysDate = new Date();
+    let todayDay = String(todaysDate.getDate()).padStart(2, '0');
+    let todayMonth = String(todaysDate.getMonth() + 1).padStart(2, '0');
+    let todayYear = String(todaysDate.getFullYear());
+    const date = `${day}.${month}.${year.slice(-2)}`;
+    const today = `${todayDay}.${todayMonth}.${todayYear}`;
     return {
-        currentPath: isStyret ? `${currentWeek.year}-${currentWeek.week}` : '2024-00',
-        nextPath: `${nextWeek.year}-${nextWeek.week}`,
-        currentWeek: currentWeek.week,
-        date
+        currentPath: isStyret ? `${currentWeek.year}-${currentWeek.week - 1}` : '2024-00',
+        nextPath: `${nextWeek.year}-${isStyret ? nextWeek.week - 1 : nextWeek.week}`,
+        currentWeek: isStyret ? currentWeek.week : currentWeek.week - 1,
+        date: isStyret ? today : date
     };
 }
 function getYearAndWeek(date) {
