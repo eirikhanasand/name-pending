@@ -29,7 +29,7 @@ export default function getNextPathYearAndWeek(isStyret) {
     return {
         currentPath: isStyret ? `${currentWeek.year}-${currentWeek.week - 1}` : '2024-00',
         nextPath: `${nextWeek.year}-${isStyret ? nextWeek.week - 1 : nextWeek.week}`,
-        currentWeek: isStyret ? currentWeek.week : currentWeek.week - 1,
+        currentWeek: currentWeek.week,
         date: isStyret ? today : date
     };
 }
