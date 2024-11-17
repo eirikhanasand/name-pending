@@ -64,22 +64,23 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
         .setStyle(TextInputStyle.Short)
 
     // First Name
-    const firstName = new TextInputBuilder()
-        .setCustomId('ticket_firstname')
-        .setLabel('First Name')
-        .setStyle(TextInputStyle.Short)
+    // const firstName = new TextInputBuilder()
+    //     .setCustomId('ticket_firstname')
+    //     .setLabel('First Name')
+    //     .setStyle(TextInputStyle.Short)
 
     // Last name
-    const lastName = new TextInputBuilder()
-        .setCustomId('ticket_lastname')
-        .setLabel('Last Name')
-        .setStyle(TextInputStyle.Short)
+    // const lastName = new TextInputBuilder()
+    //     .setCustomId('ticket_lastname')
+    //     .setLabel('Last Name')
+    //     .setStyle(TextInputStyle.Short)
 
     const titleRow = new ActionRowBuilder<TextInputBuilder>().addComponents(title)
     const mailRow = new ActionRowBuilder<TextInputBuilder>().addComponents(mail)
-    const firstNameRow = new ActionRowBuilder<TextInputBuilder>().addComponents(firstName)
-    const lastNameRow = new ActionRowBuilder<TextInputBuilder>().addComponents(lastName)
-    modal.addComponents([titleRow, mailRow, firstNameRow, lastNameRow])
+    // const firstNameRow = new ActionRowBuilder<TextInputBuilder>().addComponents(firstName)
+    // const lastNameRow = new ActionRowBuilder<TextInputBuilder>().addComponents(lastName)
+    // modal.addComponents([titleRow, mailRow, firstNameRow, lastNameRow])
+    modal.addComponents([titleRow, mailRow])
     
     // Shows modal for text input
     await interaction.showModal(modal)

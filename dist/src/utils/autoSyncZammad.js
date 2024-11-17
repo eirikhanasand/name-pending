@@ -68,7 +68,7 @@ async function sync(client) {
         if (missingZammad.length) {
             // Posts the missing message to Zammad
             for (const message of missingZammad) {
-                postMessage(Number(channel.name), undefined, `From ${message.user} via Discord:\n\n${message.content}`);
+                postMessage(Number(channel.name), message, `From ${message.user} via Discord:\n\n${message.content}`);
             }
         }
     }

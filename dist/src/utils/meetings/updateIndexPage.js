@@ -72,7 +72,6 @@ function modifyPage({ existingHTML, path, isStyret }) {
 export default async function updateIndex({ path, query, isStyret }) {
     try {
         const fetchResponse = await requestWithRetries({ query });
-        console.log('Fetch success', fetchResponse);
         const content = fetchResponse.data.pages.single.content;
         const updatedContent = modifyPage({ existingHTML: content, path, isStyret: content.includes('styremoter') });
         const TekKomTitle = 'Meetings';
@@ -85,7 +84,6 @@ export default async function updateIndex({ path, query, isStyret }) {
                 description: TekKomDescription,
                 title: TekKomTitle
             }) });
-        console.log('Update success', updateResponse);
     }
     catch (error) {
         // Logs full stack trace

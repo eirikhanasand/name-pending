@@ -112,7 +112,6 @@ function modifyPage({existingHTML, path, isStyret}: ModifyPageProps) {
 export default async function updateIndex({path, query, isStyret}: UpdateIndexProps) {
     try {
         const fetchResponse = await requestWithRetries({ query })
-        console.log('Fetch success', fetchResponse)
         const content = fetchResponse.data.pages.single.content
         const updatedContent = modifyPage({existingHTML: content, path, isStyret: content.includes('styremoter')})
         const TekKomTitle = 'Meetings'  
@@ -125,7 +124,6 @@ export default async function updateIndex({path, query, isStyret}: UpdateIndexPr
             description: TekKomDescription, 
             title: TekKomTitle
         })})
-        console.log('Update success', updateResponse)
     } catch (error) {
         // Logs full stack trace
         // logStack(error)

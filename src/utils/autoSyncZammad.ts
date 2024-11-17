@@ -97,7 +97,7 @@ async function sync(client: Client) {
             for (const message of missingZammad) {
                 postMessage(
                     Number(channel.name), 
-                    undefined as unknown as Message, 
+                    message as unknown as Message, 
                     `From ${message.user} via Discord:\n\n${message.content}`
                 )
             }
@@ -175,7 +175,7 @@ function compare(discordMessages: ReducedMessage[], zammadMessages: ReducedMessa
                 exists = true
             }
         }
-        
+
         if (!exists) {
             missingDiscord.push(message)
         }

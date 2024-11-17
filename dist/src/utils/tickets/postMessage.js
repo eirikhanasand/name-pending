@@ -1,18 +1,19 @@
 import { API } from "../../../constants.js";
 import fetchTicket from "../ticket.js";
-import uploadAttachmentToZammad from "./uploadAttachmentToZammad.js";
+import attachmentAsBase64 from "./attachmentAsBase64.js";
 export default async function postMessage(ticketID, message, body = undefined) {
     const recipient = await fetchTicket(ticketID, true);
     if (recipient) {
         try {
             const attachments = [];
-            for (const attachment of message.attachments) {
-                const data = await uploadAttachmentToZammad(attachment[1]);
+            for (const att of message.attachments) {
+                const attachment = att[1];
+                const data = await attachmentAsBase64(attachment);
                 if (data) {
                     attachments.push({
-                        filename: attachment[1].name,
+                        filename: attachment.name,
                         data,
-                        "mime-type": attachment[1].contentType
+                        "mime-type": attachment.contentType
                     });
                 }
             }
@@ -34,7 +35,7 @@ export default async function postMessage(ticketID, message, body = undefined) {
                 })
             });
             if (!response.ok) {
-                throw new Error(`Failed to post message to zammad: ${JSON.stringify(await response.json())}`);
+                throw new Error(`Failed to post message to zammad: ${await response.text()}`);
             }
             return response.status;
         }
