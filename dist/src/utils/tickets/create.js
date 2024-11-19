@@ -1,6 +1,7 @@
 import { TextChannel, PermissionsBitField, CategoryChannel, StringSelectMenuBuilder, RoleSelectMenuBuilder, ActionRowBuilder, UserSelectMenuBuilder, ChannelType, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonBuilder, ButtonStyle } from "discord.js";
 import topics from "./topics.js";
-import { API, DISCORD_URL, ZAMMAD_URL } from "../../../constants.js";
+import { DISCORD_URL, ZAMMAD_URL } from "../../../constants.js";
+import config from "../config.js";
 export default async function handleCreateTicket(interaction) {
     const guild = interaction.guild;
     if (!guild) {
@@ -114,7 +115,7 @@ export default async function handleCreateTicket(interaction) {
         const close = new ActionRowBuilder().addComponents(selectClose);
         const channelId = newChannel.id;
         const guildId = interaction.guild?.id;
-        const ticket = await fetch(`${API}/ticket`, {
+        const ticket = await fetch(`${config.api}/ticket`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

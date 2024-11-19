@@ -1,8 +1,8 @@
-import { API } from "../../../constants.js"
+import config from "../config.js"
 
 export default async function getAttachment(url: string) {
     try {
-        const response = await fetch(`${API}/attachment/${url}`)
+        const response = await fetch(`${config.api}/attachment/${url}`)
 
         if (!response.ok) {
             throw new Error(await response.json())

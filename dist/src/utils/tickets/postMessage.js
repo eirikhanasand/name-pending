@@ -1,6 +1,6 @@
-import { API } from "../../../constants.js";
 import fetchTicket from "../ticket.js";
 import attachmentAsBase64 from "./attachmentAsBase64.js";
+import config from "../config.js";
 export default async function postMessage(ticketID, message, body = undefined) {
     const recipient = await fetchTicket(ticketID, true);
     if (recipient) {
@@ -17,7 +17,7 @@ export default async function postMessage(ticketID, message, body = undefined) {
                     });
                 }
             }
-            const response = await fetch(`${API}/ticket/${ticketID}`, {
+            const response = await fetch(`${config.api}/ticket/${ticketID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

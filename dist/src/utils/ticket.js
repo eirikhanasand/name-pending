@@ -1,8 +1,8 @@
-import { API } from "../../constants.js";
+import config from "./config.js";
 // Fetches all articles (messages) for a specific Zammad ticket
 export default async function fetchTicket(id, recipient = false) {
     try {
-        const response = await fetch(`${API}/ticket/${id}/${recipient}`, {
+        const response = await fetch(`${config.api}/ticket/${id}/${recipient}`, {
             headers: {
                 'Content-Type': 'application/json',
             }
@@ -22,7 +22,7 @@ export async function closeTicket(id, author) {
     const recipient = await fetchTicket(id, true);
     if (recipient) {
         try {
-            const response = await fetch(`${API}/ticket/${id}/${author}/${recipient}`, {
+            const response = await fetch(`${config.api}/ticket/${id}/${author}/${recipient}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

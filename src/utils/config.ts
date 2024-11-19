@@ -17,7 +17,8 @@ const {
     MINECRAFT_CREATIVE,
     MINECRAFT_SURVIVAL_PORT,
     MINECRAFT_CREATIVE_PORT,
-    MINECRAFT_PORT
+    MINECRAFT_PORT,
+    API
 } = process.env
 
 // Throws an error if any of the essential environment variables are missing
@@ -34,6 +35,7 @@ if (
     || !MINECRAFT_SURVIVAL_PORT
     || !MINECRAFT_CREATIVE_PORT
     || !MINECRAFT_PORT
+    || !API
 ) {
     throw new Error('Missing essential environment variables in config.')
 }
@@ -57,7 +59,8 @@ const config = {
             port: Number(MINECRAFT_CREATIVE_PORT),
             name: MINECRAFT_CREATIVE
         }
-    ]
+    ],
+    api: API
 }
 
 // Exports the config object
