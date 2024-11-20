@@ -123,7 +123,7 @@ export default async function handleCreateTicket(interaction) {
             body: JSON.stringify({
                 title,
                 "group_id": 37,
-                "customer_id": 3116,
+                "customer_id": 5567,
                 "article": {
                     "subject": title,
                     "body": `Synced with ${DISCORD_URL}/${guildId}/${channelId}.`,

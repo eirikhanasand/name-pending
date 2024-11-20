@@ -24,7 +24,7 @@ export default async function postMessage(ticketID, message, body = undefined) {
                 },
                 body: JSON.stringify({
                     "group_id": 37,
-                    "customer_id": 3116,
+                    "customer_id": 5567,
                     "article": {
                         "body": body || `From ${message.author.username} via Discord:\n\n${message.content}`,
                         "type": "email",
