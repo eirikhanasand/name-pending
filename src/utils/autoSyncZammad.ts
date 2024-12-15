@@ -66,6 +66,9 @@ async function sync(client: Client) {
             continue
         }
 
+        if (!Array.isArray(zammadMessages)) {
+            return
+        }
         const { missingDiscord, missingZammad } = compare(discordMessages, zammadMessages as ReducedMessage[])
 
         if (missingDiscord.length) {

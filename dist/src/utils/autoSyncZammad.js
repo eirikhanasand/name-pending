@@ -45,6 +45,9 @@ async function sync(client) {
             await closeChannel({ guild, currentChannel: channel });
             continue;
         }
+        if (!Array.isArray(zammadMessages)) {
+            return;
+        }
         const { missingDiscord, missingZammad } = compare(discordMessages, zammadMessages);
         if (missingDiscord.length) {
             // Posts the missing message to Discord
