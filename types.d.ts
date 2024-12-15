@@ -151,3 +151,253 @@ type Attachment = {
 type ErrorClosed = {
     error: "closed"
 }
+
+type MinimialRepository = {
+    id: number
+    name: string
+    path_with_namespace: string // imp (path)
+    default_branch: string // imp (default branch)
+    ssh_url_to_repo: string // imp
+    web_url: string // imp
+    container_registry_image_prefix: string // imp?
+    // Links is a type
+    _links: {
+        self: string
+        // "https://gitlab.login.no/api/v4/projects/289/issues",
+        issues: string // imp
+        // "https://gitlab.login.no/api/v4/projects/289/merge_requests"
+        merge_requests: string // imp
+        // "https://gitlab.login.no/api/v4/projects/289/repository/branches"
+        repo_branches: string // imp
+    }
+}
+
+type Repository = {
+    id: number
+    description: string | null,
+    name: string
+    name_with_namespace: string
+    path: string
+    path_with_namespace: string
+    created_at: string
+    default_branch: string
+    tag_list: unknown
+    topics: string[]
+    ssh_url_to_repo: string
+    http_url_to_repo: string
+    web_url: string
+    readme_url: string
+    forks_count: number
+    avatar_url: string | null
+    star_count: number
+    last_activity_at: string
+    namespace: Namespace
+    container_registry_image_prefix: string
+    _links: Links
+    packages_enabled: boolean
+    empty_repo: boolean
+    archived: boolean
+    visibility: "internal" | string
+    resolve_outdated_diff_discussions: boolean
+    container_expiration_policy: ExpirationPolicy
+    repository_object_format: string
+    issues_enabled: boolean
+    merge_requests_enabled: boolean
+    wiki_enabled: boolean
+    jobs_enabled: boolean
+    snippets_enabled: boolean
+    container_registry_enabled: boolean
+    service_desk_enabled: boolean
+    service_desk_address: null,
+    can_create_merge_request_in: true,
+    issues_access_level: "enabled" | string
+    repository_access_level: "enabled" | string
+    merge_requests_access_level: "enabled" | string
+    forking_access_level: "enabled" | string
+    wiki_access_level: "enabled" | string
+    builds_access_level: "enabled" | string
+    snippets_access_level: "enabled" | string
+    pages_access_level: "private" | string
+    analytics_access_level: "enabled" | string
+    container_registry_access_level: "enabled" | string
+    security_and_compliance_access_level: "private" | string
+    releases_access_level: "enabled" | string
+    environments_access_level: "enabled" | string
+    feature_flags_access_level: "enabled" | string
+    infrastructure_access_level: "enabled" | string
+    monitor_access_level: "enabled" | string
+    model_experiments_access_level: "enabled" | string
+    model_registry_access_level: "enabled" | string
+    emails_disabled: boolean
+    emails_enabled: boolean
+    shared_runners_enabled: boolean
+    lfs_enabled: boolean
+    creator_id: number
+    import_url: unknown | null,
+    import_type: unknown | null,
+    import_status: string
+    open_issues_count: number
+    description_html: string
+    updated_at: string
+    ci_default_git_depth: number
+    ci_forward_deployment_enabled: boolean
+    ci_forward_deployment_rollback_allowed: boolean
+    ci_job_token_scope_enabled: boolean
+    ci_separated_caches: boolean
+    ci_allow_fork_pipelines_to_run_in_parent_project: boolean
+    ci_id_token_sub_claim_components: string[]
+    build_git_strategy: "fetch" | string
+    keep_latest_artifact: boolean
+    restrict_user_defined_variables: boolean
+    ci_pipeline_variables_minimum_override_role: "maintainer" | string
+    runners_token: string | null,
+    runner_token_expiration_interval: number | null
+    group_runners_enabled: boolean
+    auto_cancel_pending_pipelines: "enabled" | string
+    build_timeout: number
+    auto_devops_enabled: boolean
+    auto_devops_deploy_strategy: "continuous" | string
+    ci_push_repository_for_job_token_allowed: boolean
+    ci_config_path: string
+    public_jobs: boolean
+    shared_with_groups: unknown[],
+    only_allow_merge_if_pipeline_succeeds: boolean
+    allow_merge_on_skipped_pipeline: boolean | null,
+    request_access_enabled: boolean
+    only_allow_merge_if_all_discussions_are_resolved: boolean
+    remove_source_branch_after_merge: boolean
+    printing_merge_request_link_enabled: boolean
+    merge_method: "merge" | string
+    squash_option: "default_off" | string
+    enforce_auth_checks_on_uploads: boolean
+    suggestion_commit_message: unknown | null
+    merge_commit_template: unknown | null,
+    squash_commit_template: unknown | null,
+    issue_branch_template: unknown | null,
+    warn_about_potentially_unwanted_characters: boolean
+    autoclose_referenced_issues: boolean
+    requirements_enabled: boolean
+    requirements_access_level: "enabled" | string
+    security_and_compliance_enabled: boolean
+    compliance_frameworks: unknown[]
+    permissions: GitlabPermissions
+}
+
+type Namespace = {
+    id: number
+    name: string
+    path: string
+    kind: string
+    full_path: string
+    parent_id: number
+    avatar_url: string
+    web_url: string
+}
+
+type GitlabPermissions = {
+    project_access: unknown | null
+    group_access: unknown | null
+}
+
+type ExpirationPolicy = {
+    cadence: "1d" | string
+    enabled: boolean
+    keep_n: number
+    older_than: "90d" | string
+    name_regex: ".*" | string
+    name_regex_keep: unknown | null
+    next_run_at: string
+}
+
+type Links = {
+    self: string
+    issues: string
+    merge_requests: string
+    repo_branches: string
+    labels: string
+    events: string
+    members: string
+    cluster_agents: string
+}
+
+type MinimalMergeRequest = {
+    id: number
+    title: string
+    description: string // remember to slice, can be very long
+}
+
+type MergeRequest = {
+    id: number
+    iid: number
+    project_id: number
+    title: string
+    description: string
+    state: 'opened' | string
+    created_at: string
+    updated_at: string
+    merged_by: unknown | null
+    merge_user: unknown | null
+    merged_at: unknown | null
+    closed_by: unknown | null
+    closed_at: unknown | null
+    target_branch: string
+    source_branch: string
+    user_notes_count: number
+    upvotes: number
+    downvotes: number
+    author: Author
+    assignees: unknown[]
+    assignee: unknown | null
+    reviewers: unknown[]
+    source_project_id: number
+    target_project_id: number
+    labels: string[]
+    draft: boolean
+    imported: boolean
+    imported_from: 'none' | unknown
+    work_in_progress: boolean
+    milestone: unknown | null
+    merge_when_pipeline_succeeds: boolean
+    merge_status: 'can_be_merged' | string
+    detailed_merge_status: 'mergeable' | string
+    merge_after: unknown | null
+    sha: string
+    merge_commit_sha: string | null
+    squash_commit_sha: null,
+    discussion_locked: null,
+    should_remove_source_branch: null,
+    force_remove_source_branch: true,
+    prepared_at: string
+    reference: string
+    references: {
+      short: string
+      relative: string
+      full: string
+    },
+    web_url: string
+    time_stats: {
+      time_estimate: number
+      total_time_spent: number
+      human_time_estimate: unknown | null
+      human_total_time_spent: unknown | null
+    },
+    squash: boolean
+    squash_on_merge: boolean
+    task_completion_status: { 
+        count: number
+        completed_count: number 
+    },
+    has_conflicts: boolean
+    blocking_discussions_resolved: boolean
+    approvals_before_merge: unknown | null
+}
+
+type Author = {
+    id: number
+    username: string
+    name: string
+    state: 'active' | string
+    locked: boolean
+    avatar_url: string
+    web_url: string
+}

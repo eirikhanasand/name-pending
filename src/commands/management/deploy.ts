@@ -1,36 +1,63 @@
-import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, Role } from 'discord.js'
-import { readdirSync, readFileSync, writeFileSync } from 'fs'
-import { join } from 'path'
 import { Roles } from '../../../interfaces.js'
 import config from '../../utils/config.js'
+import { 
+    SlashCommandBuilder, 
+    EmbedBuilder, 
+    ChatInputCommandInteraction, 
+    Role 
+} from 'discord.js'
+import getRepositories from '../../utils/getRepositories.js'
+import sanitize from '../../utils/sanitize.js'
+import { readdirSync, readFileSync, writeFileSync } from 'fs'
+import { join } from 'path'
 
 export const data = new SlashCommandBuilder()
     .setName('deploy')
-    .setDescription('Deploys a new version of a repository to testing.')
+    .setDescription('Deploys a new version of a repository to staging.')
+    .addStringOption((option) =>
+        option
+            .setName("repository")
+            .setDescription(
+                "Repository to deploy.",
+            )
+            .setRequired(true)
+            .setAutocomplete(true),
+    )
 export async function execute(message: ChatInputCommandInteraction) {
-    const isAllowed = (message.member?.roles as unknown as Roles)?.cache.some((role: Role) => role.id === config.roleID || role.id === config.styret)
-    
+    const isAllowed = (message.member?.roles as unknown as Roles)?.cache
+    .some((role: Role) => role.id === config.roleID || role.id === config.styret)
+    const repository = sanitize(message.options.getString('repository') || "")
+    let match = null as Repository | null
+    const repositories = await getRepositories()
+
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
         return await message.reply({ content: "Unauthorized.", ephemeral: true })
     }
 
+    // Aborts if no repository is selected
+    if (!repository) {
+        return await message.reply({ content: "No repository selected.", ephemeral: true })
+    }
+
+    // Tries to find a matching repository
+    for (const repo of repositories) {
+        if (repo.name === repository) {
+            match = repo
+        }
+    }
+
+    // Aborts if no matching repository exists
+    if (!match) {
+        return await message.reply({ content: `No repository matches '${repository}'.`, ephemeral: true })
+    }
+
     const embed = new EmbedBuilder()
-        .setTitle('Deploy')
+        .setTitle(`Deploying vx.y.z of ${match.name}`)
         .setColor("#fd8738")
         .setTimestamp()
 
     await message.reply({ embeds: [embed]})
-}
-
-async function listRepositories(token: string) {
-    const response = await fetch('https://gitlab.login.no/api/v4/projects?membership=true', {
-        headers: { 'Private-Token': token },
-    });
-
-    if (!response.ok) throw new Error('Failed to fetch repositories');
-    const repos = await response.json();
-    return repos.map((repo: any) => repo.ssh_url_to_repo); // or .http_url_to_repo
 }
 
 /**

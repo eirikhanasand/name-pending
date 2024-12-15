@@ -9,6 +9,8 @@ import {
     Collection, 
     Events, 
     GatewayIntentBits, 
+    Interaction, 
+    InteractionType, 
     Message, 
     Partials, 
     Reaction, 
@@ -23,6 +25,7 @@ import validCommands, { exceptions } from './utils/valid.js'
 import handleTickets from './utils/tickets/handler.js'
 import autoSyncZammad from './utils/autoSyncZammad.js'
 import autoCreateStyretMeetings from './utils/autoCreateStyretMeetings.js'
+import Autocomplete from './utils/autocomplete.js'
 
 const token = config.token
 const __filename = fileURLToPath(import.meta.url)
@@ -129,19 +132,26 @@ client.once(Events.ClientReady, async () => {
     console.log("Ready!")
 })
 
-client.on(Events.InteractionCreate, async (interaction: ChatInputCommandInteraction) => {
+client.on(Events.InteractionCreate, async (interaction: Interaction<"cached">) => {
+    if (interaction.type === InteractionType.ApplicationCommandAutocomplete) {
+        Autocomplete(interaction)
+        return
+    }
+
+    const chatInteraction = interaction as ChatInputCommandInteraction
+
 	if (!interaction.isChatInputCommand() && !('customId' in interaction)) {
         console.error('Input is not a command nor interaction.')
         return
     }
 
-    const command = client.commands.get(interaction.commandName)
-    if (!command && !('customId' in interaction)) {
+    const command = client.commands.get(chatInteraction.commandName)
+    if (!command && !('customId' in chatInteraction)) {
         return
     }
 
-    if (validCommands.includes(interaction.commandName) || ('customId' in interaction && validCommands.includes(interaction.customId as string))) {
-        return handleComponents(interaction, getID(interaction.commandName))
+    if (validCommands.includes(chatInteraction.commandName) || ('customId' in interaction && validCommands.includes(interaction.customId as string))) {
+        return handleComponents(chatInteraction, getID(chatInteraction.commandName))
     } else {
         // @ts-expect-error
         const customId = interaction.customId
