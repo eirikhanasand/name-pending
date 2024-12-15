@@ -16,11 +16,11 @@ COPY package.json package-lock.json ./
 # Installs required dependencies
 RUN npm install
 
-# Builds the repo
-RUN npm run build
-
 # Copies contents
 COPY . .
+
+# Builds the repo
+RUN npm run build
 
 # Stars the application
 CMD npm run prod
