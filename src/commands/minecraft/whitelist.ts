@@ -1,6 +1,7 @@
 import { CacheType, ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import log from '../../utils/logger.js'
 import config from '../../utils/config.js'
+import sanitize from '../../utils/sanitize.js'
 
 /**
  * Builds a new slash command with the given name, description and options
@@ -19,7 +20,7 @@ export const data = new SlashCommandBuilder()
  */
 export async function execute(message: ChatInputCommandInteraction<CacheType>) {
     // Slices to avoid overflow errors, checks to avoid passing undefined parameters
-    const user = message.options.getString('user') ? message.options.getString('user')?.slice(0, 30) : null
+    const user = message.options.getString('user') ? sanitize(message.options.getString('user')?.slice(0, 30) || "") : null
 
     if (!user) {
         await message.reply({content: "You must provide a user: `/whitelist user:name`", ephemeral: true})

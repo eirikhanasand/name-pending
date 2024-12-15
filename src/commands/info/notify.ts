@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, Role, SlashCommandBuilder } from 'discord.
 import { Roles } from '../../../interfaces.js'
 import sendNotification from '../../utils/sendNotification.js'
 import config from '../../utils/config.js'
+import sanitize from '../../utils/sanitize.js'
 
 /**
  * Builds a new slash command with the given name, description and options
@@ -27,12 +28,10 @@ export const data = new SlashCommandBuilder()
  */
 export async function execute(message: ChatInputCommandInteraction) {
     // Slices to avoid overflow errors, checks to avoid passing undefined parameters
-    const title = message.options.getString('title')
-    const description = message.options.getString('description')
-    const topic = message.options.getString('topic')
-    const screen = {
-        id: message.options.getString('screen')
-    } as EventWithOnlyID
+    const title = sanitize(message.options.getString('title') || '')
+    const description = sanitize(message.options.getString('description') || '')
+    const topic = sanitize(message.options.getString('topic') || '')
+    const screen = { id: message.options.getString('screen') } as EventWithOnlyID
     
     // Checking if the author is allowed to remove users from the whitelist
     const isAllowed = (message.member?.roles as unknown as Roles)?.cache.some((role: Role) => role.id === config.roleID || role.id === config.styret)
