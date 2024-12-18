@@ -1,11 +1,10 @@
 import { GITLAB_API } from "../../constants.js"
 import config from "./config.js"
 
-export default async function getRepositories(query?: string): Promise<Repository[]> {
+export default async function getRepositories(limit: number, query: string): Promise<Repository[]> {
     try {
-        const repositories: Repository[] = []
         const search = query ? `&search=${encodeURIComponent(query)}` : ''
-        const response = await fetch(`${GITLAB_API}projects?membership=true&per_page=25${search}`, {
+        const response = await fetch(`${GITLAB_API}projects?simple=true${search}`, {
             headers: {
                 'Private-Token': config.privateToken
             }
@@ -16,10 +15,7 @@ export default async function getRepositories(query?: string): Promise<Repositor
         }
 
         const data = await response.json()
-
-        repositories.push(...data)
-
-        return repositories
+        return data.slice(0, limit)
     } catch (error) {
         console.error(error)
         return []

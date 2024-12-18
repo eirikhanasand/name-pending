@@ -25,7 +25,7 @@ import validCommands, { exceptions } from './utils/valid.js'
 import handleTickets from './utils/tickets/handler.js'
 import autoSyncZammad from './utils/autoSyncZammad.js'
 import autoCreateStyretMeetings from './utils/autoCreateStyretMeetings.js'
-import Autocomplete from './utils/autocomplete.js'
+import Autocomplete from './utils/autoComplete.js'
 
 const token = config.token
 const __filename = fileURLToPath(import.meta.url)

@@ -28,7 +28,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     .some((role: Role) => role.id === config.roleID || role.id === config.styret)
     const repository = sanitize(message.options.getString('repository') || "")
     let match = null as Repository | null
-    const repositories = await getRepositories()
+    const repositories = await getRepositories(25, repository)
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {

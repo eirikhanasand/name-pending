@@ -40,7 +40,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     const version = sanitize(message.options.getString('version') || "")
     let foundRepo = null as Repository | null
     let foundMR = null as any | null
-    const repositories = await getRepositories()
+    const repositories = await getRepositories(25, repository)
     const mergeRequests = await getOpenMergeRequests(INFRA_PROD_CLUSTER)
 
     // Aborts if the user does not have sufficient permissions
