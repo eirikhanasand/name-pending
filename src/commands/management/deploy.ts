@@ -140,11 +140,16 @@ export async function execute(message: ChatInputCommandInteraction) {
 }
 
 function increment(version: string, type: Increment) {
-    const versionParts = version.split('.').map(Number)
+    let versionParts = version.split('.').map(Number)
+
+    if (isNaN(versionParts[2])) {
+        versionParts[2] = Number(version.split('.')[2].split('-')[0]) ?? NaN
+    }
 
     if (versionParts.length !== 3 || versionParts.some(isNaN)) {
         return UNKNOWN_VERSION
     }
+
     let [major, minor, patch] = versionParts
 
     switch (type) {
@@ -169,7 +174,6 @@ function increment(version: string, type: Increment) {
 
 function formatCommits(commits: Commit[], count: number) {
     let authors = ""
-    let timestamps = "11.21.24, 5:48 PM\n11.21.24, 5:48 PM\n11.21.24, 5:48 PM\n11.21.24, 5:48 PM\n11.21.24, 5:48 PM"
     let descriptions = ""
 
     let i = 0
