@@ -38,7 +38,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     .some((role: Role) => role.id === config.roleID || role.id === config.styret)
     const repository = sanitize(message.options.getString('repository') || "")
     const version = sanitize(message.options.getString('version') || "")
-    let foundRepo = null as Repository | null
+    let foundRepo = null as RepositorySimple | null
     let foundMR = null as any | null
     const repositories = await getRepositories(25, repository)
     const mergeRequests = await getOpenMergeRequests(INFRA_PROD_CLUSTER)

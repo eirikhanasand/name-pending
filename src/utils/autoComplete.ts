@@ -4,7 +4,7 @@ import { AutocompleteInteraction } from "discord.js"
 import { INFRA_PROD_CLUSTER } from "../../constants.js"
 import sanitize from "./sanitize.js"
 
-type Item = Repository | MergeRequest
+type Item = RepositorySimple | MergeRequest
 const REPOSITORY = "repository"
 const DEPLOY = "deploy"
 const VERSION = "version"

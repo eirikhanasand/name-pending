@@ -86,6 +86,19 @@ export default async function handleComponents(interaction: ButtonInteraction | 
         case 'join_ticket':
             await joinTicket(buttonInteraction)
             break
+        case 'major':
+            // create major tag
+            break
+        case 'minor':
+            // create minor tag
+            break
+        case 'patch':
+            // create patch tag
+            break
+        case 'error':
+        case 'trash':
+            await (interaction as ButtonInteraction).message.delete()
+            break
         default:
             console.error(`${buttonInteraction.customId || id} is unhandled in handleComponents.`)
             await buttonInteraction.reply({ content: `Unknown action. ${buttonInteraction.customId}`, ephemeral: true })

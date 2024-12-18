@@ -283,6 +283,28 @@ type Repository = {
     permissions: GitlabPermissions
 }
 
+type RepositorySimple = {
+    id: number
+    description: string | null
+    name: string
+    name_with_namespace: string
+    path: string
+    path_with_namespace: string
+    created_at: string
+    default_branch: string
+    tag_list: unknown[]
+    topics: unknown[]
+    ssh_url_to_repo: string
+    http_url_to_repo: string
+    web_url: string
+    readme_url: string
+    forks_count: number
+    avatar_url: string | null
+    star_count: number
+    last_activity_at: string
+    namespace: Namespace
+}
+
 type Namespace = {
     id: number
     name: string
@@ -399,5 +421,33 @@ type Author = {
     state: 'active' | string
     locked: boolean
     avatar_url: string
+    web_url: string
+}
+
+type Tag = {
+    name: string
+    message: string
+    target: string
+    "commit": Commit
+    "release": null,
+    "protected": false,
+    "created_at": null
+}
+
+type Commit = {
+    id: string
+    short_id: string
+    created_at: string
+    parent_ids: string[]
+    title: string
+    message: string
+    author_name: string
+    author_email: string
+    authored_date: string
+    committer_name: string
+    committer_email: string
+    committed_date: string
+    trailers: object
+    extended_trailers: object
     web_url: string
 }

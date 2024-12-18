@@ -1,7 +1,7 @@
 import { GITLAB_API } from "../../constants.js"
 import config from "./config.js"
 
-export default async function getRepositories(limit: number, query: string): Promise<Repository[]> {
+export default async function getRepositories(limit: number, query: string): Promise<RepositorySimple[]> {
     try {
         const search = query ? `&search=${encodeURIComponent(query)}` : ''
         const response = await fetch(`${GITLAB_API}projects?simple=true${search}`, {

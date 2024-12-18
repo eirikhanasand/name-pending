@@ -33,7 +33,12 @@ const validCommands = [
     'next_page_help',
     'previous_page_help',
     'invite_to_ticket',
-    'join_ticket'
+    'join_ticket',
+    'major',
+    'minor',
+    'patch',
+    'trash',
+    'error'
 ]
 
 const exceptions = [
