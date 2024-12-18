@@ -2,12 +2,12 @@ type RestData = {
     id: string
     application_id: string
     version: string
-    default_member_permissions: unknown,
+    default_member_permissions: unknown
     type: number
     name: string
-    name_localizations: unknown,
+    name_localizations: unknown
     description: string
-    description_localizations: unknown,
+    description_localizations: unknown
     guild_id: string
     nsfw: boolean
 }
@@ -88,9 +88,9 @@ type DetailedEvent = {
     capacity: number | null
     full: boolean
     category: number
-    location: null,
-    parent: null,
-    rule: null,
+    location: null
+    parent: null
+    rule: null
     updated_at: string
     created_at: string
     deleted_at: string
@@ -122,7 +122,7 @@ type Ticket = {
         delivery_article_id_related: number
         delivery_message: boolean
         notification: boolean
-    },
+    }
     updated_by_id: number
     created_by_id: number
     created_at: string
@@ -155,26 +155,22 @@ type ErrorClosed = {
 type MinimialRepository = {
     id: number
     name: string
-    path_with_namespace: string // imp (path)
-    default_branch: string // imp (default branch)
-    ssh_url_to_repo: string // imp
-    web_url: string // imp
-    container_registry_image_prefix: string // imp?
-    // Links is a type
+    path_with_namespace: string
+    default_branch: string
+    ssh_url_to_repo: string
+    web_url: string
+    container_registry_image_prefix: string
     _links: {
         self: string
-        // "https://gitlab.login.no/api/v4/projects/289/issues",
-        issues: string // imp
-        // "https://gitlab.login.no/api/v4/projects/289/merge_requests"
-        merge_requests: string // imp
-        // "https://gitlab.login.no/api/v4/projects/289/repository/branches"
-        repo_branches: string // imp
+        issues: string
+        merge_requests: string
+        repo_branches: string
     }
 }
 
 type Repository = {
     id: number
-    description: string | null,
+    description: string | null
     name: string
     name_with_namespace: string
     path: string
@@ -208,8 +204,8 @@ type Repository = {
     snippets_enabled: boolean
     container_registry_enabled: boolean
     service_desk_enabled: boolean
-    service_desk_address: null,
-    can_create_merge_request_in: true,
+    service_desk_address: null
+    can_create_merge_request_in: boolean
     issues_access_level: "enabled" | string
     repository_access_level: "enabled" | string
     merge_requests_access_level: "enabled" | string
@@ -233,8 +229,8 @@ type Repository = {
     shared_runners_enabled: boolean
     lfs_enabled: boolean
     creator_id: number
-    import_url: unknown | null,
-    import_type: unknown | null,
+    import_url: unknown | null
+    import_type: unknown | null
     import_status: string
     open_issues_count: number
     description_html: string
@@ -250,7 +246,7 @@ type Repository = {
     keep_latest_artifact: boolean
     restrict_user_defined_variables: boolean
     ci_pipeline_variables_minimum_override_role: "maintainer" | string
-    runners_token: string | null,
+    runners_token: string | null
     runner_token_expiration_interval: number | null
     group_runners_enabled: boolean
     auto_cancel_pending_pipelines: "enabled" | string
@@ -260,9 +256,9 @@ type Repository = {
     ci_push_repository_for_job_token_allowed: boolean
     ci_config_path: string
     public_jobs: boolean
-    shared_with_groups: unknown[],
+    shared_with_groups: unknown[]
     only_allow_merge_if_pipeline_succeeds: boolean
-    allow_merge_on_skipped_pipeline: boolean | null,
+    allow_merge_on_skipped_pipeline: boolean | null
     request_access_enabled: boolean
     only_allow_merge_if_all_discussions_are_resolved: boolean
     remove_source_branch_after_merge: boolean
@@ -271,9 +267,9 @@ type Repository = {
     squash_option: "default_off" | string
     enforce_auth_checks_on_uploads: boolean
     suggestion_commit_message: unknown | null
-    merge_commit_template: unknown | null,
-    squash_commit_template: unknown | null,
-    issue_branch_template: unknown | null,
+    merge_commit_template: unknown | null
+    squash_commit_template: unknown | null
+    issue_branch_template: unknown | null
     warn_about_potentially_unwanted_characters: boolean
     autoclose_referenced_issues: boolean
     requirements_enabled: boolean
@@ -345,7 +341,7 @@ type Links = {
 type MinimalMergeRequest = {
     id: number
     title: string
-    description: string // remember to slice, can be very long
+    description: string
 }
 
 type MergeRequest = {
@@ -385,30 +381,22 @@ type MergeRequest = {
     merge_after: unknown | null
     sha: string
     merge_commit_sha: string | null
-    squash_commit_sha: null,
-    discussion_locked: null,
-    should_remove_source_branch: null,
-    force_remove_source_branch: true,
+    squash_commit_sha: null
+    discussion_locked: null
+    should_remove_source_branch: null
+    force_remove_source_branch: boolean
     prepared_at: string
     reference: string
     references: {
       short: string
       relative: string
       full: string
-    },
+    }
     web_url: string
-    time_stats: {
-      time_estimate: number
-      total_time_spent: number
-      human_time_estimate: unknown | null
-      human_total_time_spent: unknown | null
-    },
+    time_stats: TimeStats
     squash: boolean
     squash_on_merge: boolean
-    task_completion_status: { 
-        count: number
-        completed_count: number 
-    },
+    task_completion_status: CompletionStatus
     has_conflicts: boolean
     blocking_discussions_resolved: boolean
     approvals_before_merge: unknown | null
@@ -429,8 +417,8 @@ type Tag = {
     message: string
     target: string
     "commit": Commit
-    "release": null,
-    "protected": false,
+    "release": null
+    "protected": false
     "created_at": null
 }
 
@@ -450,4 +438,16 @@ type Commit = {
     trailers: object
     extended_trailers: object
     web_url: string
+}
+
+type TimeStats = {
+    time_estimate: number
+    total_time_spent: number
+    human_time_estimate: unknown | null
+    human_total_time_spent: unknown | null
+}
+
+type CompletionStatus = { 
+    count: number
+    completed_count: number 
 }

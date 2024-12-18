@@ -1,5 +1,5 @@
-import { GITLAB_API } from "../../constants.js"
-import config from "./config.js"
+import { GITLAB_API } from "../../../constants.js"
+import config from "../config.js"
 
 export default async function getOpenMergeRequests(projectId: number): Promise<MergeRequest[]> {
     try {

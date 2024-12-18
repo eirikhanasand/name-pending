@@ -1,4 +1,4 @@
-import { GITLAB_API } from "../../constants.js"
+import { GITLAB_API } from "../../../constants.js"
 
 export default async function getCommits(id: number): Promise<Commit[]> {
     try {

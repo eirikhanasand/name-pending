@@ -6,9 +6,9 @@ import {
     ChatInputCommandInteraction, 
     Role 
 } from 'discord.js'
-import getRepositories from '../../utils/getRepositories.js'
+import getRepositories from '../../utils/gitlab/getRepositories.js'
 import sanitize from '../../utils/sanitize.js'
-import getOpenMergeRequests from '../../utils/getMergeRequests.js'
+import getOpenMergeRequests from '../../utils/gitlab/getMergeRequests.js'
 import { INFRA_PROD_CLUSTER } from '../../../constants.js'
 
 export const data = new SlashCommandBuilder()

@@ -1,9 +1,9 @@
 import dotenv from 'dotenv'
-import { ticketIdPattern } from "../../constants.js"
-import postMessage from "./tickets/postMessage.js"
-import fetchTicket from "./ticket.js"
-import closeChannel from './tickets/closeChannel.js'
-import getAttachment from './tickets/getAttachment.js'
+import { ticketIdPattern } from "../../../constants.js"
+import postMessage from "./postMessage.js"
+import fetchTicket from "../ticket.js"
+import closeChannel from './closeChannel.js'
+import getAttachment from './getAttachment.js'
 import { 
     AttachmentBuilder, 
     ChannelType, 

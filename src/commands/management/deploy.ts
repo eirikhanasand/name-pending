@@ -9,11 +9,11 @@ import {
     ButtonStyle,
     ActionRowBuilder
 } from 'discord.js'
-import getRepositories from '../../utils/getRepositories.js'
+import getRepositories from '../../utils/gitlab/getRepositories.js'
 import sanitize from '../../utils/sanitize.js'
 import { FALLBACK_TAG, GITLAB_BASE, UNKNOWN_VERSION } from '../../../constants.js'
-import getTags from '../../utils/getTags.js'
-import getCommits from '../../utils/getCommits.js'
+import getTags from '../../utils/tags.js'
+import getCommits from '../../utils/gitlab/getCommits.js'
 
 enum Increment {
     MAJOR,

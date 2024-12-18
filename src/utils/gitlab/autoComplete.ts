@@ -1,8 +1,8 @@
 import getRepositories from "./getRepositories.js"
 import getOpenMergeRequests from "./getMergeRequests.js"
 import { AutocompleteInteraction } from "discord.js"
-import { INFRA_PROD_CLUSTER } from "../../constants.js"
-import sanitize from "./sanitize.js"
+import { INFRA_PROD_CLUSTER } from "../../../constants.js"
+import sanitize from "../sanitize.js"
 
 type Item = RepositorySimple | MergeRequest
 const REPOSITORY = "repository"
