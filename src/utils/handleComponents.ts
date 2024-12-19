@@ -11,6 +11,9 @@ import manageRoles from "./tickets/roles.js"
 import handleRemoveFromTicket from "./tickets/remove.js"
 import { nextPage, previousPage } from "./help.js"
 import { inviteToTicket, joinTicket } from "./tickets/invite.js"
+import { postTag } from "./gitlab/tags.js"
+import handleTag, { removeTag } from "./gitlab/handleTag.js"
+import { Increment } from "../../interfaces.js"
 
 export default async function handleComponents(interaction: ButtonInteraction | ChatInputCommandInteraction, id: string | undefined) {    
     const buttonInteraction = interaction as ButtonInteraction
@@ -87,17 +90,20 @@ export default async function handleComponents(interaction: ButtonInteraction | 
             await joinTicket(buttonInteraction)
             break
         case 'major':
-            // create major tag
+            await handleTag(buttonInteraction, Increment.MAJOR)
             break
         case 'minor':
-            // create minor tag
+            await handleTag(buttonInteraction, Increment.MINOR)
             break
         case 'patch':
-            // create patch tag
+            await handleTag(buttonInteraction, Increment.PATCH)
             break
         case 'error':
         case 'trash':
             await (interaction as ButtonInteraction).message.delete()
+            break
+        case 'cancel':
+            await removeTag(buttonInteraction)
             break
         default:
             console.error(`${buttonInteraction.customId || id} is unhandled in handleComponents.`)

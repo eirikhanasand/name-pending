@@ -1,4 +1,4 @@
-import { Roles } from '../../../interfaces.js'
+import { Increment, Roles } from '../../../interfaces.js'
 import config from '../../utils/config.js'
 import { 
     SlashCommandBuilder, 
@@ -12,14 +12,8 @@ import {
 import getRepositories from '../../utils/gitlab/getRepositories.js'
 import sanitize from '../../utils/sanitize.js'
 import { FALLBACK_TAG, GITLAB_BASE, UNKNOWN_VERSION } from '../../../constants.js'
-import getTags from '../../utils/tags.js'
+import getTags from '../../utils/gitlab/tags.js'
 import getCommits from '../../utils/gitlab/getCommits.js'
-
-enum Increment {
-    MAJOR,
-    MINOR,
-    PATCH
-}
 
 export const data = new SlashCommandBuilder()
     .setName('deploy')

@@ -149,7 +149,7 @@ type Attachment = {
 }
 
 type ErrorClosed = {
-    error: "closed"
+    error: closed
 }
 
 type MinimialRepository = {
@@ -193,7 +193,7 @@ type Repository = {
     packages_enabled: boolean
     empty_repo: boolean
     archived: boolean
-    visibility: "internal" | string
+    visibility: internal | string
     resolve_outdated_diff_discussions: boolean
     container_expiration_policy: ExpirationPolicy
     repository_object_format: string
@@ -206,24 +206,24 @@ type Repository = {
     service_desk_enabled: boolean
     service_desk_address: null
     can_create_merge_request_in: boolean
-    issues_access_level: "enabled" | string
-    repository_access_level: "enabled" | string
-    merge_requests_access_level: "enabled" | string
-    forking_access_level: "enabled" | string
-    wiki_access_level: "enabled" | string
-    builds_access_level: "enabled" | string
-    snippets_access_level: "enabled" | string
-    pages_access_level: "private" | string
-    analytics_access_level: "enabled" | string
-    container_registry_access_level: "enabled" | string
-    security_and_compliance_access_level: "private" | string
-    releases_access_level: "enabled" | string
-    environments_access_level: "enabled" | string
-    feature_flags_access_level: "enabled" | string
-    infrastructure_access_level: "enabled" | string
-    monitor_access_level: "enabled" | string
-    model_experiments_access_level: "enabled" | string
-    model_registry_access_level: "enabled" | string
+    issues_access_level: enabled | string
+    repository_access_level: enabled | string
+    merge_requests_access_level: enabled | string
+    forking_access_level: enabled | string
+    wiki_access_level: enabled | string
+    builds_access_level: enabled | string
+    snippets_access_level: enabled | string
+    pages_access_level: private | string
+    analytics_access_level: enabled | string
+    container_registry_access_level: enabled | string
+    security_and_compliance_access_level: private | string
+    releases_access_level: enabled | string
+    environments_access_level: enabled | string
+    feature_flags_access_level: enabled | string
+    infrastructure_access_level: enabled | string
+    monitor_access_level: enabled | string
+    model_experiments_access_level: enabled | string
+    model_registry_access_level: enabled | string
     emails_disabled: boolean
     emails_enabled: boolean
     shared_runners_enabled: boolean
@@ -242,17 +242,17 @@ type Repository = {
     ci_separated_caches: boolean
     ci_allow_fork_pipelines_to_run_in_parent_project: boolean
     ci_id_token_sub_claim_components: string[]
-    build_git_strategy: "fetch" | string
+    build_git_strategy: fetch | string
     keep_latest_artifact: boolean
     restrict_user_defined_variables: boolean
-    ci_pipeline_variables_minimum_override_role: "maintainer" | string
+    ci_pipeline_variables_minimum_override_role: maintainer | string
     runners_token: string | null
     runner_token_expiration_interval: number | null
     group_runners_enabled: boolean
-    auto_cancel_pending_pipelines: "enabled" | string
+    auto_cancel_pending_pipelines: enabled | string
     build_timeout: number
     auto_devops_enabled: boolean
-    auto_devops_deploy_strategy: "continuous" | string
+    auto_devops_deploy_strategy: continuous | string
     ci_push_repository_for_job_token_allowed: boolean
     ci_config_path: string
     public_jobs: boolean
@@ -263,8 +263,8 @@ type Repository = {
     only_allow_merge_if_all_discussions_are_resolved: boolean
     remove_source_branch_after_merge: boolean
     printing_merge_request_link_enabled: boolean
-    merge_method: "merge" | string
-    squash_option: "default_off" | string
+    merge_method: merge | string
+    squash_option: default_off | string
     enforce_auth_checks_on_uploads: boolean
     suggestion_commit_message: unknown | null
     merge_commit_template: unknown | null
@@ -273,7 +273,7 @@ type Repository = {
     warn_about_potentially_unwanted_characters: boolean
     autoclose_referenced_issues: boolean
     requirements_enabled: boolean
-    requirements_access_level: "enabled" | string
+    requirements_access_level: enabled | string
     security_and_compliance_enabled: boolean
     compliance_frameworks: unknown[]
     permissions: GitlabPermissions
@@ -416,10 +416,10 @@ type Tag = {
     name: string
     message: string
     target: string
-    "commit": Commit
-    "release": null
-    "protected": false
-    "created_at": null
+    commit: Commit
+    release: null
+    protected: false
+    created_at: null
 }
 
 type Commit = {
@@ -450,4 +450,120 @@ type TimeStats = {
 type CompletionStatus = { 
     count: number
     completed_count: number 
+}
+
+type Pipeline = {
+    id: number
+    iid: number
+    project_id: number
+    sha: string
+    ref: string
+    status: string
+    source: string
+    created_at: string
+    updated_at: string
+    web_url: string
+    name: string | null
+}
+
+type Job = {
+    id: number
+    status: string 
+    stage: string 
+    name: string
+    ref: string 
+    tag: boolean
+    coverage: unknown | null
+    allow_failure: boolean 
+    created_at: string
+    started_at: string 
+    finished_at: string 
+    erased_at: string | null
+    duration: number 
+    queued_duration: number 
+    user: User
+    commit: Commit
+    pipeline: Pipeline
+    web_url: string
+    project: {
+        ci_job_token_scope_enabled: boolean
+    }
+    artifacts: [
+        {
+            file_type: string
+            size: string
+            filename: string
+            file_format: string | null
+        }
+    ]
+    runner: {
+        id: number 
+        description: string 
+        ip_address: string | null
+        active: boolean
+        paused: boolean
+        is_shared: boolean
+        runner_type: string
+        name: string | null
+        online: boolean
+        status: string
+    }
+    runner_manager: {
+        id: number
+        system_id: string
+        version: string
+        revision: string
+        platform: string
+        architecture: string
+        created_at: string
+        contacted_at: string
+        ip_address: string
+        status: string
+    }
+    artifacts_expire_at: null
+    archived: false
+    tag_list: unknown[]
+}
+
+type MinimalJob = {
+    id: number
+    status: string
+    stage: string
+    ref: string
+    allow_failure: boolean
+    started_at: string
+    finished_at: string
+    duration: number
+    queued_duration: number
+    runner: {
+        id: number
+        description: string
+    }
+}
+
+type User = {
+    id: number
+    username: string
+    name: string
+    state: string
+    locked: boolean
+    avatar_url: string
+    web_url: string
+    created_at: string
+    bio: string
+    location: string
+    public_email: string | null
+    skype: string
+    linkedin: string
+    twitter: string
+    discord: string
+    website_url: string
+    organization: string
+    job_title: string
+    pronouns: string
+    bot: boolean
+    work_information: unknown | null
+    followers: number
+    following: number
+    local_time: unknown | null
 }

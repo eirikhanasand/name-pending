@@ -15,3 +15,8 @@ export interface Roles {
     cache: Role[]
 }
 
+export enum Increment {
+    MAJOR,
+    MINOR,
+    PATCH
+}

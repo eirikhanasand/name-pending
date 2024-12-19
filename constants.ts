@@ -6,6 +6,8 @@ export const GITLAB_API = "https://gitlab.login.no/api/v4/"
 export const GITLAB_BASE = "https://gitlab.login.no"
 export const INFRA_PROD_CLUSTER = 149
 export const UNKNOWN_VERSION = "unknown version"
+export const SUCCESS = "success"
+
 export const FALLBACK_TAG = {
     name: "No version released.",
     commit: {
@@ -16,4 +18,18 @@ export const FALLBACK_TAG = {
         author_email: "Unknown.",
         web_url: `${GITLAB_BASE}/tekkom`
     }
+}
+
+export const FALLBACK_PIPELINE = {
+    id: 0,
+    iid: 0,
+    project_id: 0,
+    sha: 0,
+    ref: "unknown version",
+    status: "not found",
+    source: "unknown",
+    created_at: 0,
+    updated_at: 0,
+    web_url: GITLAB_BASE,
+    name: null
 }

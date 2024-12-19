@@ -38,7 +38,8 @@ const validCommands = [
     'minor',
     'patch',
     'trash',
-    'error'
+    'error',
+    'cancel'
 ]
 
 const exceptions = [
