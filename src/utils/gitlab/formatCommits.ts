@@ -8,11 +8,11 @@ export default function formatCommits(commits: Commit[], count: number) {
     while (commits && i < count) {
         authors += `${commits[i].short_id}, ${commits[i].author_name}\n`
         const created = new Date(commits[i].created_at)
-        const year = String(created.getFullYear()).slice(2)
-        const day = created.getDate()
-        const month = created.getMonth() + 1
-        const hour = created.getHours()
-        const minute = created.getMinutes()
+        const year = String(created.getFullYear()).slice(2).toString().padStart(2, '0')
+        const day = created.getDate().toString().padStart(2, '0')
+        const month = (created.getMonth() + 1).toString().padStart(2, '0')
+        const hour = created.getHours().toString().padStart(2, '0')
+        const minute = created.getMinutes().toString().padStart(2, '0')
         const localeString = created.toLocaleString()
         const meridian = localeString.slice(localeString.length - 2, localeString.length)
         const formatDate = `${day}.${month}.${year}, ${hour}:${minute} ${meridian}`
