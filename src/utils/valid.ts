@@ -39,7 +39,8 @@ const validCommands = [
     'patch',
     'trash',
     'error',
-    'cancel'
+    'cancel',
+    'retryDeployment'
 ]
 
 const exceptions = [

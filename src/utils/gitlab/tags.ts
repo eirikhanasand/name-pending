@@ -21,7 +21,7 @@ export default async function getTags(id: number): Promise<Tag[]> {
     }
 }
 
-export async function postTag(id: number, tag: string): Promise<Tag> {
+export async function postTag(id: number, tag: string): Promise<Tag | number> {
     try {
         const response = await fetch(`${GITLAB_API}projects/${id}/repository/tags`, {
             method: 'POST',
@@ -42,9 +42,12 @@ export async function postTag(id: number, tag: string): Promise<Tag> {
 
         const data = await response.json()
         return data
-    } catch (error) {
+    } catch (error: any) {
+        if (error.message.includes('already exists')) {
+            return 409
+        }
         console.error(error)
-        return 404 as any
+        return 404
     }
 }
 

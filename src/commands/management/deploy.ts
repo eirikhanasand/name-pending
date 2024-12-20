@@ -14,6 +14,8 @@ import sanitize from '../../utils/sanitize.js'
 import { FALLBACK_TAG, GITLAB_BASE, UNKNOWN_VERSION } from '../../../constants.js'
 import getTags from '../../utils/gitlab/tags.js'
 import getCommits from '../../utils/gitlab/getCommits.js'
+import { errorButtons } from '../../utils/gitlab/buttons.js'
+import formatCommits from '../../utils/gitlab/formatCommits.js'
 
 export const data = new SlashCommandBuilder()
     .setName('deploy')
@@ -89,9 +91,9 @@ export async function execute(message: ChatInputCommandInteraction) {
     if (increment(latestVersion.name, Increment.MAJOR) !== UNKNOWN_VERSION) {
         // Creates 'major' button
         const major = new ButtonBuilder()
-        .setCustomId('major')
-        .setLabel(`Major (${increment(latestVersion.name, Increment.MAJOR)})`)
-        .setStyle(ButtonStyle.Primary)
+            .setCustomId('major')
+            .setLabel(`Major (${increment(latestVersion.name, Increment.MAJOR)})`)
+            .setStyle(ButtonStyle.Primary)
 
         // Creates 'minor' button
         const minor = new ButtonBuilder()
@@ -114,20 +116,7 @@ export async function execute(message: ChatInputCommandInteraction) {
         buttons = new ActionRowBuilder<ButtonBuilder>()
         .addComponents(major, minor, patch, trash)
     } else {
-        // Creates 'error' button
-        const error = new ButtonBuilder()
-            .setCustomId('error')
-            .setLabel('Last tag does not follow x.y.z format, fix manually.')
-            .setStyle(ButtonStyle.Danger)
-
-        // Creates 'trash' button
-        const trash = new ButtonBuilder()
-            .setCustomId('trash')
-            .setLabel('🗑️')
-            .setStyle(ButtonStyle.Secondary)
-        
-        buttons = new ActionRowBuilder<ButtonBuilder>()
-        .addComponents(error, trash)
+        buttons = errorButtons
     }
 
     await message.reply({ embeds: [embed], components: [buttons]})
@@ -164,33 +153,6 @@ function increment(version: string, type: Increment) {
     }
 
     return `${major}.${minor}.${patch}`
-}
-
-function formatCommits(commits: Commit[], count: number) {
-    let authors = ""
-    let descriptions = ""
-
-    let i = 0
-    while (commits && i < count) {
-        authors += `${commits[i].short_id}, ${commits[i].author_name}\n`
-        const created = new Date(commits[i].created_at)
-        const year = String(created.getFullYear()).slice(2)
-        const day = created.getDate()
-        const month = created.getMonth() + 1
-        const hour = created.getHours()
-        const minute = created.getMinutes()
-        const localeString = created.toLocaleString()
-        const meridian = localeString.slice(localeString.length - 2, localeString.length)
-        const formatDate = `${day}.${month}.${year}, ${hour}:${minute} ${meridian}`
-        const description = `${formatDate}, ${commits[i].title}`
-        descriptions += `${description.slice(0, 42).trim()}${description.length > 42 ? '…' : ''}\n`
-        i++
-    }
-
-    return [
-        {name: "Commit\tAuthor", value: authors, inline: true},
-        {name: "Info", value: descriptions, inline: true}
-    ]
 }
 
 /**
