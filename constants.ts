@@ -7,7 +7,7 @@ export const GITLAB_BASE = "https://gitlab.login.no"
 export const INFRA_PROD_CLUSTER = 149
 export const UNKNOWN_VERSION = "unknown version"
 export const SUCCESS = "success"
-export const DISCORD_MAX_INLINE_EMBED_FILED_LENGTH = 35
+export const DISCORD_MAX_INLINE_EMBED_FIELD_LENGTH = 35
 
 export const FALLBACK_TAG = {
     name: "No version released.",

@@ -1,4 +1,4 @@
-import { DISCORD_MAX_INLINE_EMBED_FILED_LENGTH } from "../../../constants.js"
+import { DISCORD_MAX_INLINE_EMBED_FIELD_LENGTH } from "../../../constants.js"
 
 export default function formatCommits(commits: Commit[], count: number) {
     let authors = ""
@@ -17,7 +17,7 @@ export default function formatCommits(commits: Commit[], count: number) {
         const meridian = localeString.slice(localeString.length - 2, localeString.length)
         const formatDate = `${day}.${month}.${year}, ${hour}:${minute} ${meridian}`
         const description = `${formatDate}, ${commits[i].title}`
-        descriptions += `${description.slice(0, DISCORD_MAX_INLINE_EMBED_FILED_LENGTH).trim()}${description.length > DISCORD_MAX_INLINE_EMBED_FILED_LENGTH ? '…' : ''}\n`
+        descriptions += `${description.slice(0, DISCORD_MAX_INLINE_EMBED_FIELD_LENGTH).trim()}${description.length > DISCORD_MAX_INLINE_EMBED_FIELD_LENGTH ? '…' : ''}\n`
         i++
     }
 
