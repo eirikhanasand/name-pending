@@ -47,7 +47,7 @@ export default async function postMessage(ticketID: number, message: Message, bo
 
             return response.status
         } catch (error) {
-            console.log(error)
+            console.error(error)
         }
     }
 }

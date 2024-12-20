@@ -36,7 +36,7 @@ export async function handleCloseTicket(interaction: ButtonInteraction) {
                 content: `Closed by ${interaction.user.username}.`,
             })
         } catch (error) {
-            console.log(error)
+            console.error(error)
 
             await interaction.editReply({
                 content: 'There was an error closing the ticket. Please try again later.'
@@ -110,7 +110,7 @@ export async function handleCloseSelectedTicket(interaction: ButtonInteraction) 
                 const channelToDelete = sortedChannels[i]?.channel;
                 if (channelToDelete) {
                     await channelToDelete.delete('Archiving a new ticket, deleted the oldest one.')
-                    console.log(`Deleted channel: ${channelToDelete.name}`)
+                    console.warn(`Deleted channel: ${channelToDelete.name}`)
                 }
             }
         }

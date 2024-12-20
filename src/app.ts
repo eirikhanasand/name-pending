@@ -62,7 +62,7 @@ for (const folder of commandFolders) {
 		if ('data' in command && 'execute' in command) {
 			client.commands.set(command.data.name, command)
 		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`)
+			console.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`)
 		}
 	}
 }
@@ -75,12 +75,12 @@ client.once(Events.ClientReady, async () => {
             // Fetch channel and message
             const channel = await client.channels.fetch(channelID)
             if (!channel) {
-                return console.log(`Channel with ID ${channelID} not found.`)
+                return console.error(`Channel with ID ${channelID} not found.`)
             }
 
             const roleMessage = await (channel as any).messages.fetch(message)
             if (!roleMessage) {
-                return console.log(`Message with ID ${message} not found.`)
+                return console.error(`Message with ID ${message} not found.`)
             }
 
             // Fetches missing partial data for the message
@@ -97,7 +97,7 @@ client.once(Events.ClientReady, async () => {
             const guild = client.guilds.cache.get(roleMessage.guildId)
             const content = roleMessage.embeds[0].data.fields[0].value
             if (!guild) {
-                return console.log(`Guild ${roleMessage.guildId} does not exist.`)
+                return console.error(`Guild ${roleMessage.guildId} does not exist.`)
             }
 
             const roleRegex = /<@&(\d+)>/g

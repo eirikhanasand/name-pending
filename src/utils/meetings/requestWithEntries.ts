@@ -34,7 +34,7 @@ export default async function requestWithRetries({query, retries = 10, delay = 1
             const data = await response.json()
             return data
         } catch (error: any) {
-            console.log(error)
+            console.error(error)
             if (error.response && error.response.status === 401) {
                 // Retry on authentication errors
                 retries--

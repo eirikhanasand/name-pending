@@ -132,7 +132,7 @@ async function updatePlayerCount(message: ChatInputCommandInteraction) {
         if (channel && 'setTopic' in channel) {
             channel?.setTopic(topic)
         } else {
-            console.log("Failed to set topic in minecraft/chat.ts")
+            console.error("Failed to set topic in minecraft/chat.ts")
         }
 
         // Waits for 5 minutes (Discord rate limit)

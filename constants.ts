@@ -24,12 +24,12 @@ export const FALLBACK_PIPELINE = {
     id: 0,
     iid: 0,
     project_id: 0,
-    sha: 0,
+    sha: "",
     ref: "unknown version",
-    status: "not found",
+    status: "0.0.0",
     source: "unknown",
-    created_at: 0,
-    updated_at: 0,
+    created_at: new Date(0).toLocaleTimeString(),
+    updated_at: new Date(0).toLocaleTimeString(),
     web_url: GITLAB_BASE,
     name: null
 }

@@ -31,7 +31,7 @@ for (const folder of commandFolders) {
             if ('data' in module && 'execute' in module) {
                 commands.push(module.data.toJSON())
             } else {
-                console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`)
+                console.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`)
             }
         } catch (error) {
             console.error(`Error importing ${filePath}: ${error}`)

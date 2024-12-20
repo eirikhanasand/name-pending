@@ -64,7 +64,7 @@ export default async function closeChannel({ guild, interaction, currentChannel 
             const channelToDelete = sortedChannels[i]?.channel;
             if (channelToDelete) {
                 await channelToDelete.delete('Archiving a new ticket, deleted the oldest one.')
-                console.log(`Deleted channel: ${channelToDelete.name}`)
+                console.warn(`Deleted channel: ${channelToDelete.name}`)
             }
         }
     }
