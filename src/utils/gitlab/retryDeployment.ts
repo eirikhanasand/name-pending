@@ -1,9 +1,8 @@
 import { ButtonInteraction } from "discord.js"
 import deploy from "./deploy.js"
 import getPipelines, { getJobsForPipeline } from "./pipeline.js"
-import config from "../config.js"
-import { GITLAB_API } from "../../../constants.js"
 import formatVersion from "./formatVersion.js"
+import retryJob from "./retryJob.js"
 
 export default async function retryDeployment(interaction: ButtonInteraction) {
     const message = interaction.message
@@ -25,22 +24,4 @@ export async function resumeStoppedPipelines(id: number) {
             retryJob(id, job.id)
         }
     }
-}
-
-async function retryJob(projectId: number, jobId: number) {
-    const url = `${GITLAB_API}projects/${projectId}/jobs/${jobId}/retry`;
-
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Private-Token': config.privateToken,
-        }
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to retry job with ID: ${jobId}`);
-    }
-
-    return await response.json();
 }

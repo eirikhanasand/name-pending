@@ -1,8 +1,10 @@
 import { GITLAB_API } from "../../../constants.js"
 import config from "../config.js"
+import logNullValue from "../logNullValue.js"
 
 export default async function getTags(id: number): Promise<Tag[]> {
     try {
+        logNullValue("getTags", ["id"], [id])
         const response = await fetch(`${GITLAB_API}projects/${id}/repository/tags?per_page=3`, {
             headers: {
                 'Private-Token': config.privateToken,
@@ -23,6 +25,7 @@ export default async function getTags(id: number): Promise<Tag[]> {
 
 export async function postTag(id: number, tag: string): Promise<Tag | number> {
     try {
+        logNullValue("getTags", ["id", "tag"], [id, tag])
         const response = await fetch(`${GITLAB_API}projects/${id}/repository/tags`, {
             method: 'POST',
             headers: {
@@ -53,6 +56,7 @@ export async function postTag(id: number, tag: string): Promise<Tag | number> {
 
 export async function deleteTag(id: number, tag: string): Promise<boolean> {
     try {
+        logNullValue("getTags", ["id", "tag"], [id, tag])
         const response = await fetch(`${GITLAB_API}projects/${id}/repository/tags/${encodeURIComponent(tag)}`, {
             method: 'DELETE',
             headers: {
