@@ -67,13 +67,13 @@ export default async function editEverySecondTillDone(message: Message, user: st
 
         switch (pipeline.status) {
             case SUCCESS:
-                console.log(`${name} version ${tag}${dev} deployed by ${user} completed successfully after ${seconds}s (Repository ID ${id}).`)
+                console.log(`${name} version ${tag}${dev} deployed by ${user} completed successfully after ${Seconds}s (Repository ID ${id}).`)
                 return true
             case 'canceled':
-                console.warn(`Deployment of ${name} version ${tag}${dev} deployed by ${user} was canceled after ${seconds}s (Repository ID ${id}).`)
+                console.warn(`Deployment of ${name} version ${tag}${dev} deployed by ${user} was canceled after ${Seconds}s (Repository ID ${id}).`)
                 return false
             case 'failed':
-                console.error(`Deployment of ${name} version ${tag}${dev} deployed by ${user} failed after ${seconds}s (Repository ID ${id}).`)
+                console.error(`Deployment of ${name} version ${tag}${dev} deployed by ${user} failed after ${Seconds}s (Repository ID ${id}).`)
                 return false
         }
     }
