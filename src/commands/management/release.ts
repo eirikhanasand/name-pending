@@ -67,9 +67,9 @@ export async function execute(message: ChatInputCommandInteraction) {
 
     const baseTag = tags[0]
     const baseName = baseTag.name
-    // if (!baseName.includes('-dev')) {
-    //     error = `Tag ${baseName} for ${match.name} is already deployed.\nPlease use \`\/deploy\` first.`
-    // }
+    if (!baseName.includes('-dev')) {
+        error = `Tag ${baseName} for ${match.name} is already deployed.\nPlease use \`\/deploy\` first.`
+    }
 
     if (error) {
         const embed = new EmbedBuilder()
@@ -140,35 +140,39 @@ export async function execute(message: ChatInputCommandInteraction) {
             return 0
         })
 
-        const highestVersion = formatVersion(sorted[0].title)
-        for (const mr of sorted) {
-            if (formatVersion(mr.title).join('.') === highestVersion.join('.')) {
-                willMerge.push(mr)
+        if (sorted.length) {
+            const highestVersion = formatVersion(sorted[0].title)
+            for (const mr of sorted) {
+                if (formatVersion(mr.title).join('.') === highestVersion.join('.')) {
+                    willMerge.push(mr)
+                }
             }
-        }
 
-        const result = await merge(willMerge)
+            const result = await merge(willMerge)
 
-        let success = 0
-        for (const req of result) {
-            if (req.state === "merged") {
-                success++
+            let success = 0
+            for (const req of result) {
+                if (req.state === "merged") {
+                    success++
+                }
             }
-        }
 
-        if (result.length === success) {
-            const final = new EmbedBuilder()
-                .setTitle(`Released ${repository} v${tag} to production.`)
-                .setColor("#fd8738")
-                .setTimestamp()
-            response.edit({embeds: [...response.embeds, final]})
+            if (result.length === success) {
+                const final = new EmbedBuilder()
+                    .setTitle(`Released ${repository} v${tag} to production.`)
+                    .setColor("#fd8738")
+                    .setTimestamp()
+                response.edit({embeds: [...response.embeds, final]})
+            } else {
+                const final = new EmbedBuilder()
+                    .setTitle(`Failed to release ${repository} v${tag} to production.`)
+                    .setDescription('An error occured while merging. Please resolve manually.')
+                    .setColor("#fd8738")
+                    .setTimestamp()
+                response.edit({embeds: [...response.embeds, final]})
+            }
         } else {
-            const final = new EmbedBuilder()
-                .setTitle(`Failed to release ${repository} v${tag} to production.`)
-                .setDescription('An error occured while merging. Please resolve manually.')
-                .setColor("#fd8738")
-                .setTimestamp()
-            response.edit({embeds: [...response.embeds, final]})
+            console.error(`Found no merge requests for ${repository} v${tag}. Please merge manually.`)
         }
     }
 }
