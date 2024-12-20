@@ -19,7 +19,10 @@ export default async function getRepositories(limit: number, query: string): Pro
         const data = await response.json()
         return data.slice(0, limit)
     } catch (error) {
-        console.error(error)
+        if (!JSON.stringify(error).includes('Skipped')) {
+            console.error(error)
+        }
+
         return []
     }
 }

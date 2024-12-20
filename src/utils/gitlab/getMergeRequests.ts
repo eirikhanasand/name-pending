@@ -18,7 +18,10 @@ export default async function getOpenMergeRequests(projectId: number): Promise<M
         const data = await response.json()
         return data
     } catch (error) {
-        console.error("Error fetching merge requests:", error)
+        if (!JSON.stringify(error).includes('Skipped')) {
+            console.error(error)
+        }
+
         return []
     }
 }

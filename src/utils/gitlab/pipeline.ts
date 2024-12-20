@@ -39,7 +39,10 @@ export async function getJobsForPipeline(projectID: number, id: number): Promise
         const data = await response.json()
         return data
     } catch (error) {
-        console.error(error)
+        if (!JSON.stringify(error).includes('Skipped')) {
+            console.error(error)
+        }
+
         return []
     }
 }
@@ -60,7 +63,10 @@ export async function getBridgesForPipeline(projectID: number, id: number): Prom
         const data = await response.json()
         return data
     } catch (error) {
-        console.error(error)
+        if (!JSON.stringify(error).includes('Skipped')) {
+            console.error(error)
+        }
+
         return []
     }
 }

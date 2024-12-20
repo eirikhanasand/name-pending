@@ -18,7 +18,10 @@ export default async function getTags(id: number): Promise<Tag[]> {
         const data = await response.json()
         return data
     } catch (error) {
-        console.error(error)
+        if (!JSON.stringify(error).includes('Skipped')) {
+            console.error(error)
+        }
+
         return []
     }
 }
@@ -46,6 +49,11 @@ export async function postTag(id: number, tag: string): Promise<Tag | number> {
         const data = await response.json()
         return data
     } catch (error: any) {
+        if (!JSON.stringify(error).includes('Skipped')) {
+            console.error(error)
+            return 400
+        }
+
         if (error.message.includes('already exists')) {
             return 409
         }
@@ -70,7 +78,10 @@ export async function deleteTag(id: number, tag: string): Promise<boolean> {
 
         return true
     } catch (error) {
-        console.error(`Failed to delete tag ${tag}:`, error)
+        if (!JSON.stringify(error).includes('Skipped')) {
+            console.error(`Failed to delete tag ${tag}:`, error)
+        }
+
         return false
     }
 }

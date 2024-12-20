@@ -18,7 +18,10 @@ export default async function getCommits(id: number): Promise<Commit[]> {
         const data = await response.json()
         return data
     } catch (error) {
-        console.error(error)
+        if (!JSON.stringify(error).includes('Skipped')) {
+            console.error(error)
+        }
+
         return []
     }
 }
