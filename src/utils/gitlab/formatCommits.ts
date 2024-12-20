@@ -13,9 +13,7 @@ export default function formatCommits(commits: Commit[], count: number) {
         const month = (created.getMonth() + 1).toString().padStart(2, '0')
         const hour = created.getHours().toString().padStart(2, '0')
         const minute = created.getMinutes().toString().padStart(2, '0')
-        const localeString = created.toLocaleString()
-        const meridian = localeString.slice(localeString.length - 2, localeString.length)
-        const formatDate = `${day}.${month}.${year}, ${hour}:${minute} ${meridian}`
+        const formatDate = `${day}.${month}.${year}, ${hour}:${minute}`
         const description = `${formatDate}, ${commits[i].title}`
         descriptions += `${description.slice(0, DISCORD_MAX_INLINE_EMBED_FIELD_LENGTH).trim()}${description.length > DISCORD_MAX_INLINE_EMBED_FIELD_LENGTH ? '…' : ''}\n`
         i++
