@@ -100,7 +100,7 @@ export async function joinTicket(interaction: ButtonInteraction) {
 
 function findTicketID(title: string): string {
     if (title) {
-        const match = title.match(/\d+/);
+        const match = title.match(/\d+/)
 
         if (!match) {
             return 'unknown'

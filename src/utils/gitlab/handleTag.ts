@@ -9,9 +9,9 @@ export default async function handleTag(interaction: ButtonInteraction, type: In
         let index
 
         switch (type) {
-            case Increment.MAJOR: index = 0; break;
-            case Increment.MINOR: index = 1; break;
-            case Increment.PATCH: index = 2; break;
+            case Increment.MAJOR: index = 0; break
+            case Increment.MINOR: index = 1; break
+            case Increment.PATCH: index = 2; break
         }
 
         const message = interaction.message

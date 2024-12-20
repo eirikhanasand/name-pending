@@ -41,10 +41,10 @@ for (const folder of commandFolders) {
 
 // Constructing and preparing an instance of the REST module
 // Do not remove the semicolon, it is necesarry for the IIFE below to work.
-const rest = new REST({ version: '10' }).setToken(token);
+const rest = new REST({ version: '10' }).setToken(token)
 
 // Deploying commands to Discord
-(async () => {
+;(async () => {
     try {
         console.log(`Started refreshing ${commands.length} application (/) commands.`)
 

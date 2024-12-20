@@ -55,7 +55,7 @@ function extractUrls(content: string) {
 
 // Extracts the case numbers from the fetched document
 function caseNumbers(content: string) {
-    const regex = /\b[ODVE] - 24 - Sak: (\d+)\b/g;
+    const regex = /\b[ODVE] - 24 - Sak: (\d+)\b/g
     const matches = []
     let match
 

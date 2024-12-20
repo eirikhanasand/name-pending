@@ -140,9 +140,9 @@ export async function previousPage(interaction: ButtonInteraction) {
 }
 
 function extractPageNumberFromEmbed(embed: Embed): number {
-    const pageField = embed.data.fields?.find(field => field.name.startsWith('Showing page'));
+    const pageField = embed.data.fields?.find(field => field.name.startsWith('Showing page'))
     if (pageField) {
-        const match = pageField.name.match(/Showing page (\d+) \/ \d+/);
+        const match = pageField.name.match(/Showing page (\d+) \/ \d+/)
         if (match && match[1]) {
             // Converts 1-based page to 0-based and returns it
             return parseInt(match[1], 10) - 1

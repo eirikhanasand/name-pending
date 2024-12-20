@@ -107,7 +107,7 @@ export async function handleCloseSelectedTicket(interaction: ButtonInteraction) 
         
             // Deletes 10 oldest channels (20%, to avoid fetching all channels every time someone closes a ticket)
             for (let i = 0; i < 10; i++) {
-                const channelToDelete = sortedChannels[i]?.channel;
+                const channelToDelete = sortedChannels[i]?.channel
                 if (channelToDelete) {
                     await channelToDelete.delete('Archiving a new ticket, deleted the oldest one.')
                     console.warn(`Deleted channel: ${channelToDelete.name}`)
