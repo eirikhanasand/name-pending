@@ -9,12 +9,13 @@ import {
 import getRepositories from '../../utils/gitlab/getRepositories.js'
 import sanitize from '../../utils/sanitize.js'
 import getOpenMergeRequests from '../../utils/gitlab/getMergeRequests.js'
-import { FALLBACK_TAG, GITLAB_API, GITLAB_BASE, INFRA_PROD_CLUSTER } from '../../../constants.js'
+import { FALLBACK_TAG, GITLAB_BASE, INFRA_PROD_CLUSTER } from '../../../constants.js'
 import getTags, { postTag } from '../../utils/gitlab/tags.js'
 import formatCommits from '../../utils/gitlab/formatCommits.js'
 import getCommits from '../../utils/gitlab/getCommits.js'
 import editEverySecondTillDone from '../../utils/gitlab/editEverySecondTillDone.js'
 import formatVersion from '../../utils/gitlab/formatVersion.js'
+import postMerge from '../../utils/gitlab/postMerge.js'
 
 export const data = new SlashCommandBuilder()
     .setName('release')
@@ -32,7 +33,7 @@ export const data = new SlashCommandBuilder()
 export async function execute(message: ChatInputCommandInteraction) {
     const isAllowed = (message.member?.roles as unknown as Roles)?.cache
     .some((role: Role) => role.id === config.roleID || role.id === config.styret)
-    const repository = sanitize(message.options.getString('repository') || "")
+    const repository = sanitize(message.options.getString('repository') || '')
     let match = null as RepositorySimple | null
     const repositories = await getRepositories(25, repository)
 
@@ -120,8 +121,22 @@ export async function execute(message: ChatInputCommandInteraction) {
         const willMerge: MergeRequest[] = []
         
         for (const mr of mergeRequests) {
-            if (mr.title.includes(repository)) {
-                relevant.push(mr)
+            const match = mr.title.match(/registry\.login\.no.*\/([^\/\s]+)\s/)
+                
+            if (match) {
+                const normalizedQuery = repository.toLowerCase()
+                if (match[1] === normalizedQuery) {
+                    relevant.push(mr)
+                } else {
+                    const match1 = match[1].replaceAll('-', '')
+                    const broadMatch = match1.replaceAll(' ', '')
+                    const query1 = normalizedQuery.replaceAll('-', '')
+                    const broadNormalizedQuery = query1.replaceAll(' ', '')
+                    
+                    if (broadMatch === broadNormalizedQuery) {
+                        relevant.push(mr)
+                    }
+                }
             }
         }
 
@@ -184,25 +199,4 @@ async function merge(requests: MergeRequest[]) {
     }
 
     return responses
-}
-
-async function postMerge(id: number) {
-    try {
-        console.warn("Merging", `${GITLAB_API}projects/${INFRA_PROD_CLUSTER}/merge_requests/${id}`)
-        const response = await fetch(`${GITLAB_API}projects/${INFRA_PROD_CLUSTER}/merge_requests/${id}/merge`, {
-            method: 'PUT',
-            headers: {
-                'Private-Token': config.privateToken
-            }
-        })
-
-        if (!response.ok) {
-            throw new Error(await response.text())
-        }
-
-        const data = await response.json()
-        return data
-    } catch (error) {
-        console.error(error)
-    }
 }
