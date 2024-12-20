@@ -15,7 +15,7 @@ export default function formatCommits(commits: Commit[], count: number) {
         const meridian = localeString.slice(localeString.length - 2, localeString.length)
         const formatDate = `${day}.${month}.${year}, ${hour}:${minute} ${meridian}`
         const description = `${formatDate}, ${commits[i].title}`
-        descriptions += `${description.slice(0, 42).trim()}${description.length > 42 ? '…' : ''}\n`
+        descriptions += `${description.slice(0, 40).trim()}${description.length > 40 ? '…' : ''}\n`
         i++
     }
 
