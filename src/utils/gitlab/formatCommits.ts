@@ -6,7 +6,7 @@ export default function formatCommits(commits: Commit[], count: number) {
 
     let i = 0
     while (commits && i < count) {
-        authors += `${commits[i].short_id}, ${commits[i].author_name}\n`
+        authors += `${commits[i].short_id} ${commits[i].author_name}\n`
         const created = new Date(commits[i].created_at)
         const year = String(created.getFullYear()).slice(2).toString().padStart(2, '0')
         const day = created.getDate().toString().padStart(2, '0')
@@ -14,7 +14,7 @@ export default function formatCommits(commits: Commit[], count: number) {
         const hour = created.getHours().toString().padStart(2, '0')
         const minute = created.getMinutes().toString().padStart(2, '0')
         const formatDate = `${day}.${month}.${year}, ${hour}:${minute}`
-        const description = `${formatDate}, ${commits[i].title}`
+        const description = `${formatDate}. ${commits[i].title}`
         descriptions += `${description.slice(0, DISCORD_MAX_INLINE_EMBED_FIELD_LENGTH).trim()}${description.length > DISCORD_MAX_INLINE_EMBED_FIELD_LENGTH ? '…' : ''}\n`
         i++
     }
