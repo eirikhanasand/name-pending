@@ -48,8 +48,8 @@ export default async function editEverySecondTillDone(message: Message, user: st
             ])
 
         try {
-            if (message.embeds.length > 1) {
-                message.embeds.pop()
+            if (embeds.length > 1) {
+                embeds.pop()
             }
 
             message.edit({
