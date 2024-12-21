@@ -36,6 +36,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     const repository = sanitize(message.options.getString('repository') || '')
     let match = null as RepositorySimple | null
     const repositories = await getRepositories(25, repository)
+    const interval = 1
 
     // Aborts if the user does not have sufficient permissions
     if (!isAllowed) {
@@ -113,7 +114,11 @@ export async function execute(message: ChatInputCommandInteraction) {
     await message.reply({ embeds: [embed]})
     const response = await message.fetchReply()
     await postTag(match.id, tag)
-    const result = await editEverySecondTillDone(response, message.user.username, match.id, tag, repository, 1, true)
+    const result = await editEverySecondTillDone(response, message.user.username, match.id, tag, repository, interval, true)
+
+    // Waiting for editEverySecondTo complete last iteration
+    await new Promise(resolve => setTimeout(resolve, (interval * 1000) + 25))
+    const finalResponse = await message.fetchReply()
 
     if (result) {
         const mergeRequests = await getOpenMergeRequests(INFRA_PROD_CLUSTER)
@@ -177,14 +182,14 @@ export async function execute(message: ChatInputCommandInteraction) {
                     .setTitle(`Released ${repository} v${tag} to production.`)
                     .setColor("#fd8738")
                     .setTimestamp()
-                response.edit({embeds: [...response.embeds, final]})
+                finalResponse.edit({embeds: [...finalResponse.embeds, final]})
             } else {
                 const final = new EmbedBuilder()
                     .setTitle(`Failed to release ${repository} v${tag} to production.`)
                     .setDescription('An error occured while merging. Please resolve manually.')
                     .setColor("#fd8738")
                     .setTimestamp()
-                response.edit({embeds: [...response.embeds, final]})
+                finalResponse.edit({embeds: [...finalResponse.embeds, final]})
             }
         } else {
             console.error(`Found no merge requests for ${repository} v${tag}. Please merge manually.`)
