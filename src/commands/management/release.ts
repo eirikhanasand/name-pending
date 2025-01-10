@@ -89,7 +89,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     const latestVersion = version[0] || FALLBACK_TAG
     
     const tag = baseTag.name.includes('-dev') ? baseTag.name.slice(0, baseTag.name.length - 4) : baseTag.name
-    const avatar = `${GITLAB_BASE}${match.avatar_url || match.namespace.avatar_url}`
+    const avatar = match.avatar_url || `${GITLAB_BASE}${match.namespace.avatar_url}`
     const embed = new EmbedBuilder()
         .setTitle(`Releasing v${tag} for ${repository}.`)
         .setDescription(match.description)
