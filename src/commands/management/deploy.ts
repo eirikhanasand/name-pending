@@ -64,7 +64,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     ])
     const latestVersion = version[0] || FALLBACK_TAG
 
-    const avatar = `${GITLAB_BASE}${match.avatar_url || match.namespace.avatar_url}`
+    const avatar = match.avatar_url || `${GITLAB_BASE}${match.namespace.avatar_url}`
     const embed = new EmbedBuilder()
         .setTitle(`Creating new deployment for ${match.name}.`)
         .setDescription(match.description)
