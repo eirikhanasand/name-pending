@@ -51,7 +51,7 @@ export default async function autoCreate({channel, isStyret, styremote}: AutoCre
         channel, 
         isStyret, 
         template: filledTemplate, 
-        week: path.nextPath.slice(-2) 
+        week: path.nextPath.split('-')[1] 
     }) 
 
     if (!updatedTemplate) {
@@ -70,7 +70,7 @@ export default async function autoCreate({channel, isStyret, styremote}: AutoCre
     console.log(createResponse)
 
     if (isStyret) {
-        styremote?.send(`<@&${DISCORD_STYRET_ROLE_ID}> Minner om Styremøte på LL kl 18. [Agenda](${WIKI_URL}${STYRET_MEETINGS_URL}${path.nextPath}).`)
+        styremote?.send(`<@&${DISCORD_STYRET_ROLE_ID}> Minner om Styremøte på LL kl 17. [Agenda](${WIKI_URL}${STYRET_MEETINGS_URL}${path.nextPath}).`)
     } else {
         channel.send(`<@&${DISCORD_TEKKOM_ROLE_ID}> Minner om TekKom møte på onsdag kl 16 på LL. [Agenda](${WIKI_URL}${TEKKOM_MEETINGS_URL}${path.nextPath}).`)
     }
