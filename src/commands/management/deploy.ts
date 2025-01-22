@@ -67,7 +67,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     const avatar = match.avatar_url || `${GITLAB_BASE}${match.namespace.avatar_url}`
     const embed = new EmbedBuilder()
         .setTitle(`Creating new deployment for ${match.name}.`)
-        .setDescription(match.description)
+        .setDescription(match.description || match.name)
         .setColor("#fd8738")
         .setTimestamp()
         .setThumbnail(avatar || null)
@@ -123,6 +123,7 @@ export async function execute(message: ChatInputCommandInteraction) {
 }
 
 function increment(version: string, type: Increment) {
+    version = version === "No version released." ? "1.0.0" : version
     let versionParts = version.split('.').map(Number)
 
     if (isNaN(versionParts[2])) {
