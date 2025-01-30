@@ -87,13 +87,13 @@ export default async function handleCreateTicket(interaction: ButtonInteraction)
     await interaction.showModal(modal)
 
     try {
-        // Wait for modal submission
+        // Waits for modal submission
         const filter = (i: ModalSubmitInteraction) => i.customId === 'ticket_modal' && i.user.id === interaction.user.id
 
-        // 5 minutes to submit
-        const submittedModal = await interaction.awaitModalSubmit({ filter, time: 300000 })
+        // 10 minutes to submit
+        const submittedModal = await interaction.awaitModalSubmit({ filter, time: 600000 })
 
-        // Retrieve the submitted title
+        // Retrieves the submitted title
         const title = submittedModal.fields.getTextInputValue('ticket_title')
         const mail = submittedModal.fields.getTextInputValue('ticket_mail')
 

@@ -14,6 +14,7 @@ import { inviteToTicket, joinTicket } from "./tickets/invite.js"
 import handleTag, { removeTag } from "./gitlab/handleTag.js"
 import { Increment } from "../../interfaces.js"
 import retryDeployment from "./gitlab/retryDeployment.js"
+import trash from "./trash.js"
 
 export default async function handleComponents(interaction: ButtonInteraction | ChatInputCommandInteraction, id: string | undefined) {    
     const buttonInteraction = interaction as ButtonInteraction
@@ -100,7 +101,7 @@ export default async function handleComponents(interaction: ButtonInteraction | 
             break
         case 'error':
         case 'trash':
-            await (interaction as ButtonInteraction).message.delete()
+            trash(buttonInteraction)
             break
         case 'cancel':
             await removeTag(buttonInteraction)

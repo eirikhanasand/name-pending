@@ -14,7 +14,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     const channel = message.channel as TextChannel
     const permissionOverwrites = channel.permissionOverwrites as PermissionOverwriteManager
 
-    if (!channel.name.match(/ticket\d+/)) {
+    if (!channel.name.match(/\d+/)) {
         return await message.reply({
             content: "This is not a ticket!",
             ephemeral: true

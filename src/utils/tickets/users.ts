@@ -45,15 +45,18 @@ export default async function manageUsers(interaction: ButtonInteraction, ping?:
         // Update channel permissions based on the users
         const permissionOverwrites = channel.permissionOverwrites as PermissionOverwriteManager
 
-        const permission = remove ? false : true
         for (const member of validUsers) {
-            await permissionOverwrites.edit(member, {
-                ViewChannel: permission,
-                SendMessages: permission,
-                AddReactions: permission,
-                UseExternalEmojis: permission,
-                ReadMessageHistory: permission,
-            })
+            if (remove) {
+                await channel.permissionOverwrites.delete(member.id)
+            } else {
+                await permissionOverwrites.edit(member, {
+                    ViewChannel: true,
+                    SendMessages: true,
+                    AddReactions: true,
+                    UseExternalEmojis: true,
+                    ReadMessageHistory: true,
+                })
+            }
         }
 
         // Get the category of the channel and update its permissions
@@ -63,16 +66,14 @@ export default async function manageUsers(interaction: ButtonInteraction, ping?:
 
             for (const member of validUsers) {
                 await categoryOverwrites.edit(member, {
-                    ViewChannel: permission,
+                    ViewChannel: true,
                 })
             }
         }
 
         const content = remove 
-            // @ts-expect-error
-            ? `${interaction.user.username} removed ${validUsers.map((users: User[]) => users.user.username).join(', ')} from the ticket.`
-            // @ts-expect-error
-            : `${interaction.user.username} added ${validUsers.map((users: User[]) => ping === undefined ? `<@${users.id}>` : users.user.username).join(', ')} to the ticket.`
+            ? `${interaction.user.username} removed ${validUsers.map((user: User) => user.username).join(', ')} from the ticket.`
+            : `${interaction.user.username} added ${validUsers.map((user: User) => ping === undefined ? `<@${user.id}>` : user.username).join(', ')} to the ticket.`
         // @ts-expect-error
         interaction.channel?.send({content})
 

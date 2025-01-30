@@ -1,8 +1,9 @@
-import { ButtonInteraction } from "discord.js"
-import { Increment } from "../../../interfaces.js"
+import { ButtonInteraction, Role } from "discord.js"
+import { Increment, Roles } from "../../../interfaces.js"
 import { deleteTag } from "./tags.js"
 import deploy from "./deploy.js"
 import { abortButtons, errorButtons } from "./buttons.js"
+import config from "../config.js"
 
 export default async function handleTag(interaction: ButtonInteraction, type: Increment) {
     try {
@@ -28,6 +29,11 @@ export default async function handleTag(interaction: ButtonInteraction, type: In
 
 export async function removeTag(interaction: ButtonInteraction) {
     const message = interaction.message
+    const isAllowed = (message.member?.roles as unknown as Roles)?.cache.some((role: Role) => role.id === config.roleID)
+    if (!isAllowed) {
+        return await interaction.reply({ content: "Unauthorized.", ephemeral: true })
+    }
+
     const embedTag = message.embeds[1].title || ''
     const id = Number(message.embeds[0].fields[0].value)
     const tag = embedTag.match(/\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?/) || ''
