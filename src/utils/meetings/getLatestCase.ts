@@ -28,7 +28,7 @@ export default async function getLatestCase(list: Page) {
     
             const data = await response.text()
             const foundCases = caseNumbers(data)
-    
+
             if (foundCases.length) {
                 return Number(foundCases[foundCases.length - 1])
             }
@@ -42,7 +42,7 @@ export default async function getLatestCase(list: Page) {
 
 // Extract URLs from the content
 function extractUrls(content: string) {
-    const urlPattern = /-\s\[\d{4}-\d{2}\s-\sStyremøte]\((\/public\/docs\/minutes\/styremoter\/\d{4}-\d{2})\)/g
+    const urlPattern = /-\s\[\d{4}-\d+\s-\sStyremøte]\((\/public\/docs\/minutes\/styremoter\/\d{4}-\d+)\)/g
     const matches = []
     let match
 
@@ -55,7 +55,7 @@ function extractUrls(content: string) {
 
 // Extracts the case numbers from the fetched document
 function caseNumbers(content: string) {
-    const regex = /\b[ODVE] - 24 - Sak: (\d+)\b/g
+    const regex = /\w - \d+ - Sak: (\d+)/g
     const matches = []
     let match
 

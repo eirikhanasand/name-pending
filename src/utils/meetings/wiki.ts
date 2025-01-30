@@ -67,7 +67,7 @@ export default async function autoCreate({channel, isStyret, styremote}: AutoCre
         title: path.nextPath
     })
 
-    console.log(createResponse)
+    console.log(`Create response: ${createResponse}`)
 
     if (isStyret) {
         styremote?.send(`<@&${DISCORD_STYRET_ROLE_ID}> Minner om Styremøte på LL kl 17. [Agenda](${WIKI_URL}${STYRET_MEETINGS_URL}${path.nextPath}).`)

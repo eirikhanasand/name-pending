@@ -1,4 +1,5 @@
 import dotenv from 'dotenv'
+import logStack from './logStack.js'
 
 type RequestWithRetriesProps = {
     query: string
@@ -43,7 +44,7 @@ export default async function requestWithRetries({query, retries = 10, delay = 1
                 }
             } else {
                 // Logs full stack trace
-                // logStack(error)
+                logStack(error)
             }
             await new Promise(resolve => setTimeout(resolve, delay))
             // Exponential backoff

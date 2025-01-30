@@ -92,7 +92,7 @@ export default async function updateStyretTemplate({channel, isStyret, template,
 
 async function getContent({type, message, week, year}: GetContentProps) {
     const content = message.content.split('\n')
-    const background = content[1]?.trim().length ? `Bakgrunn:\n${content[1]}` : ''
+    const background = content.length && content.slice(1).join('\n')?.trim().length ? `Bakgrunn:\n${content.slice(1).join('\n')}` : ''
     const attachments = message.attachments.map((attachment) => attachment.url)
     const uploadedAttachments = []
 

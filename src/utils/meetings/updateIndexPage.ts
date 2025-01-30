@@ -1,3 +1,4 @@
+import logStack from "./logStack.js"
 import requestWithRetries from "./requestWithEntries.js"
 import dotenv from "dotenv"
 
@@ -76,8 +77,8 @@ function modifyPage({existingHTML, path, isStyret}: ModifyPageProps) {
     const newEntry = `- [${path.nextPath}${isStyret ? ' - Styremøte' : ''}](${paths[isStyret ? 1 : 0]}${path.nextPath})`
 
     // Regex for both styret and tekkom formats
-    const styretRegex = /(- \[\d{4}-\d{2} - Styremøte\]\(\/public\/docs\/minutes\/styremoter\/\d{4}-\d{2}\))/
-    const tekkomRegex = /(- \[\d{4}-\d{2}\]\(\/tekkom\/meetings\/\d{4}-\d{2}\))/
+    const styretRegex = /(- \[\d{4}-\d+ - Styremøte\]\(\/public\/docs\/minutes\/styremoter\/\d{4}-\d+\))/
+    const tekkomRegex = /(- \[\d{4}-\d+\]\(\/tekkom\/meetings\/\d{4}-\d+\))/
 
     // Choose the appropriate regex based on isStyret
     const regex = isStyret ? styretRegex : tekkomRegex
@@ -91,7 +92,7 @@ function modifyPage({existingHTML, path, isStyret}: ModifyPageProps) {
     const firstMatch = existingHTML.match(regex)
     if (firstMatch) {
         const insertIndex = firstMatch.index
-        const updatedHTML = existingHTML.slice(0, insertIndex) + newEntry + "\n" + existingHTML.slice(insertIndex)
+        const updatedHTML = `${existingHTML.slice(0, insertIndex)}${newEntry}\n${existingHTML.slice(insertIndex)}`
         return updatedHTML
     }
 
@@ -104,7 +105,7 @@ function modifyPage({existingHTML, path, isStyret}: ModifyPageProps) {
     const index = insertionPoint + (isStyret ? styretString.length : tekkomString.length)
     
     // If no match is found, inserts at the start of the correct section
-    const updatedHTML = existingHTML.slice(0, index) + "\n" + newEntry + "\n" + existingHTML.slice(index)
+    const updatedHTML = `${existingHTML.slice(0, index)}\n${newEntry}${existingHTML.slice(index)}`
     return updatedHTML
 }
 
@@ -124,23 +125,12 @@ export default async function updateIndex({path, query, isStyret}: UpdateIndexPr
             description: TekKomDescription, 
             title: TekKomTitle
         })})
-    } catch (error) {
-        // Logs full stack trace
-        // logStack(error)
-    }
-}
 
-function logStack(error: any) {
-    if (error.response) {
-        // Server responded with a status other than 2xx
-        console.error('Response data:', error.response.data)
-        console.error('Response status:', error.response.status)
-        console.error('Response headers:', error.response.headers)
-    } else if (error.request) {
-        // Request was made but no response received
-        console.error('Request data:', error.request)
-    } else {
-        // Something else went wrong
-        console.error('Error message:', error.message)
+        if (updateResponse) {
+            console.log(`${isStyret ? 'Styret' : 'TekKom'} index file updated successfully.`)
+        }
+    } catch (error) {
+        console.error(`Failed to update ${isStyret ? 'styret' : 'TekKom'} index file:\n${error}`)
+        logStack(error)
     }
 }
