@@ -14,7 +14,9 @@ const {
     STYRET_MEETINGS_URL,
     DISCORD_TEKKOM_ROLE_ID,
     DISCORD_STYRET_ROLE_ID,
-    WIKI_URL
+    WIKI_URL,
+    WIKI_STYRET_TEMPLATE_ID,
+    WIKI_TEKKOM_TEMPLATE_ID,
 } = process.env
 
 if (
@@ -23,6 +25,8 @@ if (
     || !DISCORD_STYRET_ROLE_ID 
     || !STYRET_MEETINGS_URL 
     || !WIKI_URL
+    || !WIKI_STYRET_TEMPLATE_ID
+    || !WIKI_TEKKOM_TEMPLATE_ID
 ) {
     throw new Error('Missing essential environment variables in wiki.ts')
 }
@@ -35,25 +39,22 @@ type AutoCreateProps = {
 
 export default async function autoCreate({channel, isStyret, styremote}: AutoCreateProps) {
     const path = getNextPathYearAndWeek(isStyret)
-
-    // The number is the meeting list for styret / tekkom
-    const query = getQuery(isStyret ? 715 : 556)
+    const styret_id = Number(WIKI_STYRET_TEMPLATE_ID)
+    const tekkom_id = Number(WIKI_TEKKOM_TEMPLATE_ID)
+    const query = getQuery(isStyret ? styret_id : tekkom_id)
     const fetchResponse = await requestWithRetries({ query })
-
     const content = fetchResponse.data.pages.single.content
     const filledTemplate = content
         .replace(new RegExp(`${path.currentPath}`, 'g'), path.nextPath)
         .replace('00.00.0000', path.date)
         .replace('00.00.00', path.date)
     const fullPath = `${isStyret ? STYRET_MEETINGS_URL : TEKKOM_MEETINGS_URL}${path.nextPath}` 
-
     const updatedTemplate = await updateStyretTemplate({ 
         channel, 
         isStyret, 
         template: filledTemplate, 
         week: path.nextPath.split('-')[1] 
     }) 
-
     if (!updatedTemplate) {
         return
     }
