@@ -5,7 +5,7 @@ import {
     EmbedBuilder, 
     ChatInputCommandInteraction, 
     Role,
-    Message, 
+    Message
 } from 'discord.js'
 import getRepositories from '../../utils/gitlab/getRepositories.js'
 import sanitize from '../../utils/sanitize.js'
@@ -52,6 +52,11 @@ export async function execute(message: ChatInputCommandInteraction) {
         return await message.reply({ content: "Unauthorized.", ephemeral: true })
     }
 
+    // Aborts if the channel isnt a operations channel
+    if (!message.channel || !('name' in message.channel) || message.channel.name?.toLocaleLowerCase().includes('operations')) {
+        return await message.reply({ content: "This isnt a operations channel.", ephemeral: true })
+    }
+
     // Aborts if no repository is selected
     if (!repository) {
         return await message.reply({ content: "No repository selected.", ephemeral: true })
@@ -72,16 +77,19 @@ export async function execute(message: ChatInputCommandInteraction) {
     const tags = await getTags(match.id)
     let error
 
+    // Sets error to unable to fetch tags
     if (!Array.isArray(tags)) {
         error = `Unable to fetch tags for ${match.name}. Please try again later.`
     }
 
     const baseTag = tags[0]
     const baseName = baseTag.name
+    // Sets error to tag already deployed
     if (!baseName.includes('-dev')) {
         error = `Tag ${baseName} for ${match.name} is already deployed.\nPlease use \`\/deploy\` first.`
     }
 
+    // Aborts if there is an error
     if (error) {
         const embed = new EmbedBuilder()
         .setTitle(error)
