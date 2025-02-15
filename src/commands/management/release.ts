@@ -53,7 +53,7 @@ export async function execute(message: ChatInputCommandInteraction) {
     }
 
     // Aborts if the channel isnt a operations channel
-    if (!message.channel || !('name' in message.channel) || message.channel.name?.toLocaleLowerCase().includes('operations')) {
+    if (!message.channel || !('name' in message.channel) || !message.channel.name?.toLocaleLowerCase().includes('operations')) {
         return await message.reply({ content: "This isnt a operations channel.", ephemeral: true })
     }
 
