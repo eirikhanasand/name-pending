@@ -4,7 +4,8 @@ import {
     SlashCommandBuilder, 
     EmbedBuilder, 
     ChatInputCommandInteraction, 
-    Role, 
+    Role,
+    Message, 
 } from 'discord.js'
 import getRepositories from '../../utils/gitlab/getRepositories.js'
 import sanitize from '../../utils/sanitize.js'
@@ -16,6 +17,14 @@ import getCommits from '../../utils/gitlab/getCommits.js'
 import editEverySecondTillDone from '../../utils/gitlab/editEverySecondTillDone.js'
 import formatVersion from '../../utils/gitlab/formatVersion.js'
 import postMerge from '../../utils/gitlab/postMerge.js'
+
+type HandleMergeProps = {
+    sorted: MergeRequest[]
+    willMerge: MergeRequest[]
+    repository: string
+    tag: string
+    finalResponse: Message<boolean>
+}
 
 export const data = new SlashCommandBuilder()
     .setName('release')
@@ -83,16 +92,15 @@ export async function execute(message: ChatInputCommandInteraction) {
     }
 
     const [version, commits] = await Promise.all([
-            await getTags(match.id),
-            await getCommits(match.id)
-        ])
+        await getTags(match.id),
+        await getCommits(match.id)
+    ])
     const latestVersion = version[0] || FALLBACK_TAG
-    
     const tag = baseTag.name.includes('-dev') ? baseTag.name.slice(0, baseTag.name.length - 4) : baseTag.name
     const avatar = match.avatar_url || `${GITLAB_BASE}${match.namespace.avatar_url}`
     const embed = new EmbedBuilder()
         .setTitle(`Releasing v${tag} for ${repository}.`)
-        .setDescription(match.description)
+        .setDescription(match.description || ' ')
         .setColor("#fd8738")
         .setTimestamp()
         .setThumbnail(avatar || null)
@@ -107,7 +115,7 @@ export async function execute(message: ChatInputCommandInteraction) {
             {name: "Title", value: latestVersion.commit.title},
             {name: "Author", value: latestVersion.commit.author_name, inline: true},
             {name: "Author Email", value: latestVersion.commit.author_email, inline: true},
-            {name: "Recent commits", value: ' '},
+            {name: "Recent commits", value: ' '},
             ...formatCommits(commits, 5)
         ])
 
@@ -160,40 +168,51 @@ export async function execute(message: ChatInputCommandInteraction) {
             return 0
         })
 
-        if (sorted.length) {
-            const highestVersion = formatVersion(sorted[0].title)
-            for (const mr of sorted) {
-                if (formatVersion(mr.title).join('.') === highestVersion.join('.')) {
-                    willMerge.push(mr)
-                }
-            }
+        handleMerge({sorted, willMerge, repository, tag, finalResponse})
+    }
+}
 
-            const result = await merge(willMerge)
-
-            let success = 0
-            for (const req of result) {
-                if (req.state === "merged") {
-                    success++
-                }
+async function handleMerge({sorted, willMerge, repository, tag, finalResponse}: HandleMergeProps) {
+    if (sorted.length) {
+        const highestVersion = formatVersion(sorted[0].title)
+        for (const mr of sorted) {
+            if (formatVersion(mr.title).join('.') === highestVersion.join('.')) {
+                willMerge.push(mr)
             }
-
-            if (result.length === success) {
-                const final = new EmbedBuilder()
-                    .setTitle(`Released ${repository} v${tag} to production.`)
-                    .setColor("#fd8738")
-                    .setTimestamp()
-                finalResponse.edit({embeds: [...finalResponse.embeds, final]})
-            } else {
-                const final = new EmbedBuilder()
-                    .setTitle(`Failed to release ${repository} v${tag} to production.`)
-                    .setDescription('An error occured while merging. Please resolve manually.')
-                    .setColor("#fd8738")
-                    .setTimestamp()
-                finalResponse.edit({embeds: [...finalResponse.embeds, final]})
-            }
-        } else {
-            console.error(`Found no merge requests for ${repository} v${tag}. Please merge manually.`)
         }
+
+        const result = await merge(willMerge)
+
+        let success = 0
+        for (const req of result) {
+            if (req.state === "merged") {
+                success++
+            }
+        }
+
+        if (result.length === success) {
+            const final = new EmbedBuilder()
+                .setTitle(`Released ${repository} v${tag} to production.`)
+                .setColor("#fd8738")
+                .setTimestamp()
+            finalResponse.edit({embeds: [...finalResponse.embeds, final]})
+        } else {
+            const final = new EmbedBuilder()
+                .setTitle(`Failed to release ${repository} v${tag} to production.`)
+                .setDescription('An error occured while merging. Please resolve manually.')
+                .setColor("#fd8738")
+                .setTimestamp()
+            finalResponse.edit({embeds: [...finalResponse.embeds, final]})
+            console.error(`Failed while merging merge requests for ${repository} v${tag}. Please merge remaining MRs manually.`)
+        }
+    } else {
+        const final = new EmbedBuilder()
+            .setTitle(`Found no merge requests for ${repository} v${tag}. Please merge manually.`)
+            .setDescription('An error occured while merging. Please resolve manually.')
+            .setColor("#fd8738")
+            .setTimestamp()
+        finalResponse.edit({embeds: [...finalResponse.embeds, final]})
+        console.error(`Found no merge requests for ${repository} v${tag}. Please merge manually.`)
     }
 }
 
