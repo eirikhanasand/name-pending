@@ -22,7 +22,7 @@ export default async function templates(thread: ThreadChannel) {
     // Checks if the channel is '#refunderinger'
     if (thread.parent?.name === 'refunderinger') {
         return await thread.send({
-            content: "Kvittering SKAL ha følgende for å bli godkjent:\n```\nDato for kjøp\nOrganisasjonsnummer til selger\nKvitteringsnummer\nHvem som har kjøpt\nHvem som har solgt\nBetalingsform (vipps, Visa)\nMVA: (12%,15%,25%)\nTotalsum (med og uten MVA)\nHva som er kjøpt (fritekst)\nPDF til kvittering som vedlegg\nVedtektssak\nKontonummer```"
+            content: "Kvittering SKAL ha følgende for å bli godkjent:\n```\nDato for kjøp\nOrganisasjonsnummer til selger\nKvitteringsnummer\nHvem som har kjøpt\nHvem som har solgt\nBetalingsform (Vipps, Visa)\nMVA: (12%, 15%, 25%)\nTotalsum (med og uten MVA)\nHva som er kjøpt (fritekst)\nPDF til kvittering som vedlegg\nVedtektssak\nKontonummer```"
         })
     }
 }
