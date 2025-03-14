@@ -41,6 +41,11 @@ export async function execute(message: ChatInputCommandInteraction) {
         return await message.reply({ content: "Unauthorized.", ephemeral: true })
     }
 
+    // Aborts if the channel isnt a playhouse channel
+    if (!message.channel || !('name' in message.channel) || !message.channel.name?.toLocaleLowerCase().includes('playhouse')) {
+        return await message.reply({ content: "This isnt a playhouse channel.", ephemeral: true })
+    }
+
     // Aborts if no repository is selected
     if (!repository) {
         return await message.reply({ content: "No repository selected.", ephemeral: true })
