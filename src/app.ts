@@ -26,6 +26,7 @@ import handleTickets from './utils/tickets/handler.js'
 import autoSyncZammad from './utils/tickets/autoSyncZammad.js'
 import autoCreateStyretMeetings from './utils/meetings/autoCreateStyretMeetings.js'
 import Autocomplete from './utils/gitlab/autoComplete.js'
+import templates from './utils/templates.js'
 
 const token = config.token
 const __filename = fileURLToPath(import.meta.url)
@@ -169,25 +170,9 @@ client.on(Events.InteractionCreate, async (interaction: Interaction<"cached">) =
     await command.execute(interaction)
 })
 
-// Sends a reminder in #pr-kontakt threads reminding them of the template.
 client.on(Events.ThreadCreate, async (thread: ThreadChannel) => {
-    // Checks if the channel is '#pr-kontakt'
-    if (thread.parent?.name === 'pr-kontakt') {
-
-        // Sends the reminder message
-        return await thread.send({
-            content: "Husk å ha med:\n```\nTittel: Thread tittel skal være arrangement / grunn for kontakt\nSted (Hvor skjer det?):\nDato og klokkeslett (Når skjer det?):\nBeskrivelse/promotekst (Hva er det?):\nRelease dato (Når er det ønsket at promo postes?):\n```"
-        })
-    }
-
-    // Checks if the channel is '#saker-til-styremøter'
-    if (thread.parent?.name === 'saker-til-styremøter') {
-
-        // Sends the reminder message
-        return await thread.send({
-            content: "Husk å ha med:\n```\nType sak: O / D / V - \nBeskrivelse av saken.\n\nEksempel:\nD - Nytt format av saker\nDenne linjen og resten av meldingen er innholdet i saken.```\nDersom du ønsker å redigere en sak må du redigere samme melding. Flere meldinger for samme sak vil ikke komme med. Meldinger uten type vil heller ikke komme med. Slike meldinger antas å være urelevant diskusjon.\n"
-        })
-    }
+    // Channel templates
+    await templates(thread)
 })
 
 client.on(Events.MessageReactionRemove, async (reaction: any, user: any) => {
