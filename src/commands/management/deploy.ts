@@ -1,4 +1,4 @@
-import { Increment, Roles } from '../../../interfaces.js'
+import { Increment, Roles } from '../../interfaces.js'
 import config from '../../utils/config.js'
 import { 
     SlashCommandBuilder, 
@@ -11,7 +11,7 @@ import {
 } from 'discord.js'
 import getRepositories from '../../utils/gitlab/getRepositories.js'
 import sanitize from '../../utils/sanitize.js'
-import { FALLBACK_TAG, GITLAB_BASE, UNKNOWN_VERSION } from '../../../constants.js'
+import { FALLBACK_TAG, GITLAB_BASE, UNKNOWN_VERSION } from '../../constants.js'
 import getTags from '../../utils/gitlab/tags.js'
 import getCommits from '../../utils/gitlab/getCommits.js'
 import { errorButtons } from '../../utils/gitlab/buttons.js'

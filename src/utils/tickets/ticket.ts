@@ -5,7 +5,7 @@ import {
     PermissionsBitField, 
     TextChannel 
 } from "discord.js"
-import { ticketIdPattern } from "../../../constants.js"
+import { ticketIdPattern } from "../../constants.js"
 import formatChannelName from "./format.js"
 
 export default async function isTicketChannel(interaction: ButtonInteraction): Promise<boolean> {

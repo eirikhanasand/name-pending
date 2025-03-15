@@ -4,6 +4,7 @@
         "forceConsistentCasingInFileNames": true,
         "module": "nodenext",
         "moduleResolution": "nodenext",
+        "rootDir": "src",
         "outDir": "dist",
         "strict": true,
         "target": "es2022",
@@ -15,5 +16,5 @@
         "**/*.d.ts",
         "**/*.json",
     ],
-    "exclude": ["node_modules", "package.json", "package-lock.json", "tsconfig.json"]
+    "exclude": ["node_modules", "package-lock.json", "tsconfig.json"]
 }

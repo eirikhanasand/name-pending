@@ -1,4 +1,4 @@
-import { GITLAB_API } from "../../../constants.js"
+import { GITLAB_API } from "../../constants.js"
 import config from "../config.js"
 import logNullValue from "../logNullValue.js"
 

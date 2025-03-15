@@ -7,7 +7,7 @@ import {
     StringSelectMenuBuilder,
     TextChannel, 
 } from "discord.js"
-import { ticketIdPattern } from "../../../constants.js"
+import { ticketIdPattern } from "../../constants.js"
 import formatChannelName from "./format.js"
 
 export default async function handleViewTicket(interaction: ButtonInteraction) {

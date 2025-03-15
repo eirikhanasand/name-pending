@@ -12,7 +12,7 @@ import handleRemoveFromTicket from "./tickets/remove.js"
 import { nextPage, previousPage } from "./help.js"
 import { inviteToTicket, joinTicket } from "./tickets/invite.js"
 import handleTag, { removeTag } from "./gitlab/handleTag.js"
-import { Increment } from "../../interfaces.js"
+import { Increment } from "../interfaces.js"
 import retryDeployment from "./gitlab/retryDeployment.js"
 import trash from "./trash.js"
 

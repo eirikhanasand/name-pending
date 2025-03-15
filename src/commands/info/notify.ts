@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, Role, SlashCommandBuilder } from 'discord.js'
-import { Roles } from '../../../interfaces.js'
+import { Roles } from '../../interfaces.js'
 import sendNotification from '../../utils/sendNotification.js'
 import config from '../../utils/config.js'
 import sanitize from '../../utils/sanitize.js'

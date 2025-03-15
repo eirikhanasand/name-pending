@@ -1,5 +1,5 @@
 import { EmbedBuilder, Message } from "discord.js"
-import { FALLBACK_PIPELINE, SUCCESS } from "../../../constants.js"
+import { FALLBACK_PIPELINE, SUCCESS } from "../../constants.js"
 import getPipelines, { getBridgesForPipeline, getJobsForPipeline } from "./pipeline.js"
 import { errorButtons, initialButtons, successButtons } from "./buttons.js"
 

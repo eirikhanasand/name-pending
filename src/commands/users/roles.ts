@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, User, Role, Reaction } from 'discord.js'
 import storedEmbeds from "../../managed/roles.js"
 import config from '../../utils/config.js'
-import { Roles } from '../../../interfaces.js'
+import { Roles } from '../../interfaces.js'
 import addRole, { removeRole } from '../../utils/roles.js'
 
 export const data = new SlashCommandBuilder()

@@ -1,5 +1,5 @@
 import { EmbedBuilder, Message, TextChannel } from "discord.js"
-import { ticketIdPattern } from "../../../constants.js"
+import { ticketIdPattern } from "../../constants.js"
 import postMessage from "./postMessage.js"
 import fetchTicket from "../ticket.js"
 

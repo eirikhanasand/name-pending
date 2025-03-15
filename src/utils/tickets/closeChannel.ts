@@ -1,5 +1,5 @@
 import { ButtonInteraction, CategoryChannel, CategoryChildChannel, Guild, TextChannel } from "discord.js"
-import { MAX_CHANNELS } from "../../../constants.js"
+import { MAX_CHANNELS } from "../../constants.js"
 
 type CloseChannelProps = {
     guild: Guild

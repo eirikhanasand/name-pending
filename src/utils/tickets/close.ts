@@ -9,7 +9,7 @@ import {
 } from "discord.js"
 import { getTickets } from "./ticket.js"
 import formatChannelName from "./format.js"
-import { MAX_CHANNELS, ticketIdPattern } from "../../../constants.js"
+import { MAX_CHANNELS, ticketIdPattern } from "../../constants.js"
 import { closeTicket } from "../ticket.js"
 import closeChannel from "./closeChannel.js"
 

@@ -17,7 +17,7 @@ import {
     ButtonStyle
 } from "discord.js"
 import topics from "./topics.js"
-import { DISCORD_URL, ZAMMAD_URL } from "../../../constants.js"
+import { DISCORD_URL, ZAMMAD_URL } from "../../constants.js"
 import config from "../config.js"
 
 export default async function handleCreateTicket(interaction: ButtonInteraction) {

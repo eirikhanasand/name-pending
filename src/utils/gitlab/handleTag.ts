@@ -1,5 +1,5 @@
 import { ButtonInteraction, GuildMember, Role } from "discord.js"
-import { Increment } from "../../../interfaces.js"
+import { Increment } from "../../interfaces.js"
 import { deleteTag } from "./tags.js"
 import deploy from "./deploy.js"
 import { abortButtons, errorButtons } from "./buttons.js"

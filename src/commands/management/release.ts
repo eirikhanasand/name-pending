@@ -1,4 +1,4 @@
-import { Roles } from '../../../interfaces.js'
+import { Roles } from '../../interfaces.js'
 import config from '../../utils/config.js'
 import { 
     SlashCommandBuilder, 
@@ -10,7 +10,7 @@ import {
 import getRepositories from '../../utils/gitlab/getRepositories.js'
 import sanitize from '../../utils/sanitize.js'
 import getOpenMergeRequests from '../../utils/gitlab/getMergeRequests.js'
-import { FALLBACK_TAG, GITLAB_BASE, INFRA_PROD_CLUSTER } from '../../../constants.js'
+import { FALLBACK_TAG, GITLAB_BASE, INFRA_PROD_CLUSTER } from '../../constants.js'
 import getTags, { postTag } from '../../utils/gitlab/tags.js'
 import formatCommits from '../../utils/gitlab/formatCommits.js'
 import getCommits from '../../utils/gitlab/getCommits.js'

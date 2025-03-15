@@ -1,4 +1,4 @@
-import { GITLAB_API, INFRA_PROD_CLUSTER } from "../../../constants.js"
+import { GITLAB_API, INFRA_PROD_CLUSTER } from "../../constants.js"
 import config from "../config.js"
 import logNullValue from "../logNullValue.js"
 

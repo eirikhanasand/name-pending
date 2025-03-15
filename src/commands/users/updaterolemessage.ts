@@ -1,6 +1,6 @@
 import storedEmbeds from "../../managed/roles.js"
 import config from '../../utils/config.js'
-import { Roles } from '../../../interfaces.js'
+import { Roles } from '../../interfaces.js'
 import { 
     SlashCommandBuilder, 
     EmbedBuilder, 

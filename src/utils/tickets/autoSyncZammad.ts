@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import { ticketIdPattern } from "../../../constants.js"
+import { ticketIdPattern } from "../../constants.js"
 import postMessage from "./postMessage.js"
 import fetchTicket from "../ticket.js"
 import closeChannel from './closeChannel.js'

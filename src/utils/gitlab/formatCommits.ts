@@ -1,4 +1,4 @@
-import { DISCORD_MAX_INLINE_EMBED_FIELD_LENGTH } from "../../../constants.js"
+import { DISCORD_MAX_INLINE_EMBED_FIELD_LENGTH } from "../../constants.js"
 
 export default function formatCommits(commits: Commit[], count: number) {
     let authors = ""

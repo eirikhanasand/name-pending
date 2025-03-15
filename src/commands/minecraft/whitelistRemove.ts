@@ -1,7 +1,7 @@
 import { CacheType, ChatInputCommandInteraction, Role, SlashCommandBuilder } from 'discord.js'
 import config from '../../utils/config.js'
 import log from '../../utils/logger.js'
-import { Roles } from '../../../interfaces.js'
+import { Roles } from '../../interfaces.js'
 import sanitize from '../../utils/sanitize.js'
 
 /**
