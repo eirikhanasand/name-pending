@@ -5,7 +5,7 @@
     "main": "app.js",
     "type": "module",
     "scripts": {
-        "start": "rm -rf dist; tsc; node dist/src/deploy-commands.js; node dist/app.js",
+        "start": "rm -rf dist; tsc; node dist/deploy-commands.js; node dist/app.js",
         "build": "tsc",
         "prod": "node dist/app.js",
         "fast": "tsc && node dist/app.js"
