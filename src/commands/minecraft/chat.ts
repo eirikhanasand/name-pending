@@ -89,8 +89,8 @@ async function updatePlayerCount(message: ChatInputCommandInteraction) {
 
     // Runs once per 5 minutes as long as the chat is being mirrored
     while (true) {
-        let survival = [] as string[]
-        let creative = [] as string[]
+        let prod = [] as string[]
+        let dev = [] as string[]
         const maxWidth = 20
         let players = ""
         let topic = ""
@@ -100,33 +100,34 @@ async function updatePlayerCount(message: ChatInputCommandInteraction) {
             const data = await response.json()
             
             switch (server.name) {
-                case "survival": survival = data; break
-                case "creative": creative = data; break
+                case "prod": prod = data; break
+                case "dev": dev = data; break
             }
         }))
 
-        let playersSurvival = survival.length
-        let playersCreative = creative.length
+        let playersProd = prod.length
+        let playersDev = dev.length
 
-        for (let i = 0; i < Math.max(playersSurvival, playersCreative); i++) {
-            const playerSurvival = (survival[i] || "").substring(0, maxWidth)
-            const playerCreative = (creative[i] || "").substring(0, maxWidth)
+        for (let i = 0; i < Math.max(playersProd, playersDev); i++) {
+            const playerProd = (prod[i] || "").substring(0, maxWidth)
+            const playerDev = (dev[i] || "").substring(0, maxWidth)
             
-            const spacesSurvival = "\t".repeat(Math.max(0, (maxWidth - playerSurvival.length) / 4))
-            const spacesCreative = "\t".repeat(Math.max(0, (maxWidth - playerCreative.length) / 4))
+            const spacesProd = "\t".repeat(Math.max(0, (maxWidth - playerProd.length) / 4))
+            const spacesDev = "\t".repeat(Math.max(0, (maxWidth - playerDev.length) / 4))
         
-            const tabs = Math.max(1, Math.floor((maxWidth - playerSurvival.length) / 4))
+            const tabs = Math.max(1, Math.floor((maxWidth - playerProd.length) / 4))
             const tabCharacters = "\t".repeat(tabs)
 
-            players += `${playerSurvival}${spacesSurvival}${tabCharacters}${playerCreative}${spacesCreative}\n`
+            players += `${playerProd}${spacesProd}${tabCharacters}${playerDev}${spacesDev}\n`
         }
 
-        const online = survival.length + creative.length
+        const online = prod.length + dev.length
+        const name = config.minecraft_servers[0].name
 
         if (online) {
-            topic = `Logins Minecraft server. Online: ${online}\nSurvival (${survival.length})\t\t\t\t   Creative (${creative.length})\n${players}`
+            topic = `${name}. Online: ${online}\n${name} (${prod.length})\t\t\t\t   Dev (${dev.length})\n${players}`
         } else {
-            topic = `Logins Minecraft server. There are no players online at this time.`
+            topic = `${name}. There are no players online at this time.`
         }
         
         if (channel && 'setTopic' in channel) {

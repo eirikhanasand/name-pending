@@ -1,7 +1,7 @@
 {
-    "name": "tekkom-bot",
-    "version": "2.2.3",
-    "description": "TekKom Bot",
+    "name": "name-pending",
+    "version": "1.0.0",
+    "description": "Name pending",
     "main": "app.js",
     "type": "module",
     "scripts": {

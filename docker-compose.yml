@@ -1,28 +1,8 @@
 services:
-  tekkom-bot:
+  name-pending:
     build:
       context: .
+      restart: always
       dockerfile: Dockerfile
     volumes:
       - .:/app
-
-  postgres:
-    image: postgres:15
-    container_name: tekkom-bot_database
-    restart: always
-    environment:
-      POSTGRES_USER: tekkom
-      POSTGRES_PASSWORD: tekkom
-      POSTGRES_DB: tekkom
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./src/db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U tekkom -d tekkom"]
-      interval: 5s
-      retries: 5
-
-volumes:
-  postgres_data:
