@@ -11,7 +11,8 @@ const {
     DISCORD_ROLE_ID,
     DISCORD_CHANNEL_ID,
     DISCORD_TOKEN,
-    MINECRAFT_URL,
+    MINECRAFT_URL_PROD,
+    MINECRAFT_URL_DEV,
     MINECRAFT_PROD,
     MINECRAFT_DEV,
     MINECRAFT_PROD_PORT,
@@ -26,7 +27,8 @@ if (
     || !DISCORD_ROLE_ID
     || !DISCORD_CHANNEL_ID
     || !DISCORD_TOKEN
-    || !MINECRAFT_URL
+    || !MINECRAFT_URL_PROD
+    || !MINECRAFT_URL_DEV
     || !MINECRAFT_PROD
     || !MINECRAFT_DEV
     || !MINECRAFT_PROD_PORT
@@ -43,14 +45,15 @@ const config = {
     channelId: DISCORD_CHANNEL_ID,
     roleID: DISCORD_ROLE_ID,
     token: DISCORD_TOKEN,
-    minecraft_url: MINECRAFT_URL,
     minecraft_port: Number(MINECRAFT_PORT),
     minecraft_servers: [
         {
+            ip: MINECRAFT_URL_PROD,
             port: Number(MINECRAFT_PROD_PORT), 
             name: MINECRAFT_PROD
         }, 
         {
+            ip: MINECRAFT_URL_DEV,
             port: Number(MINECRAFT_DEV_PORT),
             name: MINECRAFT_DEV
         }

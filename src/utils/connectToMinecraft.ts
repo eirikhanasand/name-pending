@@ -45,7 +45,7 @@ export default async function connectToMinecraft(client: Client) {
 function post(message: string) {
     console.log("posting", message)
     config.minecraft_servers.forEach((server) => {
-        fetch(`${config.minecraft_url}:${server.port}/${server.name}-message`, {
+        fetch(`http://${server.ip}:${server.port}/${server.name}-message`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: message
@@ -89,9 +89,9 @@ async function updatePlayerCount(channel: TextChannel) {
         let topic = ""
 
         await Promise.allSettled(config.minecraft_servers.map(async(server) => {
-            const response = await fetch(`${config.minecraft_url}:${server.port}/${server.name}-online`)
+            const response = await fetch(`http://${server.ip}:${server.port}/${server.name}-online`)
             const data = await response.json()
-            
+
             switch (server.name) {
                 case "prod": prod = data; break
                 case "dev": dev = data; break
