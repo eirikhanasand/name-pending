@@ -93,8 +93,8 @@ async function updatePlayerCount(channel: TextChannel) {
             const data = await response.json()
 
             switch (server.name) {
-                case "prod": prod = data; break
-                case "dev": dev = data; break
+                case config.minecraft_servers[0].name: prod = data; break
+                case config.minecraft_servers[1].name: dev = data; break
             }
         }))
 
