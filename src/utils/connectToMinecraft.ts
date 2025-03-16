@@ -59,7 +59,7 @@ function post(message: string) {
  * @param {Discord_Message} message 
  */
 async function listen(channel: TextChannel) {
-    const server = http.createServer((req) => {
+    const server = http.createServer((req, res) => {
         if (req.headers['type'] === 'death') {
             req.on('data', chunk => {
                 channel.send(`**${chunk.toString()}**`)
@@ -69,6 +69,9 @@ async function listen(channel: TextChannel) {
                 channel.send(chunk.toString())
             })
         }
+
+        res.writeHead(200, { 'Content-Type': 'text/plain' })
+        res.end('OK')
     })
 
     server.listen(config.minecraft_port)
