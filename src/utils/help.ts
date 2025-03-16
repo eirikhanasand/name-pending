@@ -17,10 +17,7 @@ const commands = {
     setup: [
         {name: "Setup", value: "Sets up the specified chat service. Use the command by typing the following: `/setup service:name`"},
         {name: "Available services", value: " "},
-        {name: "chat", value: "Sets up a chat service that mirrors in game messages from both the creative and survival server to Discord, and mirrors the Discord server to in game."},
-        {name: "log", value: "Logs the whitelist messages in the chat where the command was sent."},
-        {name: "chat stop mirror", value: "Stops the bot from mirroring in game messages to Discord"},
-        {name: "chat stop listener", value: "Stops the bot from mirroring Discord messages to in game"}
+        {name: "chat", value: "Sets up a chat service that mirrors in game messages from your severs to Discord, and mirrors the Discord chat to in game."},
     ],
     version: "Displays the bots version number. Use the command by typing the following: `/version`",
     name: "'name' is a placeholder, please replace it with the command you want help for. For example for help on the ping command, write `/help command:ping`",

@@ -1,18 +1,24 @@
-import { CacheType, ChatInputCommandInteraction, Message, TextChannel } from 'discord.js'
+import { CacheType, ChatInputCommandInteraction, Client, Message, TextChannel } from 'discord.js'
 import http from "http"
 import { Reaction } from 'discord.js'
 import config from './config.js'
 
-export default function connectToMinecraft(message: ChatInputCommandInteraction<CacheType>) {
+export default async function connectToMinecraft(client: Client) {
     // Filter to check that the author is not a bot to prevent an infinite loop
     const filter = (response: Message) => !response.author.bot
 
     // Message collector that collects all messages written in Discord
-    const textChannel = message.channel as TextChannel
-    const collector = textChannel.createMessageCollector({ filter })
+    const guild = client.guilds.cache.get(config.guildId)
+
+    if (!guild) {
+        return console.error("Guild is undefined.")
+    }
+
+    const channel = await guild.channels.fetch(config.channelId) as TextChannel
+    const collector = channel.createMessageCollector({ filter })
     
     // Seperate collector that listens to reactions on all messages
-    const botMessageCollector = textChannel.createMessageCollector()
+    const botMessageCollector = channel.createMessageCollector()
     
     collector?.on('collect', (m: Message) => {
         post(`${m.author.username || m.author.globalName || m.author.id}: ${m.content}`)
@@ -29,8 +35,8 @@ export default function connectToMinecraft(message: ChatInputCommandInteraction<
     })
     
     
-    updatePlayerCount(message)
-    listen(message)
+    updatePlayerCount(channel)
+    listen(channel)
 }
 
 /**
@@ -52,17 +58,15 @@ function post(message: string) {
  * Listens for content from Minecraft and posts it on Discord
  * @param {Discord_Message} message 
  */
-async function listen(message: ChatInputCommandInteraction) {
-    const textChannel = message.channel as TextChannel
-
+async function listen(channel: TextChannel) {
     const server = http.createServer((req) => {
         if (req.headers['type'] === 'death') {
             req.on('data', chunk => {
-                textChannel.send(`**${chunk.toString()}**`)
+                channel.send(`**${chunk.toString()}**`)
             })
         } else {
             req.on('data', chunk => {
-                textChannel.send(chunk.toString())
+                channel.send(chunk.toString())
             })
         }
     })
@@ -75,9 +79,7 @@ async function listen(message: ChatInputCommandInteraction) {
  * chats with the player counts.
  * @param {*} message Message object
  */
-async function updatePlayerCount(message: ChatInputCommandInteraction) {
-    const channel = message.channel
-
+async function updatePlayerCount(channel: TextChannel) {
     // Runs once per 5 minutes as long as the chat is being mirrored
     while (true) {
         let prod = [] as string[]

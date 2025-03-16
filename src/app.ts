@@ -11,6 +11,7 @@ import {
     Interaction,
     Partials,
 } from 'discord.js'
+import connectToMinecraft from './utils/connectToMinecraft.js'
 
 const token = config.token
 const __filename = fileURLToPath(import.meta.url)
@@ -53,6 +54,7 @@ for (const folder of commandFolders) {
 }
 
 client.once(Events.ClientReady, async () => {
+    connectToMinecraft(client)
     console.log("Ready!")
 })
 

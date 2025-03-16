@@ -9,6 +9,7 @@ const {
     DISCORD_CLIENT_ID,
     DISCORD_GUILD_ID,
     DISCORD_ROLE_ID,
+    DISCORD_CHANNEL_ID,
     DISCORD_TOKEN,
     MINECRAFT_URL,
     MINECRAFT_PROD,
@@ -23,6 +24,7 @@ if (
     !DISCORD_CLIENT_ID
     || !DISCORD_GUILD_ID
     || !DISCORD_ROLE_ID
+    || !DISCORD_CHANNEL_ID
     || !DISCORD_TOKEN
     || !MINECRAFT_URL
     || !MINECRAFT_PROD
@@ -38,6 +40,7 @@ if (
 const config = {
     clientId: DISCORD_CLIENT_ID,
     guildId: DISCORD_GUILD_ID,
+    channelId: DISCORD_CHANNEL_ID,
     roleID: DISCORD_ROLE_ID,
     token: DISCORD_TOKEN,
     minecraft_url: MINECRAFT_URL,
