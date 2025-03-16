@@ -2,7 +2,7 @@ services:
   name-pending:
     build:
       context: .
-      restart: always
       dockerfile: Dockerfile
+    restart: always
     volumes:
       - .:/app
