@@ -1,4 +1,4 @@
-import { CacheType, ChatInputCommandInteraction, Client, Message, TextChannel } from 'discord.js'
+import { Client, Message, TextChannel } from 'discord.js'
 import http from "http"
 import { Reaction } from 'discord.js'
 import config from './config.js'
@@ -41,7 +41,6 @@ export default async function connectToMinecraft(client: Client) {
 
 /**
  * Posts the message from Discord on all servers
- * @param {Discord_Message} message 
  */
 function post(message: string) {
     console.log("posting", message)
@@ -56,7 +55,6 @@ function post(message: string) {
 
 /**
  * Listens for content from Minecraft and posts it on Discord
- * @param {Discord_Message} message 
  */
 async function listen(channel: TextChannel) {
     const server = http.createServer((req, res) => {
@@ -80,7 +78,6 @@ async function listen(channel: TextChannel) {
 /**
  * Updates the channel description of the channel tracking the Minecraft 
  * chats with the player counts.
- * @param {*} message Message object
  */
 async function updatePlayerCount(channel: TextChannel) {
     // Runs once per 5 minutes as long as the chat is being mirrored
