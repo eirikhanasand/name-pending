@@ -61,7 +61,8 @@ client.once(Events.ClientReady, async () => {
 })
 
 client.on(Events.MessageCreate, async (message: Message) => {
-    if (!message.author.bot) {
+    console.log("message.content", message.content)
+    if (!message.author.bot && message.channelId === config.channelId) {
         post(`${message.author.username || message.author.globalName || message.author.id}: ${message.content}`)
     }
 })
