@@ -13,6 +13,7 @@ const {
     DISCORD_TOKEN,
     MINECRAFT_PORT,
     MINECRAFT_URL_PROD,
+    DISCORD_MINECRAFT_LOG_CHANNEL_ID,
     MINECRAFT_SERVER_NAME,
 } = process.env
 
@@ -25,6 +26,7 @@ if (
     || !DISCORD_TOKEN
     || !MINECRAFT_PORT
     || !MINECRAFT_URL_PROD
+    || !DISCORD_MINECRAFT_LOG_CHANNEL_ID
     || !MINECRAFT_SERVER_NAME
 ) {
     throw new Error('Missing essential environment variables in config.')
@@ -37,6 +39,7 @@ const config = {
     channelId: DISCORD_CHANNEL_ID,
     roleID: DISCORD_ROLE_ID,
     token: DISCORD_TOKEN,
+    minecraft_log: DISCORD_MINECRAFT_LOG_CHANNEL_ID,
     minecraft_port: Number(MINECRAFT_PORT),
     minecraft_server_url: MINECRAFT_URL_PROD,
     minecraft_server_name: MINECRAFT_SERVER_NAME,

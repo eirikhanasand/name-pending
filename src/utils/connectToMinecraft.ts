@@ -62,30 +62,17 @@ async function updatePlayerCount(channel: TextChannel) {
     const url = config.minecraft_server_url
     // Runs once per 5 minutes as long as the chat is being mirrored
     while (true) {
-        let prod = ""
-        const maxWidth = 20
-        let players = ""
+        let prod: string[] = []
         let topic = ""
 
         const response = await fetch(`${url}/${name}-online`)
         const data = await response.text()
-        prod = data;
-
-        let playersProd = prod.length
-
-        for (let i = 0; i < playersProd; i++) {
-            const playerProd = (prod[i] || "").substring(0, maxWidth)
-            const spacesProd = "\t".repeat(Math.max(0, (maxWidth - playerProd.length) / 4))
-            const tabs = Math.max(1, Math.floor((maxWidth - playerProd.length) / 4))
-            const tabCharacters = "\t".repeat(tabs)
-
-            players += `${playerProd}${spacesProd}${tabCharacters}\n`
-        }
-
-        const online = Array.from(prod).length
+        prod = JSON.parse(data)
+        const players = prod.join(', ')
+        const online = prod.length
 
         if (online) {
-            topic = `${name.replaceAll('-', ' ')}. Online: ${online}\n${players} (${prod.length})`
+            topic = `${name.replaceAll('-', ' ')}. Online: ${players} (${online})`
         } else {
             topic = `${name.replaceAll('-', ' ')}. There are no players online at this time.`
         }
