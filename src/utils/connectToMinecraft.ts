@@ -33,8 +33,7 @@ export default async function connectToMinecraft(client: Client) {
             post(`${user.tag} reacted with ${reaction._emoji.name}`)
         })
     })
-    
-    
+
     updatePlayerCount(channel)
     listen(channel)
 }
