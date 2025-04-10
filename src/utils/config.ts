@@ -38,12 +38,8 @@ const config = {
     roleID: DISCORD_ROLE_ID,
     token: DISCORD_TOKEN,
     minecraft_port: Number(MINECRAFT_PORT),
-    minecraft_servers: [
-        {
-            url: MINECRAFT_URL_PROD,
-            name: MINECRAFT_SERVER_NAME
-        }, 
-    ]
+    minecraft_server_url: MINECRAFT_URL_PROD,
+    minecraft_server_name: MINECRAFT_SERVER_NAME,
 }
 
 // Exports the config object
