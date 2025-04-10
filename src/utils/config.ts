@@ -28,11 +28,8 @@ if (
     || !DISCORD_CHANNEL_ID
     || !DISCORD_TOKEN
     || !MINECRAFT_URL_PROD
-    || !MINECRAFT_URL_DEV
     || !MINECRAFT_PROD
-    || !MINECRAFT_DEV
     || !MINECRAFT_PROD_PORT
-    || !MINECRAFT_DEV_PORT
     || !MINECRAFT_PORT
 ) {
     throw new Error('Missing essential environment variables in config.')
