@@ -2,11 +2,9 @@ import { Client, Message, TextChannel } from 'discord.js'
 import http from "http"
 import { Reaction } from 'discord.js'
 import config from './config.js'
+import post from './post.js'
 
 export default async function connectToMinecraft(client: Client) {
-    // Filter to check that the author is not a bot to prevent an infinite loop
-    const filter = (response: Message) => !response.author.bot
-
     // Message collector that collects all messages written in Discord
     const guild = client.guilds.cache.get(config.guildId)
 
@@ -15,14 +13,9 @@ export default async function connectToMinecraft(client: Client) {
     }
 
     const channel = await guild.channels.fetch(config.channelId) as TextChannel
-    const collector = channel.createMessageCollector({ filter })
     
     // Seperate collector that listens to reactions on all messages
     const botMessageCollector = channel.createMessageCollector()
-    
-    collector?.on('collect', (m: Message) => {
-        post(`${m.author.username || m.author.globalName || m.author.id}: ${m.content}`)
-    })
     
     botMessageCollector?.on('collect', (m: Message) => {
         // Listens for reactions for 1 minute on each message
@@ -36,19 +29,6 @@ export default async function connectToMinecraft(client: Client) {
 
     updatePlayerCount(channel)
     listen(channel)
-}
-
-/**
- * Posts the message from Discord on all servers
- */
-function post(message: string) {
-    config.minecraft_servers.forEach((server) => {
-        fetch(`https://${server.url}/${server.name}-message`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: message
-        })
-    })
 }
 
 /**

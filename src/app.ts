@@ -9,9 +9,11 @@ import {
     Events,
     GatewayIntentBits,
     Interaction,
+    Message,
     Partials,
 } from 'discord.js'
 import connectToMinecraft from './utils/connectToMinecraft.js'
+import post from './utils/post.js'
 
 const token = config.token
 const __filename = fileURLToPath(import.meta.url)
@@ -56,6 +58,12 @@ for (const folder of commandFolders) {
 client.once(Events.ClientReady, async () => {
     connectToMinecraft(client)
     console.log("Ready!")
+})
+
+client.on(Events.MessageCreate, async (message: Message) => {
+    if (!message.author.bot) {
+        post(`${message.author.username || message.author.globalName || message.author.id}: ${message.content}`)
+    }
 })
 
 client.on(Events.InteractionCreate, async (interaction: Interaction<"cached">) => {
