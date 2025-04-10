@@ -75,17 +75,14 @@ async function updatePlayerCount(channel: TextChannel) {
 
         for (let i = 0; i < playersProd; i++) {
             const playerProd = (prod[i] || "").substring(0, maxWidth)
-            
             const spacesProd = "\t".repeat(Math.max(0, (maxWidth - playerProd.length) / 4))
-        
             const tabs = Math.max(1, Math.floor((maxWidth - playerProd.length) / 4))
             const tabCharacters = "\t".repeat(tabs)
 
             players += `${playerProd}${spacesProd}${tabCharacters}\n`
         }
 
-        const online = prod.length
-        console.log(prod)
+        const online = Array.from(prod).length
 
         if (online) {
             topic = `${name.replaceAll('-', ' ')}. Online: ${online}\n${players} (${prod.length})`
