@@ -42,9 +42,8 @@ export default async function connectToMinecraft(client: Client) {
  * Posts the message from Discord on all servers
  */
 function post(message: string) {
-    console.log("posting", message)
     config.minecraft_servers.forEach((server) => {
-        fetch(`http://${server.ip}:${server.port}/${server.name}-message`, {
+        fetch(`https://${server.url}/${server.name}-message`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: message
@@ -88,7 +87,7 @@ async function updatePlayerCount(channel: TextChannel) {
         let topic = ""
 
         await Promise.allSettled(config.minecraft_servers.map(async(server) => {
-            const response = await fetch(`http://${server.ip}:${server.port}/${server.name}-online`)
+            const response = await fetch(`https://${server.url}/${server.name}-online`)
             const data = await response.json()
 
             switch (server.name) {
