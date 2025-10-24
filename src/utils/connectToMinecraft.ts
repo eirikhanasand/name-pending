@@ -12,14 +12,14 @@ export default async function connectToMinecraft(client: Client) {
     }
 
     const channel = await guild.channels.fetch(config.channelId) as TextChannel
-    
+
     // Seperate collector that listens to reactions on all messages
     const botMessageCollector = channel.createMessageCollector()
-    
+
     botMessageCollector?.on('collect', (m: Message) => {
         // Listens for reactions for 1 minute on each message
         const reactionCollector = m.createReactionCollector({ time: 60000 })
-        
+
         // Logs the reaction interaction in game
         reactionCollector.on('collect', (reaction: Reaction, user) => {
             post(`${user.tag} reacted with ${reaction._emoji.name}`)
@@ -35,20 +35,22 @@ export default async function connectToMinecraft(client: Client) {
  */
 async function listen(channel: TextChannel) {
     const server = http.createServer((req, res) => {
-        const ip = req.socket.remoteAddress?.replace('::ffff:', '')
-        console.log(req.headers)
-        const forwarded = req.headers['x-forwarded-for'];
-        // @ts-expect-error
-        const ip2 = (forwarded ? (Array.isArray(forwarded) ? forwarded : [forwarded as string]).split(',')[0] : req.socket.remoteAddress)?.replace('::ffff:', '');
+        const userAgent = req.headers['user-agent']
+        const isJava = userAgent?.toLowerCase().includes('java') || false
 
-        console.log('Client IP:', ip2);
-        console.log('server ip', ip)
+        if (!isJava) {
+            res.writeHead(401, { 'Content-Type': 'application/json' })
+            res.end({ error: 'Unauthorized' })
+        }
+
         if (req.headers['type'] === 'death') {
             req.on('data', chunk => {
                 channel.send(`**${chunk.toString()}**`)
             })
         } else {
             req.on('data', chunk => {
+                const data = chunk.toString()
+                if (!data.match(/^([^:]+):([^:]+)$/)) return
                 console.log(chunk.toString())
                 // channel.send(chunk.toString())
             })
@@ -84,7 +86,7 @@ async function updatePlayerCount(channel: TextChannel) {
         } else {
             topic = `${name.replaceAll('-', ' ')}. There are no players online at this time.`
         }
-        
+
         if (channel && 'setTopic' in channel) {
             channel?.setTopic(topic)
         } else {
