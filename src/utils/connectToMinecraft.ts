@@ -36,6 +36,7 @@ export default async function connectToMinecraft(client: Client) {
 async function listen(channel: TextChannel) {
     const server = http.createServer((req, res) => {
         const ip = req.socket.remoteAddress?.replace('::ffff:', '')
+        console.log(req.headers)
         const forwarded = req.headers['x-forwarded-for'];
         // @ts-expect-error
         const ip2 = (forwarded ? (Array.isArray(forwarded) ? forwarded : [forwarded as string]).split(',')[0] : req.socket.remoteAddress)?.replace('::ffff:', '');
