@@ -42,6 +42,7 @@ async function listen(channel: TextChannel) {
             })
         } else {
             req.on('data', chunk => {
+                console.log(chunk)
                 channel.send(chunk.toString())
             })
         }
