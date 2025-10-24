@@ -55,8 +55,7 @@ async function listen(channel: TextChannel) {
                     return res.end(JSON.stringify({ error: 'Unauthorized' }))
                 }
 
-                console.log(chunk.toString())
-                // channel.send(chunk.toString())
+                channel.send(chunk.toString())
                 res.writeHead(200, { 'Content-Type': 'text/plain' })
                 return res.end('OK')
             })
