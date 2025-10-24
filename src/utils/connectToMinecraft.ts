@@ -39,8 +39,8 @@ async function listen(channel: TextChannel) {
         const isJava = userAgent?.toLowerCase().includes('java') || false
 
         if (!isJava) {
-            res.writeHead(401, { 'Content-Type': 'application/json' })
-            return res.end({ error: 'Unauthorized' })
+            res.writeHead(401, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ error: 'Unauthorized' }));
         }
 
         if (req.headers['type'] === 'death') {
@@ -49,18 +49,18 @@ async function listen(channel: TextChannel) {
             })
         } else {
             req.on('data', chunk => {
-                const data = chunk.toString()
-                if (!data.match(/^([^:]+):([^:]+)$/)) {
-                    res.writeHead(400, { 'Content-Type': 'application/json' })
-                    return res.end({ error: 'Invalid data' })
+                 const data = chunk.toString()
+                if (!/^([^:]+):([^:]+)$/.test(data)) {
+                    res.writeHead(401, { 'Content-Type': 'application/json' })
+                    return res.end(JSON.stringify({ error: 'Unauthorized' }))
                 }
+
                 console.log(chunk.toString())
                 // channel.send(chunk.toString())
+                res.writeHead(200, { 'Content-Type': 'text/plain' })
+                return res.end('OK')
             })
         }
-
-        res.writeHead(200, { 'Content-Type': 'text/plain' })
-        res.end('OK')
     })
 
     server.listen(config.minecraft_port)
