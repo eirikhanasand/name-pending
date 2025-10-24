@@ -40,7 +40,7 @@ async function listen(channel: TextChannel) {
 
         if (!isJava) {
             res.writeHead(401, { 'Content-Type': 'application/json' })
-            res.end({ error: 'Unauthorized' })
+            return res.end({ error: 'Unauthorized' })
         }
 
         if (req.headers['type'] === 'death') {
