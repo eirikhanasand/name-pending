@@ -13,11 +13,8 @@ RUN npm install
 # Copies contents
 COPY . .
 
-# Builds the repo
-RUN npm run build
-
 # Exposes API port
 EXPOSE 6969
 
 # Stars the application
-CMD npm run prod
+CMD npm start
