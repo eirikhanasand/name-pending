@@ -1,11 +1,5 @@
-# Uses node 20 alpine image for apk package manager
-FROM node:20-alpine
-
-# Installs required system dependencies
-RUN apk add --no-cache python3 make g++
-
-# Sets the environment variable to point to Python
-ENV PYTHON python3
+# Uses latest node alpine image
+FROM node:alpine
 
 # Sets the working directory
 WORKDIR /usr/src/app

@@ -1,5 +1,5 @@
 import { ButtonInteraction, GuildMember, Role } from "discord.js"
-import config from "./config.js"
+import config from "#config"
 
 export default async function trash(interaction: ButtonInteraction) {
     const member = interaction.member as GuildMember

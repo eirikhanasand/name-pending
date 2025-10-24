@@ -5,11 +5,12 @@
         "module": "nodenext",
         "moduleResolution": "nodenext",
         "rootDir": "src",
-        "outDir": "dist",
         "strict": true,
         "target": "es2022",
         "skipLibCheck": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "allowImportingTsExtensions": true,
+        "noEmit": true
     },
     "include": [
         "**/*.ts",

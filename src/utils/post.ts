@@ -1,4 +1,4 @@
-import config from "./config.js"
+import config from "#config"
 
 /**
  * Posts the message from Discord on all servers

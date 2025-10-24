@@ -1,13 +1,6 @@
-import { 
-    ActionRowBuilder, 
-    ButtonBuilder, 
-    ButtonInteraction, 
-    ButtonStyle, 
-    Embed, 
-    EmbedBuilder, 
-    EmbedField 
-} from "discord.js"
-import pages from "./commands.js"
+import { ActionRowBuilder, ButtonBuilder, EmbedBuilder, ButtonStyle } from 'discord.js'
+import type { ButtonInteraction, Embed, EmbedField } from "discord.js"
+import pages from "#utils/commands.ts"
 
 const commands = {
     chat: "Establishes a link between the current channel and the Minecraft survival and creative servers. Use the command by typing the following: `/chat`. The link will be established automatically.",

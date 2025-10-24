@@ -1,19 +1,15 @@
 import { readdirSync } from 'fs'
 import { fileURLToPath } from 'url'
 import { join, dirname } from 'path'
-import config from './utils/config.js'
-import {
+import config from '#utils/config.ts'
+import { Client, GatewayIntentBits, Partials, Collection, Events } from 'discord.js'
+import type {
     ChatInputCommandInteraction,
-    Client,
-    Collection,
-    Events,
-    GatewayIntentBits,
     Interaction,
     Message,
-    Partials,
 } from 'discord.js'
-import connectToMinecraft from './utils/connectToMinecraft.js'
-import post from './utils/post.js'
+import connectToMinecraft from '#utils/connectToMinecraft.ts'
+import post from '#utils/post.ts'
 
 const token = config.token
 const __filename = fileURLToPath(import.meta.url)
@@ -43,7 +39,7 @@ const commandFolders = readdirSync(foldersPath)
 
 for (const folder of commandFolders) {
 	const commandsPath = join(foldersPath, folder)
-	const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'))
+	const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.ts'))
 	for (const file of commandFiles) {
 		const filePath = join(commandsPath, file)
         const command = await import(filePath)

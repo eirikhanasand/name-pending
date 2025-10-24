@@ -1,8 +1,7 @@
-import { Client, Message, TextChannel } from 'discord.js'
+import type { Client, Message, TextChannel, Reaction } from 'discord.js'
 import http from "http"
-import { Reaction } from 'discord.js'
-import config from './config.js'
-import post from './post.js'
+import config from '#config'
+import post from '#utils/post.ts'
 
 export default async function connectToMinecraft(client: Client) {
     // Message collector that collects all messages written in Discord

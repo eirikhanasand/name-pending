@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js'
-import getCommand, { getButtons } from '../../utils/help.js'
+import getCommand, { getButtons } from '#utils/help.ts'
 
 export const data = new SlashCommandBuilder()
     .setName('help')

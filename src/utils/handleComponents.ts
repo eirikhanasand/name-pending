@@ -1,6 +1,6 @@
 import { ButtonInteraction, ChatInputCommandInteraction } from "discord.js"
-import { nextPage, previousPage } from "./help.js"
-import trash from "./trash.js"
+import { nextPage, previousPage } from "#utils/help.ts"
+import trash from "#utils/trash.ts"
 
 export default async function handleComponents(interaction: ButtonInteraction | ChatInputCommandInteraction, id: string | undefined) {    
     const buttonInteraction = interaction as ButtonInteraction

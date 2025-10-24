@@ -1,8 +1,9 @@
-import { CacheType, ChatInputCommandInteraction, Role, SlashCommandBuilder } from 'discord.js'
-import config from '../../utils/config.js'
-import log from '../../utils/logger.js'
-import { Roles } from '../../interfaces.js'
-import sanitize from '../../utils/sanitize.js'
+import { SlashCommandBuilder } from 'discord.js'
+import type { CacheType, ChatInputCommandInteraction, Role } from 'discord.js'
+import config from '#config'
+import log from '#utils/logger.ts'
+import type { Roles } from '#interfaces'
+import sanitize from '#utils/sanitize.ts'
 
 /**
  * Builds a new slash command with the given name, description and options

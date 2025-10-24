@@ -5,23 +5,22 @@
     "main": "app.js",
     "type": "module",
     "scripts": {
-        "start": "rm -rf dist; tsc; node dist/deploy-commands.js; node dist/app.js",
-        "build": "tsc",
-        "prod": "node dist/app.js",
-        "fast": "tsc && node dist/app.js"
+        "start": "node src/app.ts"
     },
     "author": "Login - Linjeforeningen for IT",
     "license": "MIT",
     "dependencies": {
-        "discord.js": "^14.16.1",
-        "dotenv": "^16.4.5",
-        "node-cron": "^3.0.3",
-        "pg": "^8.13.3"
+        "discord.js": "^14.23.2",
+        "dotenv": "^17.2.3"
     },
     "devDependencies": {
-        "@types/node": "^20.11.14",
-        "@types/node-cron": "^3.0.11",
-        "@types/pg": "^8.11.11",
-        "typescript": "^5.3.3"
+        "@types/node": "^24.9.1",
+        "typescript": "^5.9.3"
+    },
+    "imports": {
+        "#utils/*": "./src/utils/*",
+        "#config": "./src/utils/config.ts",
+        "#interfaces": "./src/interfaces.ts",
+        "#/*": "./src/*"
     }
 }
