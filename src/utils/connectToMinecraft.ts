@@ -35,6 +35,8 @@ export default async function connectToMinecraft(client: Client) {
  */
 async function listen(channel: TextChannel) {
     const server = http.createServer((req, res) => {
+        const ip = req.socket.remoteAddress?.replace('::ffff:', '')
+        console.log(ip)
         if (req.headers['type'] === 'death') {
             req.on('data', chunk => {
                 channel.send(`**${chunk.toString()}**`)
@@ -42,7 +44,7 @@ async function listen(channel: TextChannel) {
         } else {
             req.on('data', chunk => {
                 console.log(chunk.toString())
-                channel.send(chunk.toString())
+                // channel.send(chunk.toString())
             })
         }
 
