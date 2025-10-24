@@ -50,7 +50,10 @@ async function listen(channel: TextChannel) {
         } else {
             req.on('data', chunk => {
                 const data = chunk.toString()
-                if (!data.match(/^([^:]+):([^:]+)$/)) return
+                if (!data.match(/^([^:]+):([^:]+)$/)) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' })
+                    return res.end({ error: 'Invalid data' })
+                }
                 console.log(chunk.toString())
                 // channel.send(chunk.toString())
             })
