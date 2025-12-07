@@ -1,5 +1,7 @@
 services:
-  name-pending:
+  name_pending:
+    container_name: name_pending
+    image: name_pending
     build:
       context: .
       dockerfile: Dockerfile

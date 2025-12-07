@@ -7,14 +7,14 @@
     "scripts": {
         "start": "node src/app.ts"
     },
-    "author": "Login - Linjeforeningen for IT",
+    "author": "Eirik Hanasand",
     "license": "MIT",
     "dependencies": {
-        "discord.js": "^14.23.2",
+        "discord.js": "^14.25.1",
         "dotenv": "^17.2.3"
     },
     "devDependencies": {
-        "@types/node": "^24.9.1",
+        "@types/node": "^24.10.1",
         "typescript": "^5.9.3"
     },
     "imports": {

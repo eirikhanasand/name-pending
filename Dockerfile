@@ -1,4 +1,4 @@
-# Uses latest node alpine image
+# Uses latest Node Alpine image
 FROM node:alpine
 
 # Sets the working directory
