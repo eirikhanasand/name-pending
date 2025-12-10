@@ -1,5 +1,5 @@
 {
-    "name": "name-pending",
+    "name": "name_pending",
     "version": "1.0.0",
     "description": "Name pending",
     "main": "app.js",
