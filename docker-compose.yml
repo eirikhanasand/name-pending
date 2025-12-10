@@ -2,6 +2,8 @@ services:
   name_pending:
     container_name: name_pending
     image: name_pending
+    mem_limit: 1g
+    cpus: "2.0"
     build:
       context: .
       dockerfile: Dockerfile
